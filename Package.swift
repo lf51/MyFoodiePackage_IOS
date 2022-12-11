@@ -5,6 +5,10 @@ import PackageDescription
 
 let package = Package(
     name: "MyFoodiePackage",
+    platforms: [
+        .macOS(.v11),
+        .iOS(.v16)
+    ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
@@ -21,8 +25,5 @@ let package = Package(
         .target(
             name: "MyFoodiePackage",
             dependencies: []),
-        .testTarget(
-            name: "MyFoodiePackageTests",
-            dependencies: ["MyFoodiePackage"]),
     ]
 )
