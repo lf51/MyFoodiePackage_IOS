@@ -10,7 +10,7 @@ import SwiftUI
 
 // Creare Oggetto Ingrediente
 
-public struct IngredientModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1/*MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1*/ /*MyModelStatusConformity */ {
+public struct IngredientModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable/*MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1*/ /*MyModelStatusConformity */ {
  
     public static func == (lhs: IngredientModel, rhs: IngredientModel) -> Bool {
        return

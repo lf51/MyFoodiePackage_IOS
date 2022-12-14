@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public enum StatusTransition:MyProEnumPack_L0,Equatable {
+public enum StatusTransition:MyProEnumPack_L0,Equatable,Codable {
     
     public static var allCases: [StatusTransition] = [.disponibile,.inPausa,.archiviato]
  //   static var defaultValue: StatusTransition = .archiviato
@@ -58,7 +58,7 @@ public enum StatusTransition:MyProEnumPack_L0,Equatable {
     }
 }
 
-public enum StatusModel:Equatable,MyProCloudPack_L0 { // vedi Nota Consegna 17.07
+public enum StatusModel:Equatable,MyProCloudPack_L0,Codable { // vedi Nota Consegna 17.07
     
    // case nuovo // deprecato 07.09
     case bozza(StatusTransition? = nil)

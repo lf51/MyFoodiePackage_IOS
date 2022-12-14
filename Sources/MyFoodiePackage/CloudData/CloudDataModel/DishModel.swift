@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public struct DishModel: MyProStarterPack_L0,MyProCloudDownloadPack_L1 /*: MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1 */{
+public struct DishModel: MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable /*: MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1 */{
 
    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -283,7 +283,7 @@ public struct DishModel: MyProStarterPack_L0,MyProCloudDownloadPack_L1 /*: MyPro
         }
     }
     
-    public enum PercorsoProdotto:MyProEnumPack_L0,MyProCloudPack_L0 {
+    public enum PercorsoProdotto:MyProEnumPack_L0,MyProCloudPack_L0,Codable {
 
         public static var allCases:[PercorsoProdotto] = [.preparazioneFood,.preparazioneBeverage,.prodottoFinito]
         

@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 //import Firebase
 
-public struct Inventario:Equatable,MyProCloudPack_L1 {
+public struct Inventario:Equatable,MyProCloudPack_L1,Codable {
 
     // Nota 02.10 // Nota 21.11
     public var id:String

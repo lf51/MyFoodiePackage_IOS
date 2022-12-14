@@ -11,8 +11,60 @@ import SwiftUI
 //import Firebase
 
 // Nota 19.09
-public struct PropertyModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1/*MyProStarterPack_L1,MyProVisualPack_L0,MyProDescriptionPack_L0,MyProCloudPack_L1*/{
+
+public struct PropertyModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable/*MyProStarterPack_L1,MyProVisualPack_L0,MyProDescriptionPack_L0,MyProCloudPack_L1*/{
   
+    // Set Codable 14.12
+    
+   enum CodingKeys:String,CodingKey {
+        
+        case id
+        case intestazione
+        case descrizione
+       
+        case cityName
+       // case coordinates
+        case latitude
+        case longitude
+        
+        case webSite
+        case phoneNumber
+        case streetAdress
+        case numeroCivico
+        
+    }
+    
+    
+    public func encode(to encoder: Encoder) throws {
+        
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(coordinates.latitude, forKey: .latitude)
+        try container.encode(coordinates.longitude, forKey: .longitude)
+    }
+    
+    public init(from decoder: Decoder) throws {
+
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        
+        let decodeLatitude = try values.decode(Double.self, forKey: .latitude)
+        let decodedLongitude = try values.decode(Double.self, forKey: .longitude)
+        
+        self.coordinates = CLLocationCoordinate2D(latitude: decodeLatitude, longitude: decodedLongitude)
+        self.id = try values.decode(String.self, forKey: .id)
+        self.intestazione = try values.decode(String.self, forKey: .intestazione)
+        self.descrizione = try values.decode(String.self, forKey: .descrizione)
+        self.cityName = try values.decode(String.self, forKey: .cityName)
+        self.webSite = try values.decode(String.self, forKey: .webSite)
+        self.phoneNumber = try values.decode(String.self, forKey: .phoneNumber)
+        self.streetAdress = try values.decode(String.self, forKey: .streetAdress)
+        self.numeroCivico = try values.decode(String.self, forKey: .numeroCivico)
+         
+    }
+    
+    
+    
+    // Beta 14.12 Codable
+    
     public static func == (lhs: PropertyModel, rhs: PropertyModel) -> Bool {
         
         lhs.id == rhs.id  &&

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum PaxMenuFisso:MyProEnumPack_L1,MyProCloudPack_L0 /*:MyEnumProtocolMapConform */ {
+public enum PaxMenuFisso:MyProEnumPack_L1,MyProCloudPack_L0,Codable /*:MyEnumProtocolMapConform */ {
     
     public static var defaultValue: PaxMenuFisso = .uno
     public static var allCases: [PaxMenuFisso] = [.uno,.due]
@@ -68,7 +68,7 @@ public enum PaxMenuFisso:MyProEnumPack_L1,MyProCloudPack_L0 /*:MyEnumProtocolMap
 }
 
 
-public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2 /*: MyEnumProtocol, MyEnumProtocolMapConform*/ {
+public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform*/ {
    
     public static var allCases: [TipologiaMenu] = [.allaCarta(),.fisso(persone: .uno, costo: "n/d")]
     public static var defaultValue: TipologiaMenu = .noValue
@@ -266,7 +266,7 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2 /*: MyEnumPr
         self == .allaCarta(.delloChef)
     }
     
-    public enum DiSistema {
+    public enum DiSistema:Codable {
         
         case delGiorno,delloChef
         

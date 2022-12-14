@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct AccountSetup: MyProCloudPack_L1 {
+public struct AccountSetup: MyProCloudPack_L1,Codable {
    
     public var id: String
     public var startCountDownMenuAt:TimeValue
@@ -75,7 +75,7 @@ public struct AccountSetup: MyProCloudPack_L1 {
     
     //
     
-    public enum ActionValue:String,MyProCloudPack_L0 {
+    public enum ActionValue:String,MyProCloudPack_L0,Codable {
         
         static var allCases:[ActionValue] = [.sempre,.mai,.chiedi]
         static var defaultValue:ActionValue = .mai
@@ -105,7 +105,7 @@ public struct AccountSetup: MyProCloudPack_L1 {
         
     }
     
-    public enum TimeValue:Int,MyProCloudPack_L0 {
+    public enum TimeValue:Int,MyProCloudPack_L0,Codable {
         
        public static var allCases:[TimeValue] = [.quarter,.trenta,.fortyfive,.sixty,.seventyFive,.novanta,.twoHour]
        public static var defaultValue:TimeValue = .sixty

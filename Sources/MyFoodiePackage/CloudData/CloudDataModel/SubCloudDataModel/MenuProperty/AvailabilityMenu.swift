@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum AvailabilityMenu:Hashable,MyProEnumPack_L1,MyProCloudPack_L0 {
+public enum AvailabilityMenu:Hashable,MyProEnumPack_L1,MyProCloudPack_L0,Codable {
 
     public static var allCases:[AvailabilityMenu] = [.dataEsatta,.intervalloAperto,.intervalloChiuso]
     public static var defaultValue: AvailabilityMenu = .noValue

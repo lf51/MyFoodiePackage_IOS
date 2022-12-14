@@ -10,7 +10,8 @@ import Foundation
 
 public struct CategoriaMenu:
     MyProStarterPack_L0,
-    MyProCloudDownloadPack_L1
+    MyProCloudDownloadPack_L1,
+    Codable
    /*MyProStarterPack_L1,
     MyProEnumPack_L2,
     MyProDescriptionPack_L0,

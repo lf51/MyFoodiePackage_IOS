@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 //import Firebase
 
-public struct MenuModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1/*MyProStatusPack_L1,MyProToolPack_L1,MyProDescriptionPack_L0,MyProVisualPack_L1,MyProCloudPack_L1*//*MyModelStatusConformity */ {
+public struct MenuModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable/*MyProStatusPack_L1,MyProToolPack_L1,MyProDescriptionPack_L0,MyProVisualPack_L1,MyProCloudPack_L1*//*MyModelStatusConformity */ {
      
    
     

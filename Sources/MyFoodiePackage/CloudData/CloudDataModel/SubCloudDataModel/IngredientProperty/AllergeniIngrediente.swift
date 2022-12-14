@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public enum AllergeniIngrediente:MyProStarterPack_L0/*MyProStarterPack_L1,MyProEnumPack_L0,MyProCloudPack_L0*/ /*: MyEnumProtocol, MyProModelPack_L0*/{
+public enum AllergeniIngrediente:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyProEnumPack_L0,MyProCloudPack_L0*/ /*: MyEnumProtocol, MyProModelPack_L0*/{
     
 
     

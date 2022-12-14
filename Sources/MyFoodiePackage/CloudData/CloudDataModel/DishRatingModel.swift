@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 //import Firebase
 
-public struct DishRatingModel: MyProStarterPack_L0,MyProCloudPack_L1 {
+public struct DishRatingModel: MyProStarterPack_L0,MyProCloudPack_L1,Codable {
   
     public let id: String
     public let rifPiatto: String

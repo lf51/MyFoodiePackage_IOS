@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct DishFormat:Hashable {
+public struct DishFormat:Hashable,Codable {
     
     var id:String = "DishFormatPrice_NoneID" // Non serve. Non lo salviamo su firebase e quindi ne viene assegnato uno nuovo ogni volta
     
@@ -52,7 +52,7 @@ public struct DishFormat:Hashable {
     
 }
 
-public enum DishFormatType:MyProCloudPack_L0 {
+public enum DishFormatType:MyProCloudPack_L0,Codable {
     
     case mandatory,opzionale
     
