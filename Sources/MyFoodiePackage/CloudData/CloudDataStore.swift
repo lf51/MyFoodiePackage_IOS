@@ -23,7 +23,7 @@ public struct CloudDataStore:Decodable {
     
     
     
-   public enum CodingKeys:String,CodingKey {
+  /* public enum CodingKeys:String,CodingKey {
         
         case allMyIngredients = "allUserIngredients"
         case allMyDish = "allUserProducts"
@@ -60,7 +60,7 @@ public struct CloudDataStore:Decodable {
         self.inventarioScorte = try additionalInfo.decode(Inventario.self, forKey: .inventarioScorte)
         
         
-    }
+    } */
     
     
     
