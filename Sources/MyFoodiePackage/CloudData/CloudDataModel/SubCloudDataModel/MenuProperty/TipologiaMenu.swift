@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum PaxMenuFisso:MyProEnumPack_L1,MyProCloudPack_L0,Codable /*:MyEnumProtocolMapConform */ {
+public enum PaxMenuFisso:MyProEnumPack_L1,Codable /*:MyEnumProtocolMapConform */ {
     
     public static var defaultValue: PaxMenuFisso = .uno
     public static var allCases: [PaxMenuFisso] = [.uno,.due]
@@ -58,13 +58,13 @@ public enum PaxMenuFisso:MyProEnumPack_L1,MyProCloudPack_L0,Codable /*:MyEnumPro
         }
     }
     
-    public static func convertiInCase(fromNumber: Int) -> PaxMenuFisso {
+   /* public static func convertiInCase(fromNumber: Int) -> PaxMenuFisso {
         switch fromNumber {
         case 1: return .uno
         case 2: return .due
         default: return .uno
         }
-    }
+    } */
 }
 
 
@@ -233,7 +233,7 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
         }
     }
     
-    public static func convertiFromAny(value:Any?) -> TipologiaMenu {
+   /* public static func convertiFromAny(value:Any?) -> TipologiaMenu {
         
         if let int = value as? Int {
             
@@ -257,7 +257,7 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
         
         else { return TipologiaMenu.noValue }
         
-    }
+    } */
     
     public func isDiSistema() -> Bool {
       //  self == .delGiorno ||

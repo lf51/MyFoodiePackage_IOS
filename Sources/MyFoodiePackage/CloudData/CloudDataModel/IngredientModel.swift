@@ -10,7 +10,7 @@ import SwiftUI
 
 // Creare Oggetto Ingrediente
 
-public struct IngredientModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable/*MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1*/ /*MyModelStatusConformity */ {
+public struct IngredientModel:MyProStarterPack_L0,Codable/*MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1*/ /*MyModelStatusConformity */ {
  
     public static func == (lhs: IngredientModel, rhs: IngredientModel) -> Bool {
        return
@@ -70,7 +70,7 @@ public struct IngredientModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1,Coda
      
     }
     
-    public init(frDocID:String,frDoc: [String:Any]) {
+  /*  public init(frDocID:String,frDoc: [String:Any]) {
         // init da firebase Data
         
         let conservazioneInt = frDoc[DataBaseField.conservazione] as? Int ?? 0
@@ -105,7 +105,7 @@ public struct IngredientModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1,Coda
         public static let status = "status"
         
         
-    }
+    } */
 
     public func conversioneAllergeniInt() -> [Int] {
         

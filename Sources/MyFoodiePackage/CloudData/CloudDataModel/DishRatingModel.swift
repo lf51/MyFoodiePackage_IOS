@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 //import Firebase
 
-public struct DishRatingModel: MyProStarterPack_L0,MyProCloudPack_L1,Codable {
+public struct DishRatingModel: MyProStarterPack_L0,Codable {
   
     public let id: String
     public let rifPiatto: String
@@ -36,7 +36,7 @@ public struct DishRatingModel: MyProStarterPack_L0,MyProCloudPack_L1,Codable {
     
     // MyProCloudPack_L1
     
-    public init(frDocID:String,frDoc: [String:Any]) {
+    /*public init(frDocID:String,frDoc: [String:Any]) {
         
         self.id = frDocID
         
@@ -74,7 +74,7 @@ public struct DishRatingModel: MyProStarterPack_L0,MyProCloudPack_L1,Codable {
         static let image = "rifImage"
         static let dataRilascio = "dataRilascio"
         
-    }
+    } */
     
     public func rateColor() -> Color {
         

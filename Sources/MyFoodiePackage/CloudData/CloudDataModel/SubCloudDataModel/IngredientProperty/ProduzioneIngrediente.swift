@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ProduzioneIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform */{
+public enum ProduzioneIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform */{
     
     // Nota 18.10
     public static var allCases: [ProduzioneIngrediente] = [.biologico/*,.convenzionale*/]
@@ -80,7 +80,7 @@ public enum ProduzioneIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable /*:
         }
     }
     
-    public static func convertiInCase(fromNumber: Int) -> ProduzioneIngrediente {
+   /* public static func convertiInCase(fromNumber: Int) -> ProduzioneIngrediente {
       
         switch fromNumber {
             
@@ -93,7 +93,7 @@ public enum ProduzioneIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable /*:
             return .defaultValue
             
         }
-    }
+    } */
     
     // Fuori dai Protocolli
     

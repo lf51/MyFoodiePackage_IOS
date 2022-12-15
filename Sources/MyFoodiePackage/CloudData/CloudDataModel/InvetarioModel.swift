@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 //import Firebase
 
-public struct Inventario:Equatable,MyProCloudPack_L1,Codable {
+public struct Inventario:Equatable,Codable {
 
     // Nota 02.10 // Nota 21.11
     public var id:String
@@ -49,7 +49,7 @@ public struct Inventario:Equatable,MyProCloudPack_L1,Codable {
     
     // MyProCloudPack_L1
     
-    public init(frDocID:String,frDoc: [String:Any]) {
+   /* public init(frDocID:String,frDoc: [String:Any]) {
         
         self.id = frDocID
         
@@ -87,7 +87,7 @@ public struct Inventario:Equatable,MyProCloudPack_L1,Codable {
         static let lockedId = "lockedId"
         static let archivioIngInEsaurimento = "archivioIngInEsaurimento"
         
-    }
+    } */
     
     // Method
     

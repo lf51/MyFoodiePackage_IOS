@@ -22,7 +22,7 @@ public struct DishFormat:Hashable,Codable {
         self.type = type
     }
         
-    public init(frMapData: [String:Any]) {
+  /*  public init(frMapData: [String:Any]) {
         
         let typeInt = frMapData[DataBaseField.type] as? Int ?? 0
         
@@ -47,12 +47,12 @@ public struct DishFormat:Hashable,Codable {
         static let price = "price"
         static let type = "type"
         
-    }
+    } */
     
     
 }
 
-public enum DishFormatType:MyProCloudPack_L0,Codable {
+public enum DishFormatType:Codable {
     
     case mandatory,opzionale
     
@@ -63,12 +63,12 @@ public enum DishFormatType:MyProCloudPack_L0,Codable {
         }
     }
     
-    public static func convertiInCase(fromNumber: Int) -> DishFormatType {
+   /* public static func convertiInCase(fromNumber: Int) -> DishFormatType {
         switch fromNumber {
         case 0: return .mandatory
         default: return .opzionale
         }
-    }
+    } */
 
 }
 

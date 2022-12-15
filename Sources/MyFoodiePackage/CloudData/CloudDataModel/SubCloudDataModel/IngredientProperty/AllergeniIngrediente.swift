@@ -134,7 +134,7 @@ public enum AllergeniIngrediente:MyProStarterPack_L0,Codable/*MyProStarterPack_L
         
     }
     
-    public static func convertiInCase(fromNumber: Int) -> AllergeniIngrediente {
+  /*  public static func convertiInCase(fromNumber: Int) -> AllergeniIngrediente {
         
         switch fromNumber {
             
@@ -156,7 +156,7 @@ public enum AllergeniIngrediente:MyProStarterPack_L0,Codable/*MyProStarterPack_L
         default: return .defaultValue
             
         }
-    }
+    } */
 
     public static func returnAllergeniIn(ingredients: [IngredientModel]...) -> [AllergeniIngrediente] {
      

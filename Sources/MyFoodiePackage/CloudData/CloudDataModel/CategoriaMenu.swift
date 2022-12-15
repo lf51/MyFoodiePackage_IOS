@@ -10,7 +10,6 @@ import Foundation
 
 public struct CategoriaMenu:
     MyProStarterPack_L0,
-    MyProCloudDownloadPack_L1,
     Codable
    /*MyProStarterPack_L1,
     MyProEnumPack_L2,
@@ -54,7 +53,7 @@ public struct CategoriaMenu:
     
     // MyProCloudPack_L1
     
-    public init(frDocID:String,frDoc: [String:Any]) {
+   /* public init(frDocID:String,frDoc: [String:Any]) {
         
         self.id = frDocID
         self.intestazione = frDoc[DataBaseField.intestazione] as? String ?? ""
@@ -71,7 +70,7 @@ public struct CategoriaMenu:
         public static let image = "image"
         public static let listIndex = "listIndex"
         
-    }
+    } */
     
     //
     

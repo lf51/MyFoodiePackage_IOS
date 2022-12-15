@@ -145,37 +145,38 @@ public protocol MyProToolPack_L0:MyProStatusPack_L1,MyProVisualPack_L0 { }
 public protocol MyProToolPack_L1:MyProToolPack_L0,MyProSearchPack_L0,MyProManagingPack_L0 { }
 
 
+/*
 /// Gestione upload e download da/per firebase per enum
 public protocol MyProCloudPack_L0 {
     /// protocollo per le proprietà, in particolare per le enum, per essere convertite in un valore più facilmente stockabile
     // 14.12 Probabilmente sarà deprecato dall'implementazione di Codable. Tuttavia i metodi definiti potrebbero essere stati utilizzati per altri usi. Verificare ed eventualmente spostarli in altri protocolli
           func orderAndStorageValue() -> Int
    static func convertiInCase(fromNumber:Int) -> Self
-}
+} */
 
 /// download dei modelli dal firebase
-public protocol MyProCloudDownloadPack_L1 {
+/*public protocol MyProCloudDownloadPack_L1 {
    
     // Questa è la nostra versione custom del protocollo Decodable. Deprecata 14.12.22. Sostituita appunto da Decodable
     
     associatedtype DataBaseField
     init(frDocID:String,frDoc:[String:Any])
     
-}
+}*/
 ///upload modelli su firebase
-public protocol MyProCloudUploadPack_L1 {
+/*public protocol MyProCloudUploadPack_L1 {
     
     // Questa è la nostra versione custom del protocollo Encodable. Deprecata 14.12.22. Sostituita appunto da Encodable
     var id: String { get }
     func documentDataForFirebaseSavingAction(positionIndex:Int?) -> [String:Any] // Nota 24.11
    
-}
+}*/
 
-public protocol MyProCloudPack_L1:MyProCloudDownloadPack_L1,MyProCloudUploadPack_L1 {
+/*public protocol MyProCloudPack_L1:MyProCloudDownloadPack_L1,MyProCloudUploadPack_L1 {
     // Lo abbiamo splittato in due protocolli, uno per l'upload e uno per il download. Lo abbiamo messo così per gestire la transizione. Se non sarà necessario riaverlo unificato, li usiamo splittati e questo lo eliminiamo
     
     // Questa è la nostra versione custom del protocollo Codable (Encodavle + Decodable). Deprecata 14.12.22. Sostituita appunto da Codable
-}
+} */
 
  public protocol MyProVMPack_L0 {
     

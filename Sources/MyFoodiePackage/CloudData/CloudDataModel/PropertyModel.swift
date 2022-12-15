@@ -12,7 +12,7 @@ import SwiftUI
 
 // Nota 19.09
 
-public struct PropertyModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable/*MyProStarterPack_L1,MyProVisualPack_L0,MyProDescriptionPack_L0,MyProCloudPack_L1*/{
+public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyProVisualPack_L0,MyProDescriptionPack_L0,MyProCloudPack_L1*/{
   
     // Set Codable 14.12
     
@@ -38,8 +38,19 @@ public struct PropertyModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codabl
     public func encode(to encoder: Encoder) throws {
         
         var container = encoder.container(keyedBy: CodingKeys.self)
+        
         try container.encode(coordinates.latitude, forKey: .latitude)
         try container.encode(coordinates.longitude, forKey: .longitude)
+        
+        try container.encode(id, forKey: .id)
+        try container.encode(intestazione, forKey: .intestazione)
+        try container.encode(descrizione, forKey: .descrizione)
+        try container.encode(cityName, forKey: .cityName)
+        try container.encode(webSite, forKey: .webSite)
+        try container.encode(phoneNumber, forKey: .phoneNumber)
+        try container.encode(streetAdress, forKey: .streetAdress)
+        try container.encode(numeroCivico, forKey: .numeroCivico)
+        
     }
     
     public init(from decoder: Decoder) throws {
@@ -100,7 +111,7 @@ public struct PropertyModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codabl
     
     // MyProCloudPack_L1
     
-    public init(frDocID:String,frDoc: [String:Any]) {
+   /* public init(frDocID:String,frDoc: [String:Any]) {
         
         self.id = frDocID
         self.intestazione = frDoc[DataBaseField.intestazione] as? String ?? ""
@@ -134,7 +145,7 @@ public struct PropertyModel:MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codabl
         public static let latitude = "latitudine"
         public static let longitude = "longitudine"
         
-    }
+    } */
             
     public init() { // utile quando creaiamo la @State NewProperty
         

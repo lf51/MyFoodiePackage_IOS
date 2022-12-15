@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct AccountSetup: MyProCloudPack_L1,Codable {
+public struct AccountSetup: Codable {
    
     public var id: String
     public var startCountDownMenuAt:TimeValue
@@ -37,7 +37,7 @@ public struct AccountSetup: MyProCloudPack_L1,Codable {
     
     // MyProCloudPack_L1
     
-    public init(frDocID:String,frDoc: [String:Any]) {
+  /*  public init(frDocID:String,frDoc: [String:Any]) {
         
         let countDownInt = frDoc[DataBaseField.startCountDownMenuAt] as? Int ?? 0
         let pausaInt = frDoc[DataBaseField.autoPauseDish_byPauseING] as? Int ?? 0
@@ -71,11 +71,11 @@ public struct AccountSetup: MyProCloudPack_L1,Codable {
         static let autoPauseDish_byPauseING = "autoPauseDish_byPauseING"
         static let autoPauseDish_byDeleteING = "autoPauseDish_byDeleteING"
         static let autoPauseDish_byArchiveING = "autoPauseDish_byArchiveING"
-    }
+    } */
     
     //
     
-    public enum ActionValue:String,MyProCloudPack_L0,Codable {
+    public enum ActionValue:String,Codable {
         
         static var allCases:[ActionValue] = [.sempre,.mai,.chiedi]
         static var defaultValue:ActionValue = .mai
@@ -93,7 +93,7 @@ public struct AccountSetup: MyProCloudPack_L1,Codable {
             }
         }
         
-        public static func convertiInCase(fromNumber: Int) -> AccountSetup.ActionValue {
+       /* public static func convertiInCase(fromNumber: Int) -> AccountSetup.ActionValue {
             switch fromNumber {
                 
             case 0: return .mai
@@ -101,11 +101,11 @@ public struct AccountSetup: MyProCloudPack_L1,Codable {
             case 2: return .chiedi
             default: return .defaultValue
             }
-        }
+        } */
         
     }
     
-    public enum TimeValue:Int,MyProCloudPack_L0,Codable {
+    public enum TimeValue:Int,Codable {
         
        public static var allCases:[TimeValue] = [.quarter,.trenta,.fortyfive,.sixty,.seventyFive,.novanta,.twoHour]
        public static var defaultValue:TimeValue = .sixty
@@ -130,7 +130,7 @@ public struct AccountSetup: MyProCloudPack_L1,Codable {
             }
         }
         
-        public static func convertiInCase(fromNumber: Int) -> AccountSetup.TimeValue {
+      /*  public static func convertiInCase(fromNumber: Int) -> AccountSetup.TimeValue {
             switch fromNumber {
                 
             case 15: return .quarter
@@ -144,6 +144,6 @@ public struct AccountSetup: MyProCloudPack_L1,Codable {
             default: return .defaultValue
                 
             }
-        }
+        } */
     }
 }

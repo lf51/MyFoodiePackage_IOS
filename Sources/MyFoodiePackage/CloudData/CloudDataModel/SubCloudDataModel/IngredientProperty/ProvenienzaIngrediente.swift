@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ProvenienzaIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform*/ {
+public enum ProvenienzaIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform*/ {
  
     // Nota Vocale 18.10
     
@@ -80,7 +80,7 @@ public enum ProvenienzaIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable /*
         }
     }
     
-    public static func convertiInCase(fromNumber: Int) -> ProvenienzaIngrediente {
+   /* public static func convertiInCase(fromNumber: Int) -> ProvenienzaIngrediente {
     
         switch fromNumber {
             
@@ -95,6 +95,6 @@ public enum ProvenienzaIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable /*
         default:
             return .defaultValue
         }
-    }
+    } */
 
 }

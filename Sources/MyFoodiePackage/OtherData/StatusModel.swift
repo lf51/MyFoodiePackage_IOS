@@ -58,7 +58,7 @@ public enum StatusTransition:MyProEnumPack_L0,Equatable,Codable {
     }
 }
 
-public enum StatusModel:Equatable,MyProCloudPack_L0,Codable { // vedi Nota Consegna 17.07
+public enum StatusModel:Equatable,Codable { // vedi Nota Consegna 17.07
     
    // case nuovo // deprecato 07.09
     case bozza(StatusTransition? = nil)
@@ -139,7 +139,7 @@ public enum StatusModel:Equatable,MyProCloudPack_L0,Codable { // vedi Nota Conse
         }
     }
     
-    public static func convertiInCase(fromNumber: Int) -> StatusModel {
+   /* public static func convertiInCase(fromNumber: Int) -> StatusModel {
         
         switch fromNumber {
             
@@ -160,7 +160,7 @@ public enum StatusModel:Equatable,MyProCloudPack_L0,Codable { // vedi Nota Conse
         default:
             return .bozza()
         }
-    }
+    } */
     
   /*  func estrapolaStatusTransition() -> StatusTransition? {
         

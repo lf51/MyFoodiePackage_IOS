@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ConservazioneIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform */{
+public enum ConservazioneIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform */{
     
     public static var allCases: [ConservazioneIngrediente] = [.altro,.congelato,.surgelato]
     public static var defaultValue: ConservazioneIngrediente = .noValue // deprecato in futuro togliere dal protocollo
@@ -88,7 +88,7 @@ public enum ConservazioneIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable 
         }
     }
     
-    public static func convertiInCase(fromNumber: Int) -> ConservazioneIngrediente {
+  /*  public static func convertiInCase(fromNumber: Int) -> ConservazioneIngrediente {
         
         switch fromNumber {
             
@@ -104,6 +104,6 @@ public enum ConservazioneIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable 
                 return .noValue
             
         }
-    }
+    }*/
     
 }

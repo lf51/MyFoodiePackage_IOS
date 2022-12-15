@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public struct DishModel: MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable /*: MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1 */{
+public struct DishModel: MyProStarterPack_L0,Codable /*: MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1 */{
 
    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -109,7 +109,7 @@ public struct DishModel: MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable /
     
     // MyProCloudPack_L1
     
-    public init(frDocID:String,frDoc: [String:Any]) {
+   /* public init(frDocID:String,frDoc: [String:Any]) {
         
         let percorsoInt = frDoc[DataBaseField.percorsoProdotto] as? Int ?? 0
         let statusInt = frDoc[DataBaseField.status] as? Int ?? 0
@@ -145,7 +145,7 @@ public struct DishModel: MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable /
         public static let status = "status"
         public static let pricingPiatto = "pricing"
         
-    }
+    } */
 
     func creaID(fromValue: String) -> String {
         print("DishModel/creaID()")
@@ -283,7 +283,7 @@ public struct DishModel: MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable /
         }
     }
     
-    public enum PercorsoProdotto:MyProEnumPack_L0,MyProCloudPack_L0,Codable {
+    public enum PercorsoProdotto:MyProEnumPack_L0,Codable {
 
         public static var allCases:[PercorsoProdotto] = [.preparazioneFood,.preparazioneBeverage,.prodottoFinito]
         
@@ -336,7 +336,7 @@ public struct DishModel: MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable /
             }
         }
         
-        public static func convertiInCase(fromNumber: Int) -> DishModel.PercorsoProdotto {
+       /* public static func convertiInCase(fromNumber: Int) -> DishModel.PercorsoProdotto {
             
             switch fromNumber {
             case 0: return .prodottoFinito
@@ -344,7 +344,7 @@ public struct DishModel: MyProStarterPack_L0,MyProCloudDownloadPack_L1,Codable /
             case 2: return .preparazioneBeverage
             default: return .preparazioneFood
             }
-        }
+        } */
         
         public func extendedDescription() -> String {
             

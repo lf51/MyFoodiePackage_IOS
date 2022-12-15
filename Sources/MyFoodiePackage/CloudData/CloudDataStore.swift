@@ -65,7 +65,7 @@ public struct CloudDataStore:Decodable {
     
     
     
-   public enum CloudCollectionKey:String { // Custom - Deprecata 14.12
+  /* public enum CloudCollectionKey:String { // Custom - Deprecata 14.12
         
         case ingredient = "userIngredients"
         case dish = "userPreparazioniEprodotti"
@@ -76,7 +76,7 @@ public struct CloudDataStore:Decodable {
                 
         case anyDocument = "datiDiFunzionamento"
     
-    }
+    } */
     
    public init() {
         

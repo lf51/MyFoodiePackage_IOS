@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum OrigineIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform */{
+public enum OrigineIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform */{
     
     public static var allCases: [OrigineIngrediente] = [.vegetale,.animale]
     public static var defaultValue: OrigineIngrediente = .noValue
@@ -75,7 +75,7 @@ public enum OrigineIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable /*: My
         }
     }
     
-    public static func convertiInCase(fromNumber: Int) -> OrigineIngrediente {
+   /* public static func convertiInCase(fromNumber: Int) -> OrigineIngrediente {
         
         switch fromNumber {
             
@@ -87,7 +87,7 @@ public enum OrigineIngrediente:MyProEnumPack_L2,MyProCloudPack_L0,Codable /*: My
         default:
             return .defaultValue
         }
-    }
+    } */
 }
 
 /*

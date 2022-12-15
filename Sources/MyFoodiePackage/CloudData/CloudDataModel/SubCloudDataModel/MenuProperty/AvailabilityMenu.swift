@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum AvailabilityMenu:Hashable,MyProEnumPack_L1,MyProCloudPack_L0,Codable {
+public enum AvailabilityMenu:Hashable,MyProEnumPack_L1,Codable {
 
     public static var allCases:[AvailabilityMenu] = [.dataEsatta,.intervalloAperto,.intervalloChiuso]
     public static var defaultValue: AvailabilityMenu = .noValue
@@ -50,7 +50,7 @@ public enum AvailabilityMenu:Hashable,MyProEnumPack_L1,MyProCloudPack_L0,Codable
         }
     }
     
-    public static func convertiInCase(fromNumber: Int) -> AvailabilityMenu {
+   /* public static func convertiInCase(fromNumber: Int) -> AvailabilityMenu {
         switch fromNumber {
             
         case 1: return .dataEsatta
@@ -58,7 +58,7 @@ public enum AvailabilityMenu:Hashable,MyProEnumPack_L1,MyProCloudPack_L0,Codable
         case 3: return .intervalloAperto
         default: return .noValue
         }
-    }
+    } */
     
     public func shortDescription() -> String {
         
