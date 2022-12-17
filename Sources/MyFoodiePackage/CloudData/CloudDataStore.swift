@@ -46,7 +46,7 @@ public struct CloudDataStore {
     
     public enum SetupKeys:String,CodingKey {
         
-        case countDown
+        case startCountDownMenuAt
         case autoPauseDish_byPauseING
         case autoPauseDish_byArchiveING
         case autoPauseDish_byDeleteING
