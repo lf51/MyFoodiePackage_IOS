@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public struct CloudDataStore:Decodable {
+public struct CloudDataStore {
     
     public var setupAccount: AccountSetup // caricato
     public var inventarioScorte: Inventario // caricato
@@ -23,7 +23,7 @@ public struct CloudDataStore:Decodable {
     
     
     
-  public enum CodingKeys:String,CodingKey {
+   public enum CodingKeys:String,CodingKey {
         
       case publicData = "datiPubblici"
       case privateData = "datiPrivati"
@@ -49,9 +49,9 @@ public struct CloudDataStore:Decodable {
         case inventarioScorte = "userInventarioScorte"
     }
     
-    public init(from decoder: Decoder) throws {
+   /* public init(from decoder: Decoder) throws {
         self.init()
-    }
+    }*/
    /* public init(from decoder: Decoder) throws {
        
         let values = try decoder.container(keyedBy: CodingKeys.self)
