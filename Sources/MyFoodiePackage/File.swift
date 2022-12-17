@@ -16,5 +16,11 @@ public protocol MyProViewModelPack_L1:ObservableObject {
     var allMyCategories:[CategoriaMenu] { get set }
     var allMyReviews:[DishRatingModel] { get set }
     
+    // associatedType V:MyProXXXX
+    // var cloudDataStore: V { get set }
+    
 }
 
+//protocol MyProXXX {
+ //   associatedtype CodingKeys:String,CodingKey
+//}

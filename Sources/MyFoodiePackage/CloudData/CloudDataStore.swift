@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+
 public struct CloudDataStore {
     
     public var setupAccount: AccountSetup // caricato
@@ -22,20 +23,13 @@ public struct CloudDataStore {
     public var allMyReviews:[DishRatingModel] // caricato
     
     
-    
    public enum CodingKeys:String,CodingKey {
-        
-      case publicData = "datiPubblici"
-      case privateData = "datiPrivati"
-     
-    }
-    
-   public enum AdditionalInfoKeys:String,CodingKey {
     
        case allMyIngredients = "allUserIngredients"
        case allMyDish = "allUserProducts"
        case allMyMenu = "allUserMenu"
        case allMyProperties =  "allUserProperties"
+       
        case allMyCategories = "allUserCategories"
        case allMyReviews = "allUserReviews"
        
@@ -43,10 +37,20 @@ public struct CloudDataStore {
        
     }
     
-    public enum DeepInfoKeys:String,CodingKey {
+    public enum AdditionalInfoKeys:String,CodingKey {
         
         case setupAccount = "userAccountSetup"
         case inventarioScorte = "userInventarioScorte"
+        
+    }
+    
+    public enum SetupKeys:String,CodingKey {
+        
+        case countDown
+        case autoPauseDish_byPauseING
+        case autoPauseDish_byArchiveING
+        case autoPauseDish_byDeleteING
+        
     }
     
    /* public init(from decoder: Decoder) throws {
