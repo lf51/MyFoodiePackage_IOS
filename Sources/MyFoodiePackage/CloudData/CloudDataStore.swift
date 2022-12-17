@@ -23,26 +23,77 @@ public struct CloudDataStore:Decodable {
     
     
     
-  /* public enum CodingKeys:String,CodingKey {
+  public enum CodingKeys:String,CodingKey {
         
-        case allMyIngredients = "allUserIngredients"
-        case allMyDish = "allUserProducts"
-        case allMyMenu = "allUserMenu"
-        case allMyProperties =  "allUserProperties"
-        case allMyCategories = "allUserCategories"
-        case allMyReviews = "allUserReviews"
-                
-        case anyDocument = "datiDiFunzionamento"
-        
+      case publicData = "datiPubblici"
+      case privateData = "datiPrivati"
+     
     }
     
    public enum AdditionalInfoKeys:String,CodingKey {
+    
+       case allMyIngredients = "allUserIngredients"
+       case allMyDish = "allUserProducts"
+       case allMyMenu = "allUserMenu"
+       case allMyProperties =  "allUserProperties"
+       case allMyCategories = "allUserCategories"
+       case allMyReviews = "allUserReviews"
+       
+       case otherDocument = "otherDocuments"
+       
+    }
+    
+    public enum DeepInfoKeys:String,CodingKey {
         
         case setupAccount = "userAccountSetup"
         case inventarioScorte = "userInventarioScorte"
     }
     
+    public init(from decoder: Decoder) throws {
+        self.init()
+    }
+   /* public init(from decoder: Decoder) throws {
+       
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.allMyIngredients = try values.decode([IngredientModel].self, forKey: .allMyIngredients)
+        self.allMyDish = try values.decode([DishModel].self, forKey: .allMyDish)
+        self.allMyMenu = try values.decode([MenuModel].self, forKey: .allMyMenu)
+        self.allMyProperties = try values.decode([PropertyModel].self, forKey: .allMyProperties)
+        
+        self.allMyCategories = try values.decode([CategoriaMenu].self, forKey: .allMyCategories)
+        self.allMyReviews = try values.decode([DishRatingModel].self, forKey: .allMyReviews)
+        
+        let additionalInfo = try values.nestedContainer(keyedBy: AdditionalInfoKeys.self, forKey: .anyDocument)
+        self.setupAccount = try additionalInfo.decode(AccountSetup.self, forKey: .setupAccount)
+        self.inventarioScorte = try additionalInfo.decode(Inventario.self, forKey: .inventarioScorte)
+        
+        
+    } */
     
+    /*
+     
+     public enum CodingKeys:String,CodingKey {
+           
+           case allMyIngredients = "allUserIngredients"
+           case allMyDish = "allUserProducts"
+           case allMyMenu = "allUserMenu"
+           case allMyProperties =  "allUserProperties"
+           case allMyCategories = "allUserCategories"
+           case allMyReviews = "allUserReviews"
+                   
+           case anyDocument = "datiDiFunzionamento"
+           
+       }
+       
+      public enum AdditionalInfoKeys:String,CodingKey {
+           
+           case setupAccount = "userAccountSetup"
+           case inventarioScorte = "userInventarioScorte"
+       }
+
+     
+     
     public init(from decoder: Decoder) throws {
        
         let values = try decoder.container(keyedBy: CodingKeys.self)
