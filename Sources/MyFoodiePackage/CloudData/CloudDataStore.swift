@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 
-
 public struct CloudDataStore {
     
     public var setupAccount: AccountSetup // caricato
@@ -44,14 +43,14 @@ public struct CloudDataStore {
         
     }
     
-    public enum SetupKeys:String,CodingKey {
+  /*  public enum SetupKeys:String,CodingKey {
         
         case startCountDownMenuAt
         case autoPauseDish_byPauseING
         case autoPauseDish_byArchiveING
         case autoPauseDish_byDeleteING
         
-    }
+    }*/
     
    /* public init(from decoder: Decoder) throws {
         self.init()
