@@ -37,14 +37,17 @@ public struct DishModel: MyProStarterPack_L0,Codable /*: MyProToolPack_L1,MyProV
     
     public var intestazione: String
     public var descrizione: String
-    public var rifReviews: [String] // Nota 13.09
+    public var rifReviews: [String] // Nota 13.09 // deprecata in futuro. Gestire da lato review con riferimento al piatto.
     
+    /// array con i Rif degli ingredienti Principali
     public var ingredientiPrincipali: [String]
+    /// array con i Rif degli ingredienti Secondari
     public var ingredientiSecondari: [String]
    
     public var elencoIngredientiOff: [String:String] // id Sostituito: idSOSTITUTO
     public var idIngredienteDaSostituire: String? // Nota 30.08
-    
+
+    /// Rif della CategoriaMenu
     public var categoriaMenu: String
     public var mostraDieteCompatibili: Bool
 
