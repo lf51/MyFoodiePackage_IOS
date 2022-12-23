@@ -38,7 +38,7 @@ public protocol MyProDescriptionPack_L0 {
     var descrizione: String { get set }
 }
 
-public protocol MyProSearchPack_Sub_0 {
+/*public protocol MyProSearchPack_Sub_0 {
        
    associatedtype SortCondition
 }
@@ -52,7 +52,7 @@ public protocol MyProSearchPack_L0:MyProVMPack_L0 {
     func modelPropertyCompare(filterProperty:FPM,readOnlyVM:VM) -> Bool
     
     static func sortModelInstance(lhs:Self,rhs:Self,condition:FPM.SortCondition?,readOnlyVM:VM) -> Bool
-}
+} */
 
 
 
@@ -142,7 +142,7 @@ public protocol MyProManagingPack_L0:MyProVMPack_L0 {
 
 public protocol MyProToolPack_L0:MyProStatusPack_L1,MyProVisualPack_L0 { }
 
-public protocol MyProToolPack_L1:MyProToolPack_L0,MyProSearchPack_L0,MyProManagingPack_L0 { }
+public protocol MyProToolPack_L1:MyProToolPack_L0,MyProManagingPack_L0 { }
 
 
 /*
