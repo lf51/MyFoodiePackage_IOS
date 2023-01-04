@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public struct DishModel: MyProStarterPack_L0,Codable /*: MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1 */{
+public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1 */{
 
    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -109,6 +109,149 @@ public struct DishModel: MyProStarterPack_L0,Codable /*: MyProToolPack_L1,MyProV
         
 
     }
+    
+    // 31.12.22 Ricollocati OK
+    
+    /// ritorna gli ingredienti Attivi sostituendo gli ingredienti inPausa con gli eventuali sostituti
+    public func allIngredientsAttivi(viewModel:FoodieViewModel) -> [IngredientModel] {
+        
+        // Innesto 06.10
+        guard !self.ingredientiPrincipali.contains(self.id) else {
+           // Trattasi di ibrido
+            if let model = viewModel.modelFromId(id: self.id, modelPath: \.allMyIngredients) { return [model] }
+            else { return [] }
+        }
+        
+        let allMinusBozzeEArchiviati = allMinusArchiviati(viewModel: viewModel)
+
+        let allInPausa = allMinusBozzeEArchiviati.filter({
+            $0.status.checkStatusTransition(check: .inPausa)
+            })
+        
+        guard !allInPausa.isEmpty else { return allMinusBozzeEArchiviati }
+        
+        guard !self.elencoIngredientiOff.isEmpty else {
+            return allMinusBozzeEArchiviati.filter({
+                $0.status.checkStatusTransition(check: .disponibile)
+            })
+        }
+        
+        var allActiveIDs = allMinusBozzeEArchiviati.map({$0.id})
+        
+        for ingredient in allInPausa {
+            
+            let position = allActiveIDs.firstIndex{$0 == ingredient.id}
+            
+            if let sostituto = self.elencoIngredientiOff[ingredient.id] {
+                
+                let(isActive,_,_) = viewModel.infoFromId(id: sostituto, modelPath: \.allMyIngredients)
+                
+                if isActive {
+                    allActiveIDs[position!] = sostituto
+                } else { allActiveIDs.remove(at: position!)}
+                
+            } else { allActiveIDs.remove(at: position!)}
+            
+        }
+        
+        let allActiveModels = viewModel.modelCollectionFromCollectionID(collectionId: allActiveIDs, modelPath: \.allMyIngredients)
+        
+        return allActiveModels
+    }
+    
+    public func allMinusArchiviati(viewModel:FoodieViewModel) -> [IngredientModel] {
+        
+        let allIngredientsID = self.ingredientiPrincipali + self.ingredientiSecondari
+        let allTheIngredients = viewModel.modelCollectionFromCollectionID(collectionId: allIngredientsID, modelPath: \.allMyIngredients)
+        let allMinusBozzeEArchiviati = allTheIngredients.filter({
+            !$0.status.checkStatusTransition(check: .archiviato)
+        })
+        
+        return allMinusBozzeEArchiviati
+        
+    }
+    
+    public func hasAllIngredientSameQuality<T:MyProEnumPack_L0>(viewModel:FoodieViewModel,kpQuality:KeyPath<IngredientModel,T>,quality:T) -> Bool {
+        
+        let allIngredient = self.allIngredientsAttivi(viewModel: viewModel)
+        guard !allIngredient.isEmpty else { return false }
+        
+        for ingredient in allIngredient {
+            if ingredient[keyPath: kpQuality] == quality { continue }
+            else { return false }
+        }
+        return true
+    }
+    
+    /// Calcola se la preparazione è a base di carne, pesce, o verdure
+ /*  public func calcolaBaseDellaPreparazione(readOnlyVM:FoodieViewModel) -> BasePreparazione {
+        
+        let allING = self.allIngredientsAttivi(viewModel: readOnlyVM)
+        let allInGMapped = allING.map({$0.origine})
+        
+        guard allInGMapped.contains(.animale) else { return .vegetale }
+        
+        let allergeneIn = allING.map({$0.allergeni})
+        
+        for arrAll in allergeneIn {
+            
+            if arrAll.contains(where: {
+                $0 == .pesce ||
+                $0 == .molluschi ||
+                $0 == .crostacei
+            }) { return .pesce }
+            else { continue }
+        }
+    
+        return .carne
+        
+    } */
+    
+   public func calcolaAllergeniNelPiatto(viewModel:FoodieViewModel) -> [AllergeniIngrediente] {
+      
+        let allIngredients = self.allIngredientsAttivi(viewModel: viewModel)
+        var allergeniPiatto:[AllergeniIngrediente] = []
+        
+             for ingredient in allIngredients {
+                 
+                 let allergeneIngre:[AllergeniIngrediente] = ingredient.allergeni
+                 allergeniPiatto.append(contentsOf: allergeneIngre)
+             }
+
+            let setAllergeniPiatto = Set(allergeniPiatto)
+            let orderedAllergeni = Array(setAllergeniPiatto).sorted { $0.simpleDescription() < $1.simpleDescription() }
+        
+            return orderedAllergeni
+    
+     }
+    
+    
+
+    
+    // New 02.1.23
+    
+    /// Analizza gli ingredienti per verificare se ce ne sia almeno uno che ha la qualità richiesta
+    /// - Parameters:
+    ///   - viewModel: viewModel
+    ///   - kpQuality: percorso della qualità nell'IngredientModel
+    ///   - quality: valore della proprietà ricercato
+    /// - Returns: True se c'è qualche ingrediente nel piatto con quella qualità
+    public func hasSomeIngredientASpecificQuality<T:MyProEnumPack_L0>(viewModel:FoodieViewModel,kpQuality:KeyPath<IngredientModel,T>,quality:T) -> Bool {
+        
+        let allIngredient = self.allIngredientsAttivi(viewModel: viewModel)
+        guard !allIngredient.isEmpty else { return false }
+        
+        let map = allIngredient.map({$0[keyPath: kpQuality] == quality})
+        
+        return !map.isEmpty
+        
+    }
+    
+    
+    
+    
+    // New
+    
     
     // MyProCloudPack_L1
     

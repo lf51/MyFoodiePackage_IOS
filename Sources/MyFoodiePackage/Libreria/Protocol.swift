@@ -16,6 +16,15 @@ public protocol MyProStarterPack_L0:Identifiable,Equatable,Hashable { // Primo p
    
 }
 
+public protocol MyProStarterPack_L01:MyProStarterPack_L0 {
+    
+    var intestazione: String { get set }
+    var status:StatusModel { get set }
+    
+}
+
+
+
 public protocol MyProStarterPack_L1:MyProStarterPack_L0,MyProVMPack_L0 {
     
     

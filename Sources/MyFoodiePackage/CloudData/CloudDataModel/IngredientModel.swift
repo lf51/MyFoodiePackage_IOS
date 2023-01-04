@@ -10,7 +10,7 @@ import SwiftUI
 
 // Creare Oggetto Ingrediente
 
-public struct IngredientModel:MyProStarterPack_L0,Codable/*MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1*/ /*MyModelStatusConformity */ {
+public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1*/ /*MyModelStatusConformity */ {
  
     public static func == (lhs: IngredientModel, rhs: IngredientModel) -> Bool {
        return
@@ -181,6 +181,34 @@ public struct IngredientModel:MyProStarterPack_L0,Codable/*MyProToolPack_L1,MyPr
     }
 }
 
-
+public struct IngredientModelInSintesi:Hashable {
+    
+    var intestazione:String
+    var isPrincipal:Bool
+    var isTemporaryOff:Bool
+    var isBio:Bool
+    var hasAllergene:Bool
+    var isFreeze:Bool
+    
+    var idSostituto:String?
+    
+    public init(
+        intestazione: String,
+        isPrincipal: Bool,
+        isTemporaryOff: Bool,
+        isBio: Bool,
+        hasAllergene: Bool,
+        isFreeze:Bool,
+        idSostituto: String? = nil) {
+            
+        self.intestazione = intestazione
+        self.isPrincipal = isPrincipal
+        self.isTemporaryOff = isTemporaryOff
+        self.isBio = isBio
+        self.hasAllergene = hasAllergene
+        self.isFreeze = isFreeze
+        self.idSostituto = idSostituto
+    }
+}
 
 
