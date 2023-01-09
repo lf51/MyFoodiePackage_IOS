@@ -58,8 +58,10 @@ public enum TipoDieta:Identifiable,MyProEnumPack_L0 /*: MyEnumProtocol,MyEnumPro
     }
     
     public func imageAssociated() -> String {
-        
+        // 07.01.23 Capire perchè diamo solo questa immagine:
         "square.and.arrow.up.trianglebadge.exclamationmark"
+        
+        //
      /*   switch self {
             
         case .standard:

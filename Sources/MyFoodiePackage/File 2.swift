@@ -74,24 +74,54 @@ var dishItem2_Test: DishModel = {
     newDish.descrizione = "Piatto classico della tradizione, leggero, con il nostro migliore olio d'oliva riscaldato senza toccare il punto di ebolizzione. Non perde nutrienti e discioglie lentamente i principi attivi dell' aglio senza bruciarlo ensamble ultima parola sata."
    newDish.status = .completo(.disponibile)
    newDish.ingredientiPrincipali = [ingredientSample2_Test.id,ingredientSample3_Test.id,ingredientSample4_Test.id,ingredientSample5_Test.id,ingredientSample6_Test.id]
-   newDish.ingredientiSecondari = [ingredientSample7_Test.id,ingredientSample8_Test.id]
+   newDish.ingredientiSecondari = [ingredientSample7_Test.id,ingredientSample8_Test.id,ingredientSample_Test.id]
    newDish.categoriaMenu = "cat2"
    newDish.elencoIngredientiOff = [ingredientSample2_Test.id:ingredientSample_Test.id]
   // newDish.rifReviews = [rate8.id,rate9.id,rate10.id,rate11.id,rate12.id]
     
    let price:DishFormat = {
-       var pr = DishFormat(type: .mandatory)
-       pr.label = "Porzione"
+       var pr = DishFormat(type: .opzionale)
+       pr.label = "Tabisca"
        pr.price = "29.5"
        return pr
    }()
    let price1:DishFormat = {
        var pr = DishFormat(type: .opzionale)
-       pr.label = "1/2 Porzione"
+       pr.label = "Pizza"
        pr.price = "14.5"
        return pr
    }()
-   newDish.pricingPiatto = [price,price1]
+    let price2:DishFormat = {
+        var pr = DishFormat(type: .opzionale)
+        pr.label = "Pizzetta"
+        pr.price = "4.5"
+        return pr
+    }()
+    let price3:DishFormat = {
+        var pr = DishFormat(type: .opzionale)
+        pr.label = "Focaccia"
+        pr.price = "8.5"
+        return pr
+    }()
+    let price4:DishFormat = {
+        var pr = DishFormat(type: .mandatory)
+        pr.label = "Avvolta"
+        pr.price = "11.5"
+        return pr
+    }()
+    let price5:DishFormat = {
+        var pr = DishFormat(type: .opzionale)
+        pr.label = "DellaNonna"
+        pr.price = "19.5"
+        return pr
+    }()
+    let price6:DishFormat = {
+        var pr = DishFormat(type: .opzionale)
+        pr.label = "dellaMamma"
+        pr.price = "21.5"
+        return pr
+    }()
+   newDish.pricingPiatto = [price,price1,price2,price3,price4,price5,price6]
    
     newDish.id = "lailo6" // per far funzionare il riferimento con le recensioni e avere un id corto
     
@@ -103,6 +133,7 @@ var dishItem2_Test: DishModel = {
     var newDish = DishModel()
     newDish.intestazione = "Bucatini alla Matriciana"
     newDish.status = .completo(.disponibile)
+    newDish.percorsoProdotto = .preparazioneBeverage
     newDish.ingredientiPrincipali = [ingredientSample4_Test.id]
     newDish.ingredientiSecondari = [] //[ingredientSample2_Test.id]
      newDish.rifReviews = [rate8.id,rate9.id,rate10.id,rate11.id,rate12.id]
@@ -137,11 +168,24 @@ var dishItem4_Test: DishModel = {
     newDish.rifReviews = [rate1.id,rate2.id,rate3.id,rate4.id,rate5.id,rate6.id,rate7.id]
     newDish.categoriaMenu = "cat2"
     let price:DishFormat = {
-        var pr = DishFormat(type: .mandatory)
-        pr.price = "22.5"
+        var pr = DishFormat(type: .opzionale)
+        pr.label = "Tabisca"
+        pr.price = "29.5"
         return pr
     }()
-    newDish.pricingPiatto = [price]
+    let price1:DishFormat = {
+        var pr = DishFormat(type: .opzionale)
+        pr.label = "Pizza"
+        pr.price = "14.5"
+        return pr
+    }()
+     let price2:DishFormat = {
+         var pr = DishFormat(type: .mandatory)
+         pr.label = "Pizzetta con ketchup"
+         pr.price = "4.5"
+         return pr
+     }()
+    newDish.pricingPiatto = [price,price1,price2]
     
     newDish.id = "lailo4"
     
@@ -193,7 +237,7 @@ var ingredienteFinito:IngredientModel = {
     var new = IngredientModel(id:prodottoFinito.id)
     new.intestazione = prodottoFinito.intestazione
     new.origine = .vegetale
-    new.conservazione = .surgelato
+    new.conservazione = .altro
     new.produzione = .biologico
     new.provenienza = .italia
     new.allergeni = [.latte_e_derivati]
@@ -267,7 +311,7 @@ var menuDelloChef_Test:MenuModel = {
  
    // var mDD = MenuModel(tipologia: .allaCarta(.delloChef))
     var mDD = MenuModel(tipologiaDiSistema: .delloChef)
-    mDD.rifDishIn = [dishItem2_Test.id,dishItem5_Test.id]
+    mDD.rifDishIn = [dishItem2_Test.id,dishItem5_Test.id,dishItem3_Test.id]
     return mDD
     
 }()
@@ -300,7 +344,7 @@ var ingredientSample3_Test =  IngredientModel(
     conservazione: .altro,
     produzione: .biologico,
     provenienza: .restoDelMondo,
-    allergeni: [.anidride_solforosa_e_solfiti,.arachidi_e_derivati,.crostacei,.fruttaAguscio,.lupini],
+    allergeni: [.anidride_solforosa_e_solfiti,.arachidi_e_derivati,.crostacei,.fruttaAguscio,.lupini,.glutine,.latte_e_derivati,.molluschi,.pesce,.sedano,.senape,.sesamo,.soia,.uova_e_derivati],
     origine: .vegetale,
     status: .bozza(.disponibile))
 

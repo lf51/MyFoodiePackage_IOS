@@ -241,13 +241,56 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         let allIngredient = self.allIngredientsAttivi(viewModel: viewModel)
         guard !allIngredient.isEmpty else { return false }
         
-        let map = allIngredient.map({$0[keyPath: kpQuality] == quality})
+        let map = allIngredient.filter({$0[keyPath: kpQuality] == quality})
         
         return !map.isEmpty
         
     }
     
+    /// Controlla l'origine degli ingredienti e restituisce un array con le diete compatibili
+    func returnDietAvaible(viewModel:FoodieViewModel) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
+        
+        let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
+        
+        // step 1 ->
+        var animalOrFish: [IngredientModel] = []
+        var milkIn: [IngredientModel] = []
+        var glutenIn: [IngredientModel] = []
+        
+        for ingredient in allModelIngredients {
+            
+            if ingredient.origine == .animale {
+                
+                if ingredient.allergeni.contains(.latte_e_derivati) { milkIn.append(ingredient) }
+                
+                else { animalOrFish.append(ingredient) }
+                        }
+
+            if ingredient.allergeni.contains(.glutine) { glutenIn.append(ingredient)}
+        }
+        
+        // step 2 -->
+        
+        var dieteOk:[TipoDieta] = []
+        
+        if glutenIn.isEmpty {dieteOk.append(.glutenFree)}
+        
+        if milkIn.isEmpty && animalOrFish.isEmpty {dieteOk.append(contentsOf: [.vegano,.vegariano,.vegetariano])}
+        else if milkIn.isEmpty { dieteOk.append(.vegariano)}
+        else if animalOrFish.isEmpty {dieteOk.append(.vegetariano)}
+        else {dieteOk.append(.standard) }
+ 
+        var dieteOkInStringa:[String] = []
+ 
+        for diet in dieteOk {
+            
+            let stringDiet = diet.simpleDescription()
+            dieteOkInStringa.append(stringDiet)
+       
+        }
     
+        return (dieteOk,dieteOkInStringa)
+    }
     
     
     // New

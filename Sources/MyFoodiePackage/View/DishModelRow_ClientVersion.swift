@@ -14,12 +14,23 @@ public struct DishModelRow_ClientVersion: View {
     @EnvironmentObject var viewModel:FoodieViewModel
     
     let item: DishModel
-    let backgroundView:Color
+    // @Binding var carrelloOrdini:[String] // rif dei piatti
+    let backgroundView:Color // ?? Uso ??
+    let priceAction:() -> Bool
+    
+    @State private var isPriceActionActive:Bool = false
     private let isItemIbrido:Bool
-    
     @State private var openInfo:Bool = false
+    @State private var openPrices:Bool = false
     
-    public init(item: DishModel, backgroundView: Color) {
+    let moneyCode = Locale.current.currency?.identifier ?? "EUR"
+    
+    /// <#Description#>
+    /// - Parameters:
+    ///   - item: <#item description#>
+    ///   - backgroundView: <#backgroundView description#>
+    ///   - priceAction: Effettua un'azione e ritorna un valore bool per indicare se l'azione è attiva o meno
+    public init(item: DishModel, backgroundView: Color,priceAction:@escaping () -> Bool) {
         
         self.isItemIbrido = {
             item.ingredientiPrincipali.contains(item.id)
@@ -27,90 +38,255 @@ public struct DishModelRow_ClientVersion: View {
         
         self.item = item
         self.backgroundView = backgroundView
+        self.priceAction = priceAction
     }
- 
-   public var body: some View {
-       
-       CSZStackVB_OpenFrame {
-
-           VStack(alignment: .leading) {
     
-               HStack {
-                   
-                   VStack(alignment:.leading) {
-                       
-                       vbFirstLine()
-                       vbSecondLine()
-                   }
-                   
-                   vbPriceSpace()
-                       .padding(.horizontal,10)
-                       .background {
-                           Color.seaTurtle_1.cornerRadius(5.0)
-                       }
-                   
-               }
-           
-              vbBadgeRow()
-              vbPrincipalIngredientRow()
-               
-               vbAllergeniLine()
-               
-               HStack {
-                   
-                   vbConservazioneLine()
-                   Spacer()
-                   
-                   Button {
-                       withAnimation(.easeIn(duration: 0.5)) {
-                           self.openInfo.toggle()
-                      }
-                   } label: {
-                       
-                       let sign = self.openInfo ? "up" : "down"
-                       
-                       Image(systemName: "chevron.\(sign).circle.fill")
-                           .imageScale(.medium)
-                           .foregroundColor(self.openInfo ? .seaTurtle_4 : .seaTurtle_2)
-                   }
-               }
-              
-               if self.openInfo {
-                   
-                   vbDishHistory()
-               }
+    public var body: some View {
+        
+        CSZStackVB_OpenFrame {
+            
+            VStack(alignment: .leading,spacing: 5) {
+                
+                HStack {
+                    
+                    VStack(alignment:.leading,spacing: 0) {
+                        
+                        vbIntestastione()
+                        vbSecondLine()
+                    }
+                    
+                    Spacer()
+                    
+                    vbPriceSpace()
+                    
+                    
+                }
+                
+                vbBadgeRow()
+                
+                ZStack(alignment:.topLeading) {
+                    
+                    VStack(alignment:.leading,spacing: 5) {
+                        
+                        vbPrincipalIngredientRow()
+                        
+                        if let dietAvaible = csPreShowDiet() {
+                            vbShowDiet(dietAvaible: dietAvaible)
+                        }
+                        
+                        if self.openInfo {
+                            
+                            vbDishHistory()
+                        }
+                    }
+                    
+                    Button {
+                        withAnimation {
+                            self.openInfo.toggle()
+                        }
+                    } label: {
+                        
+                        let sign = self.openInfo ? "up" : "down"
+                        
+                        Image(systemName: "chevron.\(sign).circle.fill")
+                        //.imageScale(.medium)
+                            .foregroundColor(self.openInfo ? .seaTurtle_4 : .seaTurtle_3)
+                    }
+                    
+                    
+                }
+                
+                VStack(alignment:.leading,spacing:0) {
+                    
+                    vbAllergeniLine()
+                    vbConservazioneLine()
+                }
+                
+                if self.openPrices {
+                    
+                    vbShowPrices()
+                    
+                }
+                
+            }
+            .padding(.horizontal,10)
+            .padding(.vertical,5)
+            
+            
+        }
+        
+        
+    }
     
-           }
-           .padding(.horizontal,10)
-           .padding(.vertical,5)
-           
-           
-       }
-       
-       
+    // ViewBuilder - Method
+    
+    private func csPreShowDiet() -> [TipoDieta]? {
+        // Utilizziamo un preCalcolo perchè rimaneva un piccolo spazietto quando non c'erano valori da mostrare. Così invece è risolto.
+        let dietAvaible = self.item.returnDietAvaible(viewModel: self.viewModel).inDishTipologia
+        
+        if dietAvaible.count == 1 &&
+            dietAvaible.contains(.standard) { return nil }
+        else { return dietAvaible }
+        
+    }
+    
+    @ViewBuilder private func vbShowDiet(dietAvaible:[TipoDieta]) -> some View {
+        
+        HStack(spacing: 10.0) {
+            
+            ForEach(dietAvaible,id:\.self) { diet in
+                
+                let value = csDietImage(diet: diet)
+                
+                if let image = value.imageOrEmojy,
+                   let color = value.color,
+                   let daElidere = value.daElidere {
+                    
+                    image
+                        .foregroundColor(.black.opacity(0.7))
+                        .frame(width: 30, height: 30)
+                        .background {
+                            Color.seaTurtle_3.opacity(0.2)
+                        }
+                        .clipShape(Circle())
+                        .overlay {
+                            if daElidere {
+                                Image(systemName: "line.diagonal")
+                                    .foregroundColor(color)
+                                    .fontWeight(.light)
+                                
+                            }
+                        }
+                }
+                
+            }
+        }
+        
+    }
+    
+    private func csDietImage(diet:TipoDieta) -> (imageOrEmojy:Text?,color:Color?,daElidere:Bool?) {
+        
+        switch diet {
+            
+        case .vegetariano:
+            return (Text(Image(systemName: "pawprint.fill")),.white,true)
+        case .vegariano:
+            return (Text("🥛"),.black,true)
+        case .glutenFree:
+            return (Text(Image(systemName: "laurel.leading")),.black,true)
+            
+        default: return (nil,nil,nil)
+        }
+        
+        
+    }
+    
+    @ViewBuilder private func vbShowPrices() -> some View {
+        
+        let items:[GridItem] = [
+            GridItem(.flexible(), spacing: 5, alignment: .leading),
+            GridItem(.flexible(), spacing: 5, alignment: .leading),
+            GridItem(.flexible(), spacing: 5, alignment: .leading)
+        ]
+        
+        LazyVGrid(columns: items,alignment: .center, spacing: 5) {
+            
+            ForEach(self.item.pricingPiatto.sorted(
+                by: {csOrdinaPriceFormat(lhs: $0, rhs: $1)}),id:\.self) { formato in
+                    
+                    let doubleValue = csConvertToDouble(from: formato.price)
+                    
+                    Button {
+                        self.isPriceActionActive = self.priceAction()
+                    } label: {
+                        
+                        VStack {
+                            
+                            Text(formato.label)
+                                .foregroundColor(.seaTurtle_4)
+                            
+                            /*  Text(doubleValue,format: .currency(code: self.moneyCode))
+                             .foregroundColor(.seaTurtle_2) */
+                            HStack(alignment:.top,spacing:1) {
+                                
+                                Text("\(doubleValue,format: .currency(code: self.moneyCode))")
+                                // .font(.title2)
+                                    .foregroundColor(.seaTurtle_2)
+                                
+                                Text(self.isPriceActionActive ? "-" : "+")
+                                    .fontWeight(.bold)
+                                    .font(.caption2)
+                                    .foregroundColor(.seaTurtle_3)
+                            }
+                        }
+                        .font(.headline)
+                        .lineLimit(1)
+                        .frame(maxWidth:.infinity)
+                        .background {
+                            Color.seaTurtle_1
+                                .cornerRadius(5.0)
+                                .opacity(0.6)
+                        }
+                    }
+                    
+                }
+            
+        }
+        
+    }
+    
+    private func csConvertToDouble(from value:String) -> Double {
+        
+        Double(value) ?? 0.0
+    }
+    
+    private func csOrdinaPriceFormat(lhs:DishFormat,rhs:DishFormat) -> Bool {
+        
+        lhs.type.orderAndStorageValue() < rhs.type.orderAndStorageValue() ||
+        csConvertToDouble(from: lhs.price) > csConvertToDouble(from: rhs.price)
+        
     }
     
     @ViewBuilder private func vbAllergeniLine() -> some View {
         
         let allergeni = self.item.calcolaAllergeniNelPiatto(viewModel: self.viewModel)
         
-        let stringAllergeni = allergeni.map({$0.intestazione})
+        let textAllergeni = allergeni.map({creaTextAllergene(allergene: $0)})
         let isEmpty = allergeni.isEmpty
+        
+        if !isEmpty {
+            
+            HStack(alignment:.firstTextBaseline,spacing: 0) {
+                
+                Text("*")
+                    .font(.subheadline)
+                    .foregroundColor(Color.white)
+                
+                combinaTesto(
+                    textList: textAllergeni,
+                    coloreSeparatore: .black,
+                    fontFinale: .caption2) {
+                        
+                        Text("Contiene:")
+                            .fontWeight(.heavy)
+                            .fontWidth(.condensed)
+                    }
+                
+                
+            }
+            
+        }
+        
+    }
     
-            Text("*")
-                .foregroundColor(Color.white)
-            +
-            Text(isEmpty ? "Non contiene allergeni" : "Contiene: ")
-                .italic(isEmpty)
-                .bold(!isEmpty)
-                .font(.caption2)
-            +
-            Text(stringAllergeni,format: .list(type: .and))
-                .italic()
-                .fontWeight(.semibold)
-                .font(.caption2)
-                .foregroundColor(Color.black.opacity(0.8))
-
+    private func creaTextAllergene(allergene:AllergeniIngrediente) -> Text {
+        
+        Text(allergene.intestazione)
+            .italic()
+            .fontWeight(.semibold)
+        //.font(.caption2)
+            .foregroundColor(Color.black.opacity(0.8))
+        
     }
     
     @ViewBuilder private func vbConservazioneLine() -> some View {
@@ -124,21 +300,22 @@ public struct DishModelRow_ClientVersion: View {
         
         if valueSintesi {
             
-            Text("*")
-                .foregroundColor(Color.white.opacity(0.6))
-            +
-            Text("Può contenere ingredienti congelati e/o surgelati")
-                .italic()
-                .font(.caption2)
-                .fontWeight(.light)
-                .foregroundColor(Color.black)
-            
-        } else {
-            EmptyView()
+            HStack(alignment:.firstTextBaseline,spacing:0) {
+                
+                Text("*")
+                    .font(.subheadline)
+                    .foregroundColor(Color.white.opacity(0.6))
+                
+                Text("Può contenere ingredienti congelati e/o surgelati")
+                    .italic()
+                    .font(.caption2)
+                    .fontWeight(.light)
+                    .foregroundColor(Color.black)
+                
+            }
         }
         
     }
-    
     
     @ViewBuilder private func vbDishHistory() -> some View {
         
@@ -147,12 +324,13 @@ public struct DishModelRow_ClientVersion: View {
         let allSintesys:[IngredientModelInSintesi] = allFilteredIngredients.map({self.sintetizzaIngredienteTitolare(ingredient: $0)})
         let allSintesysSecondary:[IngredientModelInSintesi] = allSintesys.filter({!$0.isPrincipal})
         
+        let nomePercorso = self.item.percorsoProdotto.simpleDescription()
         // 2. Controlliamo se la descrizione del piatto li contiene tutti
         
         let mapByName:[String] = allSintesysSecondary.map({$0.intestazione})
         
         let areAllMentioned:Bool = {
-           
+            
             guard !mapByName.isEmpty else { return false }
             
             let description = self.item.descrizione.lowercased()
@@ -167,141 +345,211 @@ public struct DishModelRow_ClientVersion: View {
             return true
         }()
         
-
-        // 3. Distinguiamo i due casi
-       // if areAllMentioned {
-            // 3.1 Se sono tutti menzionati mostriamo solo la descrizione con gli ing in grassetto
-            
-          /*  descriptionWithIngMentions(ing: allSintesysSecondary) {
+        self.combinaIngredienti(
+            ing: allSintesysSecondary,
+            areAllMentioned: areAllMentioned,
+            fontFinale: .footnote) {
                 
-                Text("Altri ingredienti usati nella preparazione: (in grassetto nel testo)\nStoria del piatto:\n")
-                    .font(.footnote)
-                    .fontWidth(.condensed)
-                    .foregroundColor(Color.black)
-                
-            }.multilineTextAlignment(.leading) */
-            
-            
-       // } else {
-            // 3.2 Se non sono menzionati tutti, mostriamo la descrizione più l'elenco dei secondari
-            
-          //  VStack {
-                
-            self.combinaIngredienti(ing: allSintesysSecondary,areAllMentioned: areAllMentioned) {
-                    
                 Text("Altri ingredienti usati nella preparazione:")
-                        .font(.footnote)
-                        .fontWidth(.condensed)
-                        .foregroundColor(Color.black)
-                    
-                }.multilineTextAlignment(.leading)
-                
-          //  Divider()
-            
-            self.descriptionWithIngMentions(ing: allSintesysSecondary) {
-                
-                Text("Storia del piatto:")
-                    .font(.footnote)
+                //.font(.footnote)
+                    .fontWeight(.semibold)
                     .fontWidth(.condensed)
                     .foregroundColor(Color.black)
                 
-            }.multilineTextAlignment(.leading)
-            
-            
-            
-           /* VStack(alignment:.leading) {
-                Text("Storia del piatto:")
-                    .font(.footnote)
+            }//.multilineTextAlignment(.leading)
+        
+        self.descriptionWithIngMentions(
+            ing: allSintesysSecondary,
+            fontFinale: .footnote) {
+                
+                Text("Racconto del \(nomePercorso):")
+                // .font(.footnote)
+                    .fontWeight(.semibold)
                     .fontWidth(.condensed)
                     .foregroundColor(Color.black)
                 
-                Text(self.item.descrizione)
-                        .italic()
-                        .font(.caption)
-                        .foregroundColor(.seaTurtle_4)
-            } */
-                
-            
-            
-            
-            
-         //   }
-            
-           // Text("Descrizione Plus Elento")
-            
-            
-      //  }
-        
-    
-        
-        
-        
+            }//.multilineTextAlignment(.leading)
     }
     
-    
-    
-    
-    @ViewBuilder private func vbFirstLine() -> some View {
-
-        HStack(alignment:.bottom) {
-            
-            Text(self.item.intestazione)
-                .font(.title2)
-                .fontWeight(.semibold)
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-                .allowsTightening(true)
-               
-                .foregroundColor(.seaTurtle_4)
-              //  .fixedSize()
-            
-            Spacer()
-            
-          //  vbEstrapolaStatusImage(itemModel: self.item)
-            
-        }
-                
+    @ViewBuilder private func vbIntestastione() -> some View {
+        
+        Text(self.item.intestazione)
+            .font(.title2)
+            .fontWeight(.semibold)
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .allowsTightening(true)
+            .foregroundColor(.seaTurtle_4)
         
     }
     
     @ViewBuilder private func vbSecondLine() -> some View {
         
-            if !isItemIbrido {
-                
-                vbReviewLine()
-                
-            } else {
-                
-                Text(self.item.percorsoProdotto.simpleDescription().lowercased())
-                    .italic()
-                    .fontWeight(.light)
-                    .multilineTextAlignment(.leading)
-                    .foregroundColor(.seaTurtle_2)
-            }
-
-    }
-    
-    @ViewBuilder private func vbPriceSpace() -> some View {
-           
-        let (price,count) = csIterateDishPricing()
-        // add 21.09
-        let moneyCode = Locale.current.currency?.identifier ?? "EUR"
-        let priceDouble = Double(price) ?? 0
-        
-        HStack(alignment:.top,spacing:1) {
-      
-            Text("\(priceDouble,format: .currency(code: moneyCode))")
-               // .fontWeight(.bold)
-                .font(.title2)
-                .foregroundColor(.seaTurtle_4)
+        if !isItemIbrido {
             
-            Text("+\(count)")
-                .fontWeight(.bold)
-                .font(.caption2)
-                .foregroundColor(.seaTurtle_3)
+            vbReviewLine()
+            
+        } else {
+            
+            Text(self.item.percorsoProdotto.simpleDescription().lowercased())
+                .italic()
+                .fontWeight(.light)
+                .multilineTextAlignment(.leading)
+                .foregroundColor(.seaTurtle_2)
         }
         
     }
+    
+    @ViewBuilder private func vbPriceSpace() -> some View {
+        
+        let (price,count) = csIterateDishPricing()
+        let priceDouble = csConvertToDouble(from: price)//Double(price) ?? 0
+
+        let (value,action) = labelPriceMultiAction(count: count)
+        
+        Button {
+            withAnimation {
+
+                action()
+            }
+        } label: {
+            
+            HStack(alignment:.top,spacing:1) {
+                
+                Text("\(priceDouble,format: .currency(code: self.moneyCode))")
+                    .font(.title2)
+                    .foregroundColor(.seaTurtle_4)
+                
+                Text(value)
+                    .fontWeight(.bold)
+                    .font(.caption2)
+                    .foregroundColor(.seaTurtle_3)
+            }
+            .padding(.horizontal,10)
+            .background {
+                Color.seaTurtle_1.cornerRadius(5.0)
+                    .brightness(self.isPriceActionActive ? 0.3 : 0.0)
+            }
+        }//.disabled(countZero)
+        
+    }
+    
+    private func labelPriceMultiAction(count:String) -> (label:String,action:()->Void){
+        
+        let countZero = count == "0"
+        let condition_4 = self.isPriceActionActive && !self.openPrices
+        
+        func action() {
+            self.isPriceActionActive = self.priceAction()
+        }
+        func multiAction() {
+            if condition_4 { self.isPriceActionActive = self.priceAction() }
+            else { self.openPrices.toggle() }
+        }
+
+            if countZero {
+                let label = self.isPriceActionActive ? "-" : "+"
+                return (label,action)}
+            
+            else {
+                
+                let label:String = {
+                   
+                    if condition_4 { return "-" }
+                    else {
+                        let lab = self.openPrices ? "-" : "+"
+                        return "\(lab)\(count)"
+                    }
+                    
+                }()
+
+                return ("\(label)",multiAction) }
+
+    }
+    
+   /* @ViewBuilder private func vbPriceSpace() -> some View {
+           
+        let (price,count) = csIterateDishPricing()
+        let priceDouble = csConvertToDouble(from: price)//Double(price) ?? 0
+        let countZero = count == "0"
+        
+        
+        
+        let countValue:String = {
+            
+            if countZero {
+                
+                let label = self.isPriceActionActive ? "-" : "+"
+                return label }
+            
+            else if self.openPrices { return "-"}
+            else { return "+\(count)"}
+            
+        }()
+        
+        Button {
+            withAnimation {
+                
+                if countZero {
+                    self.isPriceActionActive = self.priceAction()
+                } else {
+                    self.openPrices.toggle()
+                }
+                
+               
+            }
+        } label: {
+            
+            HStack(alignment:.top,spacing:1) {
+          
+                Text("\(priceDouble,format: .currency(code: self.moneyCode))")
+                    .font(.title2)
+                    .foregroundColor(.seaTurtle_4)
+                
+                Text(countValue)
+                    .fontWeight(.bold)
+                    .font(.caption2)
+                    .foregroundColor(.seaTurtle_3)
+            }
+            .padding(.horizontal,10)
+            .background {
+                Color.seaTurtle_1.cornerRadius(5.0)
+            }
+        }//.disabled(countZero)
+
+    }*/ // backup 09.01
+    
+    private func csIterateDishPricing() -> (price:String,count:String) {
+        
+        var mandatoryPrice:String = "0.00"
+        let pricingCount = self.item.pricingPiatto.count
+        let normalizedCount = pricingCount > 0 ? (pricingCount - 1) : pricingCount
+        let stringCount:String = String(normalizedCount)
+        
+        guard !self.item.pricingPiatto.isEmpty else {
+          
+            return (mandatoryPrice,stringCount)
+        }
+            
+        for format in self.item.pricingPiatto {
+                
+            if format.type == .mandatory {
+                mandatoryPrice = format.price
+                break
+                }
+            }
+        
+            return (mandatoryPrice,stringCount)
+    }
+    
+   /* private func csReduceDishPricesInDictionary() -> [String:String] {
+        
+        let extended:[String:String] = self.item.pricingPiatto.reduce(into: [:]) { partialResult, format in
+            partialResult[format.label] = format.price
+        }
+        return extended
+        
+    } */ // Deprecata 06.01.23
     
     @ViewBuilder private func vbReviewLine() -> some View {
         
@@ -337,13 +585,7 @@ public struct DishModelRow_ClientVersion: View {
         let isDelGiorno = self.viewModel.checkMenuDiSistemaContainDish(idPiatto: self.item.id, menuDiSistema: .delGiorno)
         let isAdviceByTheChef = self.viewModel.checkMenuDiSistemaContainDish(idPiatto: self.item.id, menuDiSistema: .delloChef)
 
-      //  let isIbrido = self.isItemIbrido
-        
-        HStack {
-  
-          //  ScrollView(.horizontal,showsIndicators: false){
-                
-                HStack {
+        HStack(spacing:3) {
                     
                     if areAllBio {
                         
@@ -357,44 +599,41 @@ public struct DishModelRow_ClientVersion: View {
                             backgroundOpacity: 1.0)
               
                     }
-                
-                  //  if !isIbrido {
-                        
-                        if areAllItalian {
+   
+                    if areAllItalian {
                             
-                            CSEtichetta(
-                                text: "🇮🇹",
-                                fontStyle: .subheadline,
-                                textColor: Color.white,
-                                image: "💯",
-                                imageColor: nil,
-                                imageSize: .large,
-                                backgroundColor: Color.white.opacity(0.5),
-                                backgroundOpacity: 1.0)
+                        CSEtichetta(
+                            text: "🇮🇹",
+                            fontStyle: .subheadline,
+                            textColor: Color.white,
+                            image: "💯",
+                            imageColor: nil,
+                            imageSize: .large,
+                            backgroundColor: .seaTurtle_4.opacity(0.8),
+                            backgroundOpacity: 1.0)
                         }
                         
-                        if areAllLocal {
+                    if areAllLocal {
                             
-                            CSEtichetta(
-                                text: "locale",
-                                textColor: Color.white,
-                                image: "💯",
-                                imageColor: nil,
-                                imageSize: .large,
-                                backgroundColor: Color.yellow.opacity(0.5),
-                                backgroundOpacity: 1.0)
+                        CSEtichetta(
+                            text: "locale",
+                            textColor: Color.white,
+                            image: "💯",
+                            imageColor: nil,
+                            imageSize: .large,
+                            backgroundColor: Color.yellow.opacity(0.5),
+                            backgroundOpacity: 1.0)
                         }
-              //      }
-                    
+  
                     if isDelGiorno {
                         
                         CSEtichetta(
                             text: "del Giorno",
                             textColor: Color.white,
                             image: "fork.knife.circle.fill",
-                            imageColor: Color.yellow,
+                            imageColor: .seaTurtle_4,
                             imageSize: .medium,
-                            backgroundColor: Color.pink,
+                            backgroundColor: .seaTurtle_2,
                             backgroundOpacity: 0.5)
                     }
 
@@ -406,42 +645,13 @@ public struct DishModelRow_ClientVersion: View {
                             image: "👨🏻‍🍳", //"🗣️", // person.wave.2
                             imageColor: nil,
                             imageSize: .large,
-                            backgroundColor: Color.purple,
+                            backgroundColor: .gray,
                             backgroundOpacity: 0.7)
                     }
                     
                 }
-                
-        //    }
-
-        }
     }
-    
-    private func csIterateDishPricing() -> (price:String,count:String) {
         
-        var mandatoryPrice:String = "0.00"
-        let pricingCount = self.item.pricingPiatto.count
-        let normalizedCount = pricingCount > 0 ? (pricingCount - 1) : pricingCount
-        let stringCount:String = String(normalizedCount)
-        
-        guard !self.item.pricingPiatto.isEmpty else {
-          
-            return (mandatoryPrice,stringCount)
-        }
-            
-            for format in self.item.pricingPiatto {
-                
-                if format.type == .mandatory {
-                    mandatoryPrice = format.price
-                    break
-                }
-               
-            }
-
-            return (mandatoryPrice,stringCount)
-            
-    }
-    
     /// Crea un array di Ingredienti in Sintesi, filtra i principali, e ritorna una view che li descrive
     /// - Returns: Text
     @ViewBuilder private func vbPrincipalIngredientRow() -> some View {
@@ -450,13 +660,22 @@ public struct DishModelRow_ClientVersion: View {
         let allSintesys:[IngredientModelInSintesi] = allFilteredIngredients.map({self.sintetizzaIngredienteTitolare(ingredient: $0)})
         let allSintesysPrincipal:[IngredientModelInSintesi] = allSintesys.filter({$0.isPrincipal})
       
-        combinaIngredienti(ing:allSintesysPrincipal) {
+        combinaIngredienti(
+            ing: allSintesysPrincipal,
+            fontFinale: .callout) { //.subheadline
             Text(
                  Image(
-                     systemName:"list.bullet.rectangle")
-                 ).foregroundColor(.seaTurtle_2)
+                     systemName:"circle"/*"list.bullet.rectangle"*/)
+                 )
+            .foregroundColor(Color.clear)
+            //.font(.subheadline)
+           // .foregroundColor(.seaTurtle_2)
+                // Un segnaposto che viene sovrapposto da un bottone che qui non possiamo inserire
+           
         }
-            .multilineTextAlignment(.leading)
+       // .lineSpacing(-2)
+           // .multilineTextAlignment(.leading)
+            
                 
     }
     
@@ -465,7 +684,7 @@ public struct DishModelRow_ClientVersion: View {
     /// - Parameter areAllMentioned: Solo per i secondari. Indicare se gli ingredienti sono tutti menzionati nel testo della descrizione
     /// - Parameter textIniziale: Il testo di incipit. Può anche essere un Text contenente una immagine
     /// - Returns: Text
-    private func combinaIngredienti(ing:[IngredientModelInSintesi],areAllMentioned:Bool = false,textIniziale:() -> Text) -> some View {
+    private func combinaIngredienti(ing:[IngredientModelInSintesi],areAllMentioned:Bool = false,fontFinale:Font,textIniziale:() -> Text) -> some View {
         
         let texts:[Text] = {
          
@@ -473,7 +692,7 @@ public struct DishModelRow_ClientVersion: View {
                 
                 let emptyText = Text("(nessuno)")
                    // .italic()
-                    .font(.caption)
+                    .font(fontFinale)
                     .foregroundColor(.seaTurtle_2)
                 
                 return [emptyText]
@@ -482,7 +701,7 @@ public struct DishModelRow_ClientVersion: View {
                 
                 let emptyText = Text("(in grassetto nel testo)")
                  //   .italic()
-                    .font(.caption)
+                    .font(fontFinale)
                     .foregroundColor(.seaTurtle_2)
                 
                 return [emptyText]
@@ -494,47 +713,32 @@ public struct DishModelRow_ClientVersion: View {
             
         }()
         
-        return combinaTestoIng(textList: texts,textIniziale: textIniziale)
+        return combinaTesto(
+            textList: texts,
+            fontFinale: fontFinale,
+            textIniziale: textIniziale)
         
     }
     
     /// Combina un array di Text (stilizzati diversamente)in un unico Text
     /// - Parameter textList: [Text]
     /// - Returns: Text
-    private func combinaTestoIng(textList:[Text],textIniziale:() -> Text) -> Text {
-        
-       /* let initialText:Text = Text(
-            Image(
-                systemName:"list.bullet.rectangle")
-            ).foregroundColor(.seaTurtle_2) */
+    private func combinaTesto(textList:[Text],coloreSeparatore:Color = .white,fontFinale:Font,textIniziale:() -> Text) -> Text {
+
         let initialText:Text = textIniziale()
-        
+    
         let testoComposto:Text = textList.reduce(initialText) { partialResult, text in
-            
-          //  if textList.isEmpty {
-                
-                return partialResult
+ 
+                 partialResult
                  +
                  Text(partialResult == initialText ? " " : ", ")
-                    .foregroundColor(Color.white)
+                    .foregroundColor(coloreSeparatore)
                  +
                  text
-                
-           /* }  else {
-                
-                return partialResult
-                 +
-                 Text(" ")
-                 +
-                 Text("Lista Ingredienti Vuota")
-                     .italic()
-                     .font(.subheadline)
-                     .foregroundColor(.seaTurtle_2)
-                
-            } */
-        }
+            }
         
         return testoComposto
+                .font(fontFinale)
         
     }
     
@@ -590,12 +794,12 @@ public struct DishModelRow_ClientVersion: View {
             
         }()
             
-        let font:(intestazione:Font,isBio:Font.TextStyle) = {
+       /*let font:(intestazione:Font,isBio:Font.TextStyle) = {
                 
             if ing.isPrincipal { return (Font.subheadline,.caption2) }
             else { return (Font.caption,.caption2) }
         
-        }()
+        }() */
         
       return
         Text(isASubstitute ? " (" : "")
@@ -603,7 +807,7 @@ public struct DishModelRow_ClientVersion: View {
             .foregroundColor(.seaTurtle_3)
         +
         Text(ing.intestazione)
-            .font(font.intestazione)
+           // .font(font.intestazione)
             .foregroundColor(ing.isTemporaryOff ? .seaTurtle_1 : .seaTurtle_4)
             .strikethrough(ing.isTemporaryOff, color: .seaTurtle_3)
        +
@@ -615,7 +819,7 @@ public struct DishModelRow_ClientVersion: View {
             .foregroundColor(Color.white.opacity(0.6))
        +
         Text(show.isBio ? "(bio)" : "")
-            .font(.system(font.isBio ,design: .monospaced, weight: .semibold))
+           // .font(.system(font.isBio ,design: .monospaced, weight: .semibold))
             .foregroundColor(Color.green)
         +
         Text(isASubstitute ? ")" : "")
@@ -670,7 +874,7 @@ public struct DishModelRow_ClientVersion: View {
    
     }
     
-     private func descriptionWithIngMentions(ing:[IngredientModelInSintesi],textIniziale:() -> Text) -> Text {
+    private func descriptionWithIngMentions(ing:[IngredientModelInSintesi],fontFinale:Font,textIniziale:() -> Text) -> Text {
         
          // 1. Atomizziamo la descrizione del Piatto come un array delle singole parole, in forma Text.
          let (atomicDescription,emptyDescription) = atomizzaDescrizionePiatto(ing: ing)
@@ -679,7 +883,7 @@ public struct DishModelRow_ClientVersion: View {
          
          let testoElaborato:Text = atomicDescription.reduce(initialText) { partialResult, word in
              
-         return partialResult
+             partialResult
              +
              Text(" ")
              +
@@ -689,7 +893,7 @@ public struct DishModelRow_ClientVersion: View {
          
          return testoElaborato
                     .italic(!emptyDescription)
-                    .font(.caption)
+                    .font(fontFinale)
                     .foregroundColor(emptyDescription ? .seaTurtle_2 : .seaTurtle_4)
         
     }
@@ -706,7 +910,7 @@ public struct DishModelRow_ClientVersion: View {
         
         guard !description.isEmpty else {
             
-            let emptyText:Text = Text("(nessuna)")
+            let emptyText:Text = Text("(nessuno)")
             return ([emptyText],true)
         }
         
@@ -728,9 +932,6 @@ public struct DishModelRow_ClientVersion: View {
         
     }
     
-    
-  
-    
 }
 
 
@@ -739,32 +940,53 @@ public struct DishModelRow_ClientVersion: View {
 struct DishModelRow_ClientVersion_Previews: PreviewProvider {
         
     static var viewModel:FoodieViewModel = testAccount
+    @State static var preSelection:[DishModel] = []
     
     static var previews: some View {
       
         CSZStackVB(title: "Menu", backgroundColorView: .seaTurtle_1) {
             
-            VStack {
+            VStack(alignment:.leading) {
+                
+                Text("Selected:\(preSelection.count)")
+                    .padding(.horizontal)
                 
                 ScrollView {
                     
                     
                     ForEach(viewModel.allMyDish) { dish in
                         
-                        DishModelRow_ClientVersion(item:dish,backgroundView: .seaTurtle_1)
+                        
+                        DishModelRow_ClientVersion(item:dish,backgroundView: .seaTurtle_1) {
+                            
+                          test(value: dish)
+                        }
                         
 
                     }
                     
                 }
-                
+                CSDivider()
             }
-            
+           
             
         }
         .environmentObject(viewModel)
 
     }
+    
+    static func test(value:DishModel) -> Bool {
+        
+        if preSelection.contains(value) {
+            let index = preSelection.firstIndex(of: value)
+            preSelection.remove(at: index!)
+        } else {
+            preSelection.append(value)
+        }
+       return true
+       // return preSelection.contains(value)
+    }
+    
 }
 
 var testAccount: FoodieViewModel = {
