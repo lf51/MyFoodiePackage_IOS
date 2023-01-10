@@ -27,14 +27,14 @@ public protocol MyProViewModelPack_L1:ObservableObject {
 
 open class FoodieViewModel:ObservableObject {
     
-    var cloudData:CloudDataStore?
+    @Published var cloudData:CloudDataStore?
     
-    var allMyIngredients:[IngredientModel]
-    var allMyDish:[DishModel]
-    var allMyMenu:[MenuModel]
-    var allMyProperties:[PropertyModel]
-    var allMyCategories:[CategoriaMenu]
-    var allMyReviews:[DishRatingModel]
+    public var allMyIngredients:[IngredientModel]
+    public var allMyDish:[DishModel]
+    public var allMyMenu:[MenuModel]
+    public var allMyProperties:[PropertyModel]
+    public var allMyCategories:[CategoriaMenu]
+    public var allMyReviews:[DishRatingModel]
     
     public init(userUID:String? = nil) {
         
