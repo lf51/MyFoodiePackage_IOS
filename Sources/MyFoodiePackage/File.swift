@@ -25,7 +25,7 @@ public protocol MyProViewModelPack_L1:ObservableObject {
  //   associatedtype CodingKeys:String,CodingKey
 //}
 
-public class FoodieViewModel:ObservableObject {
+open class FoodieViewModel:ObservableObject {
     
     var cloudData:CloudDataStore?
     
