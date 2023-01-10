@@ -8,21 +8,6 @@
 import SwiftUI
 import MyPackView_L0
 
-struct test:View {
-    
-    @ObservedObject var vm:FoodieViewModel
-    
-    init(vm: FoodieViewModel) {
-        self.vm = vm
-    }
-    
-    var body: some View {
-        
-        Text("")
-    }
-}
-
-
 public struct DishModelRow_ClientVersion: View {
     
    // @EnvironmentObject var viewModel:FoodieViewModel
@@ -31,7 +16,7 @@ public struct DishModelRow_ClientVersion: View {
     let item: DishModel
     // @Binding var carrelloOrdini:[String] // rif dei piatti
     let backgroundView:Color // ?? Uso ??
-    let priceAction:() -> Bool
+    let priceAction:(_ :String) -> Bool
     
     @State private var isPriceActionActive:Bool = false
     private let isItemIbrido:Bool
@@ -45,7 +30,7 @@ public struct DishModelRow_ClientVersion: View {
     ///   - item: <#item description#>
     ///   - backgroundView: <#backgroundView description#>
     ///   - priceAction: Effettua un'azione e ritorna un valore bool per indicare se l'azione è attiva o meno
-    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,priceAction:@escaping () -> Bool) {
+    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,priceAction:@escaping (_ :String) -> Bool) {
         
         self.isItemIbrido = {
             item.ingredientiPrincipali.contains(item.id)
@@ -60,11 +45,11 @@ public struct DishModelRow_ClientVersion: View {
         
         CSZStackVB_OpenFrame {
             
-            VStack(alignment: .leading,spacing: 5) {
+            VStack(alignment: .leading,spacing: 8) {
                 
                 HStack {
                     
-                    VStack(alignment:.leading,spacing: 0) {
+                    VStack(alignment:.leading,spacing: 2) {
                         
                         vbIntestastione()
                         vbSecondLine()
@@ -106,8 +91,15 @@ public struct DishModelRow_ClientVersion: View {
                         Image(systemName: "chevron.\(sign).circle.fill")
                         //.imageScale(.medium)
                             .foregroundColor(self.openInfo ? .seaTurtle_4 : .seaTurtle_3)
+                            .shadow(color: .seaTurtle_1, radius: 5)
                     }
                     
+                    
+                }
+                
+                if self.openPrices {
+                    
+                    vbShowPrices()
                     
                 }
                 
@@ -117,11 +109,7 @@ public struct DishModelRow_ClientVersion: View {
                     vbConservazioneLine()
                 }
                 
-                if self.openPrices {
-                    
-                    vbShowPrices()
-                    
-                }
+                
                 
             }
             .padding(.horizontal,10)
@@ -140,7 +128,7 @@ public struct DishModelRow_ClientVersion: View {
         let dietAvaible = self.item.returnDietAvaible(viewModel: self.viewModel).inDishTipologia
         
         if dietAvaible.count == 1 &&
-            dietAvaible.contains(.standard) { return nil }
+           dietAvaible.contains(.standard) { return nil }
         else { return dietAvaible }
         
     }
@@ -212,7 +200,7 @@ public struct DishModelRow_ClientVersion: View {
                     let doubleValue = csConvertToDouble(from: formato.price)
                     
                     Button {
-                        self.isPriceActionActive = self.priceAction()
+                        self.isPriceActionActive = self.priceAction(formato.price)
                     } label: {
                         
                         VStack {
@@ -242,6 +230,7 @@ public struct DishModelRow_ClientVersion: View {
                                 .cornerRadius(5.0)
                                 .opacity(0.6)
                         }
+                        .shadow(color: .seaTurtle_1, radius: 5)
                     }
                     
                 }
@@ -420,7 +409,7 @@ public struct DishModelRow_ClientVersion: View {
         let (price,count) = csIterateDishPricing()
         let priceDouble = csConvertToDouble(from: price)//Double(price) ?? 0
 
-        let (value,action) = labelPriceMultiAction(count: count)
+        let (value,action) = labelPriceMultiAction(count: count,price: price)
         
         Button {
             withAnimation {
@@ -445,20 +434,21 @@ public struct DishModelRow_ClientVersion: View {
                 Color.seaTurtle_1.cornerRadius(5.0)
                     .brightness(self.isPriceActionActive ? 0.3 : 0.0)
             }
+            .shadow(color: .seaTurtle_1, radius: 5)
         }//.disabled(countZero)
         
     }
     
-    private func labelPriceMultiAction(count:String) -> (label:String,action:()->Void){
+    private func labelPriceMultiAction(count:String,price:String) -> (label:String,action:()->Void){
         
         let countZero = count == "0"
         let condition_4 = self.isPriceActionActive && !self.openPrices
         
         func action() {
-            self.isPriceActionActive = self.priceAction()
+            self.isPriceActionActive = self.priceAction(price)
         }
         func multiAction() {
-            if condition_4 { self.isPriceActionActive = self.priceAction() }
+            if condition_4 { self.isPriceActionActive = self.priceAction(price) }
             else { self.openPrices.toggle() }
         }
 
@@ -972,7 +962,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                     ForEach(viewModel.allMyDish) { dish in
                         
                         
-                        DishModelRow_ClientVersion(viewModel: viewModel, item:dish,backgroundView: .seaTurtle_1) {
+                        DishModelRow_ClientVersion(viewModel: viewModel, item:dish,backgroundView: .seaTurtle_1) { price in
                             
                           test(value: dish)
                         }
@@ -998,8 +988,8 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
         } else {
             preSelection.append(value)
         }
-       return true
-       // return preSelection.contains(value)
+      // return true
+        return preSelection.contains(value)
     }
     
 }

@@ -253,6 +253,51 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
         
         // step 1 ->
+        let animalOrFish: [IngredientModel] = allModelIngredients.filter({$0.origine.returnTypeCase() == .animale})
+        let milkIn: [IngredientModel] = allModelIngredients.filter({$0.allergeni.contains(.latte_e_derivati)})
+        let glutenIn: [IngredientModel] = allModelIngredients.filter({$0.allergeni.contains(.glutine)})
+        
+       /* for ingredient in allModelIngredients {
+            
+            if ingredient.origine == .animale {
+                
+                if ingredient.allergeni.contains(.latte_e_derivati) { milkIn.append(ingredient) }
+                
+                else { animalOrFish.append(ingredient) }
+                        }
+
+            if ingredient.allergeni.contains(.glutine) { glutenIn.append(ingredient)}
+        } */
+        
+        // step 2 -->
+        
+        var dieteOk:[TipoDieta] = []
+        
+        if glutenIn.isEmpty {dieteOk.append(.glutenFree)}
+        if milkIn.isEmpty && animalOrFish.isEmpty {dieteOk.append(contentsOf: [.vegano,.vegariano,.vegetariano])}
+        else if milkIn.isEmpty { dieteOk.append(.vegariano)}
+        else if animalOrFish.isEmpty {dieteOk.append(.vegetariano)}
+        else {dieteOk.append(.standard) }
+ 
+        var dieteOkInStringa:[String] = dieteOk.map({$0.simpleDescription()})
+ 
+      /*  for diet in dieteOk {
+            
+            let stringDiet = diet.simpleDescription()
+            dieteOkInStringa.append(stringDiet)
+       
+        } */
+    
+        return (dieteOk,dieteOkInStringa)
+    }
+    
+    /*
+    /// Controlla l'origine degli ingredienti e restituisce un array con le diete compatibili
+    func returnDietAvaible(viewModel:FoodieViewModel) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
+        
+        let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
+        
+        // step 1 ->
         var animalOrFish: [IngredientModel] = []
         var milkIn: [IngredientModel] = []
         var glutenIn: [IngredientModel] = []
@@ -290,7 +335,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         }
     
         return (dieteOk,dieteOkInStringa)
-    }
+    } */ // 10.01.23 Backup per Upgrade e bug fix
     
     
     // New
