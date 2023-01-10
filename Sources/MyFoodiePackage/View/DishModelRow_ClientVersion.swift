@@ -8,10 +8,25 @@
 import SwiftUI
 import MyPackView_L0
 
+struct test:View {
+    
+    @ObservedObject var vm:FoodieViewModel
+    
+    init(vm: FoodieViewModel) {
+        self.vm = vm
+    }
+    
+    var body: some View {
+        
+        Text("")
+    }
+}
+
 
 public struct DishModelRow_ClientVersion: View {
     
-    @EnvironmentObject var viewModel:FoodieViewModel
+   // @EnvironmentObject var viewModel:FoodieViewModel
+    @ObservedObject var viewModel:FoodieViewModel
     
     let item: DishModel
     // @Binding var carrelloOrdini:[String] // rif dei piatti
@@ -30,12 +45,12 @@ public struct DishModelRow_ClientVersion: View {
     ///   - item: <#item description#>
     ///   - backgroundView: <#backgroundView description#>
     ///   - priceAction: Effettua un'azione e ritorna un valore bool per indicare se l'azione è attiva o meno
-    public init(item: DishModel, backgroundView: Color,priceAction:@escaping () -> Bool) {
+    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,priceAction:@escaping () -> Bool) {
         
         self.isItemIbrido = {
             item.ingredientiPrincipali.contains(item.id)
         }()
-        
+        self.viewModel = viewModel
         self.item = item
         self.backgroundView = backgroundView
         self.priceAction = priceAction
@@ -957,7 +972,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                     ForEach(viewModel.allMyDish) { dish in
                         
                         
-                        DishModelRow_ClientVersion(item:dish,backgroundView: .seaTurtle_1) {
+                        DishModelRow_ClientVersion(viewModel: viewModel, item:dish,backgroundView: .seaTurtle_1) {
                             
                           test(value: dish)
                         }
@@ -971,7 +986,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
            
             
         }
-        .environmentObject(viewModel)
+      //  .environmentObject(viewModel)
 
     }
     
