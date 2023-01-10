@@ -27,7 +27,7 @@ public protocol MyProViewModelPack_L1:ObservableObject {
 
 open class FoodieViewModel:ObservableObject {
     
-    @Published var cloudData:CloudDataStore?
+    @Published public var cloudData:CloudDataStore?
     
     public var allMyIngredients:[IngredientModel]
     public var allMyDish:[DishModel]
