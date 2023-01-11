@@ -16,9 +16,10 @@ public struct DishModelRow_ClientVersion: View {
     let item: DishModel
     // @Binding var carrelloOrdini:[String] // rif dei piatti
     let backgroundView:Color // ?? Uso ??
-    let priceAction:(_ :String) -> Bool
-    
-    @State private var isPriceActionActive:Bool = false
+    let priceAction:(_ :String) -> Void
+   // let selectionCheck:() -> Bool
+   // @State private var isPriceActionActive:Bool = false
+    private let isPriceSelectionActive:Bool
     private let isItemIbrido:Bool
     @State private var openInfo:Bool = false
     @State private var openPrices:Bool = false
@@ -30,7 +31,7 @@ public struct DishModelRow_ClientVersion: View {
     ///   - item: <#item description#>
     ///   - backgroundView: <#backgroundView description#>
     ///   - priceAction: Effettua un'azione e ritorna un valore bool per indicare se l'azione è attiva o meno
-    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,priceAction:@escaping (_ :String) -> Bool) {
+    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,selectionCheck:() -> Bool, priceAction:@escaping (_ :String) -> Void) {
         
         self.isItemIbrido = {
             item.ingredientiPrincipali.contains(item.id)
@@ -39,6 +40,7 @@ public struct DishModelRow_ClientVersion: View {
         self.item = item
         self.backgroundView = backgroundView
         self.priceAction = priceAction
+        self.isPriceSelectionActive = selectionCheck()
     }
     
     public var body: some View {
@@ -200,7 +202,7 @@ public struct DishModelRow_ClientVersion: View {
                     let doubleValue = csConvertToDouble(from: formato.price)
                     
                     Button {
-                        self.isPriceActionActive = self.priceAction(formato.price)
+                        self.priceAction(formato.price)
                     } label: {
                         
                         VStack {
@@ -216,7 +218,7 @@ public struct DishModelRow_ClientVersion: View {
                                 // .font(.title2)
                                     .foregroundColor(.seaTurtle_2)
                                 
-                                Text(self.isPriceActionActive ? "-" : "+")
+                                Text(self.isPriceSelectionActive ? "-" : "+")
                                     .fontWeight(.bold)
                                     .font(.caption2)
                                     .foregroundColor(.seaTurtle_3)
@@ -432,7 +434,7 @@ public struct DishModelRow_ClientVersion: View {
             .padding(.horizontal,10)
             .background {
                 Color.seaTurtle_1.cornerRadius(5.0)
-                    .brightness(self.isPriceActionActive ? 0.3 : 0.0)
+                    .brightness(self.isPriceSelectionActive ? 0.3 : 0.0)
             }
             .shadow(color: .seaTurtle_1, radius: 5)
         }//.disabled(countZero)
@@ -442,18 +444,20 @@ public struct DishModelRow_ClientVersion: View {
     private func labelPriceMultiAction(count:String,price:String) -> (label:String,action:()->Void){
         
         let countZero = count == "0"
-        let condition_4 = self.isPriceActionActive && !self.openPrices
+        let condition_4 = self.isPriceSelectionActive && !self.openPrices
         
         func action() {
-            self.isPriceActionActive = self.priceAction(price)
+           // self.isPriceActionActive = self.priceAction(price)
+            self.priceAction(price)
         }
         func multiAction() {
-            if condition_4 { self.isPriceActionActive = self.priceAction(price) }
+           // if condition_4 { self.isPriceActionActive = self.priceAction(price) }
+            if condition_4 { self.priceAction(price) }
             else { self.openPrices.toggle() }
         }
 
             if countZero {
-                let label = self.isPriceActionActive ? "-" : "+"
+                let label = self.isPriceSelectionActive ? "-" : "+"
                 return (label,action)}
             
             else {
@@ -961,11 +965,20 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                     
                     ForEach(viewModel.allMyDish) { dish in
                         
+                        DishModelRow_ClientVersion(
+                            viewModel: viewModel,
+                            item: dish,
+                            backgroundView: .seaTurtle_1) {
+                                return true
+                            } priceAction: { price in
+                                test(value: dish)
+                            }
+
                         
-                        DishModelRow_ClientVersion(viewModel: viewModel, item:dish,backgroundView: .seaTurtle_1) { price in
+                       /* DishModelRow_ClientVersion(viewModel: viewModel, item:dish,backgroundView: .seaTurtle_1) { price in
                             
                           test(value: dish)
-                        }
+                        } */
                         
 
                     }
@@ -980,7 +993,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
 
     }
     
-    static func test(value:DishModel) -> Bool {
+    static func test(value:DishModel)  {
         
         if preSelection.contains(value) {
             let index = preSelection.firstIndex(of: value)
@@ -989,7 +1002,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
             preSelection.append(value)
         }
       // return true
-        return preSelection.contains(value)
+       // return preSelection.contains(value)
     }
     
 }
@@ -1026,7 +1039,6 @@ var testAccount: FoodieViewModel = {
         @ViewBuilder var content: Content
 
         private let backgroundOpacity: Double = 0.03
-        private let shadowColor:Color = Color.black
         private let rowColor:Color = Color.white
    
     init(frameWidth: CGFloat = 650, content: () -> Content) {
@@ -1042,8 +1054,7 @@ var testAccount: FoodieViewModel = {
             ZStack(alignment:.leading) {
                 
                 RoundedRectangle(cornerRadius: 1.0)
-                    .fill(rowColor.gradient.opacity(backgroundOpacity))
-                   // .shadow(color:shadowColor,radius: 1.0)
+                    .fill(rowColor.opacity(backgroundOpacity))
                     .zIndex(0)
                 
                 content
