@@ -16,10 +16,10 @@ public struct DishModelRow_ClientVersion: View {
     let item: DishModel
     // @Binding var carrelloOrdini:[String] // rif dei piatti
     let backgroundView:Color // ?? Uso ??
-    let priceAction:(_ :String) -> Void
+    let selectorAction:() -> Void
    // let selectionCheck:() -> Bool
    // @State private var isPriceActionActive:Bool = false
-    private let isPriceSelectionActive:Bool
+    private let isSelected:Bool
     private let isItemIbrido:Bool
     @State private var openInfo:Bool = false
     @State private var openPrices:Bool = false
@@ -28,10 +28,12 @@ public struct DishModelRow_ClientVersion: View {
     
     /// <#Description#>
     /// - Parameters:
+    ///   - viewModel: <#viewModel description#>
     ///   - item: <#item description#>
     ///   - backgroundView: <#backgroundView description#>
-    ///   - priceAction: Effettua un'azione e ritorna un valore bool per indicare se l'azione è attiva o meno
-    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,selectionCheck:() -> Bool, priceAction:@escaping (_ :String) -> Void) {
+    ///   - isSelectedActionCheck: <#isSelectedActionCheck description#>
+    ///   - selectorAction: <#selectorAction description#>
+    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,isSelectedActionCheck:() -> Bool, selectorAction:@escaping () -> Void) {
         
         self.isItemIbrido = {
             item.ingredientiPrincipali.contains(item.id)
@@ -39,13 +41,15 @@ public struct DishModelRow_ClientVersion: View {
         self.viewModel = viewModel
         self.item = item
         self.backgroundView = backgroundView
-        self.priceAction = priceAction
-        self.isPriceSelectionActive = selectionCheck()
+        self.selectorAction = selectorAction
+        self.isSelected = isSelectedActionCheck()
     }
     
     public var body: some View {
         
         CSZStackVB_OpenFrame {
+            
+            ZStack(alignment:.bottomTrailing) {
             
             VStack(alignment: .leading,spacing: 8) {
                 
@@ -105,25 +109,49 @@ public struct DishModelRow_ClientVersion: View {
                     
                 }
                 
+                
+                
                 VStack(alignment:.leading,spacing:0) {
                     
                     vbAllergeniLine()
                     vbConservazioneLine()
+                    
+                    }
+ 
                 }
+              //  .padding(.horizontal,10)
+              //  .padding(.vertical,5)
                 
-                
-                
-            }
+                vbSelector()
+            
+            } // close ZStack Interno
             .padding(.horizontal,10)
             .padding(.vertical,5)
-            
-            
         }
         
         
     }
     
     // ViewBuilder - Method
+    
+    @ViewBuilder private func vbSelector() -> some View {
+        
+        let value:(image:String,opacity:CGFloat) = {
+            
+            if self.isSelected {return ("😋",1.0) }
+            else { return ("🤔",0.4)}
+            
+        }()
+        
+        Button {
+            self.selectorAction()
+        } label: {
+            Text(value.image)
+                .shadow(color: .seaTurtle_1, radius: 5)
+                .opacity(value.opacity)
+               
+        }
+    }
     
     private func csPreShowDiet() -> [TipoDieta]? {
         // Utilizziamo un preCalcolo perchè rimaneva un piccolo spazietto quando non c'erano valori da mostrare. Così invece è risolto.
@@ -201,28 +229,28 @@ public struct DishModelRow_ClientVersion: View {
                     
                     let doubleValue = csConvertToDouble(from: formato.price)
                     
-                    Button {
-                        self.priceAction(formato.price)
-                    } label: {
+                  //  Button {
+                      // self.priceAction(formato.price)
+                  //  } label: {
                         
                         VStack {
                             
                             Text(formato.label)
                                 .foregroundColor(.seaTurtle_4)
                             
-                            /*  Text(doubleValue,format: .currency(code: self.moneyCode))
-                             .foregroundColor(.seaTurtle_2) */
-                            HStack(alignment:.top,spacing:1) {
+                            Text(doubleValue,format: .currency(code: self.moneyCode))
+                             .foregroundColor(.seaTurtle_2)
+                          /*  HStack(alignment:.top,spacing:1) {
                                 
                                 Text("\(doubleValue,format: .currency(code: self.moneyCode))")
                                 // .font(.title2)
                                     .foregroundColor(.seaTurtle_2)
                                 
-                                Text(self.isPriceSelectionActive ? "-" : "+")
+                                Text(self.openPrices ? "-" : "+")
                                     .fontWeight(.bold)
                                     .font(.caption2)
                                     .foregroundColor(.seaTurtle_3)
-                            }
+                            } */
                         }
                         .font(.headline)
                         .lineLimit(1)
@@ -232,8 +260,8 @@ public struct DishModelRow_ClientVersion: View {
                                 .cornerRadius(5.0)
                                 .opacity(0.6)
                         }
-                        .shadow(color: .seaTurtle_1, radius: 5)
-                    }
+                        .shadow(color: .black, radius: 0.5)
+                  //  }
                     
                 }
             
@@ -411,12 +439,21 @@ public struct DishModelRow_ClientVersion: View {
         let (price,count) = csIterateDishPricing()
         let priceDouble = csConvertToDouble(from: price)//Double(price) ?? 0
 
-        let (value,action) = labelPriceMultiAction(count: count,price: price)
+      //  let (value,action) = labelPriceMultiAction(count: count,price: price)
+        let countZero = count == "0"
+        let label:String = {
+            
+            if countZero { return ""}
+            else {
+                let lab = self.openPrices ? "-" : "+"
+                return "\(lab)\(count)"
+            }
+        }()
         
         Button {
             withAnimation {
 
-                action()
+                self.openPrices.toggle()
             }
         } label: {
             
@@ -426,7 +463,7 @@ public struct DishModelRow_ClientVersion: View {
                     .font(.title2)
                     .foregroundColor(.seaTurtle_4)
                 
-                Text(value)
+                Text(label)
                     .fontWeight(.bold)
                     .font(.caption2)
                     .foregroundColor(.seaTurtle_3)
@@ -434,14 +471,16 @@ public struct DishModelRow_ClientVersion: View {
             .padding(.horizontal,10)
             .background {
                 Color.seaTurtle_1.cornerRadius(5.0)
-                    .brightness(self.isPriceSelectionActive ? 0.3 : 0.0)
+                   // .brightness(self.isPriceSelectionActive ? 0.3 : 0.0)
             }
             .shadow(color: .seaTurtle_1, radius: 5)
-        }//.disabled(countZero)
+            
+        }.disabled(countZero)
         
     }
     
-    private func labelPriceMultiAction(count:String,price:String) -> (label:String,action:()->Void){
+    
+   /* private func labelPriceMultiAction(count:String,price:String) -> (label:String,action:()->Void){
         
         let countZero = count == "0"
         let condition_4 = self.isPriceSelectionActive && !self.openPrices
@@ -474,7 +513,9 @@ public struct DishModelRow_ClientVersion: View {
 
                 return ("\(label)",multiAction) }
 
-    }
+    } */
+    
+    
     
    /* @ViewBuilder private func vbPriceSpace() -> some View {
            
@@ -948,7 +989,7 @@ public struct DishModelRow_ClientVersion: View {
 
 struct DishModelRow_ClientVersion_Previews: PreviewProvider {
         
-    static var viewModel:FoodieViewModel = testAccount
+    @StateObject static var viewModel:FoodieViewModel = testAccount
     @State static var preSelection:[DishModel] = []
     
     static var previews: some View {
@@ -968,9 +1009,9 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                         DishModelRow_ClientVersion(
                             viewModel: viewModel,
                             item: dish,
-                            backgroundView: .seaTurtle_1) {
-                                return true
-                            } priceAction: { price in
+                            backgroundView:.seaTurtle_1) {
+                                preSelection.contains(dish)
+                            } selectorAction: {
                                 test(value: dish)
                             }
 
