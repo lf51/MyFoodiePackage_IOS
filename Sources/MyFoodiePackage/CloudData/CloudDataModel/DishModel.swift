@@ -225,6 +225,25 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     
      }
     
+    /// Ritorna la media in forma di stringa delle recensioni di un Piatto, e il numero delle stesse come Int, e un array con i modelli delle recensioni
+   public func ratingInfo(readOnlyViewModel:FoodieViewModel) -> (media:Double,count:Int,allModelReview:[DishRatingModel]) {
+        
+        // Nota 13.09
+
+        let allLocalReviews:[DishRatingModel] = readOnlyViewModel.modelCollectionFromCollectionID(collectionId: self.rifReviews, modelPath: \.allMyReviews)
+        
+        guard !allLocalReviews.isEmpty else {
+            
+            return (0.0,0,[])
+        }
+        
+        let ratingCount: Int = allLocalReviews.count // item.rating.count
+        let mediaPonderata = csCalcoloMediaRecensioni(elementi: allLocalReviews)
+ 
+        return (mediaPonderata,ratingCount,allLocalReviews)
+        
+    }
+    
     
 
     

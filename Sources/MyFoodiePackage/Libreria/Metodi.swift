@@ -119,3 +119,22 @@ public func csStringCleaner(string:String) -> String {
     return newStringaTesto
     
 }
+
+/// ritorna il valore della media Pesata di un array di Recensioni
+public func csCalcoloMediaRecensioni(elementi:[DishRatingModel]) -> Double {
+    
+    let votiEPesi = elementi.map({$0.votoEPeso()})
+       
+        var sommaVoti: Double = 0.0
+        var sommaPesi: Double = 0.0
+        
+        for (v,p) in votiEPesi {
+            
+            let votoPesato = v * p
+            sommaVoti += votoPesato
+            sommaPesi += p
+        }
+        
+        return sommaVoti / sommaPesi
+
+}

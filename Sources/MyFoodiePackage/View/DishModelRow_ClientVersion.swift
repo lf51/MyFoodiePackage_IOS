@@ -17,6 +17,7 @@ public struct DishModelRow_ClientVersion: View {
     // @Binding var carrelloOrdini:[String] // rif dei piatti
     let backgroundView:Color // ?? Uso ??
     let selectorAction:() -> Void
+    let reviewButton:() -> Void
    // let selectionCheck:() -> Bool
    // @State private var isPriceActionActive:Bool = false
     private let isSelected:Bool
@@ -26,14 +27,8 @@ public struct DishModelRow_ClientVersion: View {
     
     let moneyCode = Locale.current.currency?.identifier ?? "EUR"
     
-    /// <#Description#>
-    /// - Parameters:
-    ///   - viewModel: <#viewModel description#>
-    ///   - item: <#item description#>
-    ///   - backgroundView: <#backgroundView description#>
-    ///   - isSelectedActionCheck: <#isSelectedActionCheck description#>
-    ///   - selectorAction: <#selectorAction description#>
-    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,isSelectedActionCheck:() -> Bool, selectorAction:@escaping () -> Void) {
+ 
+    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,isSelectedActionCheck:() -> Bool, selectorAction:@escaping () -> Void,reviewButton:@escaping () -> Void) {
         
         self.isItemIbrido = {
             item.ingredientiPrincipali.contains(item.id)
@@ -41,38 +36,36 @@ public struct DishModelRow_ClientVersion: View {
         self.viewModel = viewModel
         self.item = item
         self.backgroundView = backgroundView
-        self.selectorAction = selectorAction
+       
         self.isSelected = isSelectedActionCheck()
+        self.selectorAction = selectorAction
+        self.reviewButton = reviewButton
     }
     
     public var body: some View {
         
-        CSZStackVB_OpenFrame {
+      CSZStackVB_OpenFrame {
             
-            ZStack(alignment:.bottomTrailing) {
+        ZStack(alignment:.bottomTrailing) {
             
-            VStack(alignment: .leading,spacing: 8) {
-                
-                HStack {
-                    
-                    VStack(alignment:.leading,spacing: 2) {
+           VStack(alignment: .leading,spacing: 8) {
+ 
+               HStack(alignment:.lastTextBaseline) {
                         
-                        vbIntestastione()
-                        vbSecondLine()
-                    }
-                    
+                    vbIntestastione()
                     Spacer()
-                    
                     vbPriceSpace()
-                    
-                    
-                }
-                
-                vbBadgeRow()
+                      
+                    }
+ 
+                  vbSecondLine()
+                   .padding(.top,-5)
+               
+                  vbBadgeRow()
                 
                 ZStack(alignment:.topLeading) {
                     
-                    VStack(alignment:.leading,spacing: 5) {
+                  VStack(alignment:.leading,spacing: 5) {
                         
                         vbPrincipalIngredientRow()
                         
@@ -103,13 +96,7 @@ public struct DishModelRow_ClientVersion: View {
                     
                 }
                 
-                if self.openPrices {
-                    
-                    vbShowPrices()
-                    
-                }
-                
-                
+                if self.openPrices { vbShowPrices() }
                 
                 VStack(alignment:.leading,spacing:0) {
                     
@@ -118,18 +105,14 @@ public struct DishModelRow_ClientVersion: View {
                     
                     }
  
-                }
-              //  .padding(.horizontal,10)
-              //  .padding(.vertical,5)
-                
-                vbSelector()
+                } // Close VStack
+           
+                    vbSelector()
             
             } // close ZStack Interno
             .padding(.horizontal,10)
             .padding(.vertical,5)
         }
-        
-        
     }
     
     // ViewBuilder - Method
@@ -419,19 +402,56 @@ public struct DishModelRow_ClientVersion: View {
     
     @ViewBuilder private func vbSecondLine() -> some View {
         
-        if !isItemIbrido {
-            
-            vbReviewLine()
-            
-        } else {
+        if !isItemIbrido { vbReviewLine() }
+        else {
             
             Text(self.item.percorsoProdotto.simpleDescription().lowercased())
                 .italic()
                 .fontWeight(.light)
-                .multilineTextAlignment(.leading)
+                .font(.subheadline)
                 .foregroundColor(.seaTurtle_2)
+                .padding(.top,-5)
         }
         
+    }
+    
+    @ViewBuilder private func vbReviewLine() -> some View {
+        
+        let (mediaRating,ratingCount,_) = self.item.ratingInfo(readOnlyViewModel: self.viewModel)
+    
+        let zeroCount = ratingCount == 0
+        
+        HStack(spacing:3) {
+            
+            Button {
+                withAnimation {
+                    self.reviewButton()
+                }
+            } label: {
+                
+                Text("\(mediaRating,specifier: "%.1f")") // media
+                    .fontWeight(.light)
+                    .foregroundColor(.seaTurtle_1)
+                    .padding(.horizontal,5)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5.0)
+                            .fill(Color.seaTurtle_2)
+                            .opacity(zeroCount ? 0.6 : 1.0)
+                            .shadow(color: .seaTurtle_1, radius: zeroCount ? 0 : 3)
+                    )
+            }.disabled(zeroCount)
+            
+            Group {
+                Text("/")
+                Text("\(ratingCount) recensioni") // valore da importare
+                    .italic()
+            }
+            .fontWeight(.semibold)
+            .foregroundColor(.seaTurtle_2)
+        }
+        
+   
+
     }
     
     @ViewBuilder private func vbPriceSpace() -> some View {
@@ -473,7 +493,7 @@ public struct DishModelRow_ClientVersion: View {
                 Color.seaTurtle_1.cornerRadius(5.0)
                    // .brightness(self.isPriceSelectionActive ? 0.3 : 0.0)
             }
-            .shadow(color: .seaTurtle_1, radius: 5)
+            .shadow(color: .seaTurtle_1, radius: 0.5)
             
         }.disabled(countZero)
         
@@ -600,31 +620,6 @@ public struct DishModelRow_ClientVersion: View {
         return extended
         
     } */ // Deprecata 06.01.23
-    
-    @ViewBuilder private func vbReviewLine() -> some View {
-        
-        let (mediaRating,ratingCount) = (9.5,18)
-    
-        HStack(spacing:3) {
-            Text("\(mediaRating,specifier: "%.1f")") // media
-                .fontWeight(.light)
-                .foregroundColor(.seaTurtle_1)
-                .padding(.horizontal,5)
-                .background(
-                    RoundedRectangle(cornerRadius: 5.0)
-                        .fill(Color.seaTurtle_2)
-                )
-
-            Group {
-                Text("/")
-                Text("\(ratingCount) recensioni") // valore da importare
-                    .italic()
-            }
-            .fontWeight(.semibold)
-            .foregroundColor(.seaTurtle_2)
-        }
-
-    }
     
     @ViewBuilder private func vbBadgeRow() -> some View {
         
@@ -1013,6 +1008,8 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                                 preSelection.contains(dish)
                             } selectorAction: {
                                 test(value: dish)
+                            } reviewButton: {
+                                //
                             }
 
                         
@@ -1062,7 +1059,7 @@ var testAccount: FoodieViewModel = {
     ]
     vm.inventarioScorte.archivioIngInEsaurimento = [todayString:[ingredientSample5_Test.id]]
     vm.allMyReviews = [rate1,rate2,rate3,rate4,rate5,rate6,rate7,rate8,rate9,rate10,rate11,rate12]*/
-    
+    vm.allMyReviews = [rate1,rate2,rate3,rate4,rate5,rate6,rate7,rate8,rate9,rate10,rate11,rate12]
     vm.allMyCategories = [cat1,cat2,cat3,cat4,cat5,cat6,cat7]
     
    /* vm.remoteStorage.modelRif_deleted = [ingredientSample_Test.id:ingredientSample_Test.intestazione]
