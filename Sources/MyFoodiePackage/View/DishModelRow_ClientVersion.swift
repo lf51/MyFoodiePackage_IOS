@@ -39,7 +39,7 @@ public struct DishModelRow_ClientVersion: View {
         item: DishModel,
         rowColor: Color,
         rowOpacity:CGFloat = 0.0,
-        riduzioneMainBounds:CGFloat = 20,
+        rowBoundReduction:CGFloat = 20,
         vistaEspansa:Bool = false,
         isSelectedActionCheck:() -> Bool,
         selectorAction:@escaping () -> Void,
@@ -53,7 +53,7 @@ public struct DishModelRow_ClientVersion: View {
         self.item = item
         self.rowColor = rowColor
         self.rowOpacity = rowOpacity
-        self.rowBoundReduction = riduzioneMainBounds
+        self.rowBoundReduction = rowBoundReduction
             
         _openInfo = State(initialValue: vistaEspansa)
         _openPrices = State(initialValue: vistaEspansa)
@@ -68,7 +68,7 @@ public struct DishModelRow_ClientVersion: View {
      //CSZStackVB_OpenFrame {
       
         CSZStackVB_Framed(
-            backgroundOpacity:rowOpacity,
+            backgroundOpacity: rowOpacity,
             shadowColor: Color.black,
             rowColor: rowColor,
             cornerRadius: 1.0,
@@ -124,7 +124,8 @@ public struct DishModelRow_ClientVersion: View {
                     
                 }
                 
-                if self.openPrices { vbShowPrices() }
+                if self.openPrices,
+                   self.item.pricingPiatto.count > 1 { vbShowPrices() }
                 
                 VStack(alignment:.leading,spacing:0) {
                     
