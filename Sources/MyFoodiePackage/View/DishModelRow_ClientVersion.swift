@@ -19,7 +19,6 @@ public struct DishModelRow_ClientVersion: View {
     let rowOpacity:CGFloat
     let rowBoundReduction:CGFloat
     
-    
     @State private var openInfo:Bool
     @State private var openPrices:Bool
     
@@ -55,8 +54,8 @@ public struct DishModelRow_ClientVersion: View {
         self.rowOpacity = rowOpacity
         self.rowBoundReduction = rowBoundReduction
             
-        _openInfo = State(initialValue: vistaEspansa)
-        _openPrices = State(initialValue: vistaEspansa)
+        _openInfo = State(wrappedValue: vistaEspansa)
+        _openPrices = State(wrappedValue: vistaEspansa)
        
         self.isSelected = isSelectedActionCheck()
         self.selectorAction = selectorAction
