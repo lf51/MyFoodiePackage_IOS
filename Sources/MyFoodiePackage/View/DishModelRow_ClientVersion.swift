@@ -16,19 +16,22 @@ public struct DishModelRow_ClientVersion: View {
     let item: DishModel
     // @Binding var carrelloOrdini:[String] // rif dei piatti
     let backgroundView:Color // ?? Uso ??
+    
+    @State private var openInfo:Bool
+    @State private var openPrices:Bool
+    
     let selectorAction:() -> Void
     let reviewButton:() -> Void
    // let selectionCheck:() -> Bool
    // @State private var isPriceActionActive:Bool = false
     private let isSelected:Bool
     private let isItemIbrido:Bool
-    @State private var openInfo:Bool = false
-    @State private var openPrices:Bool = false
+    
     
     let moneyCode = Locale.current.currency?.identifier ?? "EUR"
     
  
-    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,isSelectedActionCheck:() -> Bool, selectorAction:@escaping () -> Void,reviewButton:@escaping () -> Void) {
+    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,vistaEspansa:Bool = false,isSelectedActionCheck:() -> Bool, selectorAction:@escaping () -> Void,reviewButton:@escaping () -> Void) {
         
         self.isItemIbrido = {
             item.ingredientiPrincipali.contains(item.id)
@@ -36,6 +39,8 @@ public struct DishModelRow_ClientVersion: View {
         self.viewModel = viewModel
         self.item = item
         self.backgroundView = backgroundView
+        _openInfo = State(initialValue: vistaEspansa)
+        _openPrices = State(initialValue: vistaEspansa)
        
         self.isSelected = isSelectedActionCheck()
         self.selectorAction = selectorAction
@@ -421,33 +426,39 @@ public struct DishModelRow_ClientVersion: View {
     
         let zeroCount = ratingCount == 0
         
-        HStack(spacing:3) {
+        HStack(alignment: .lastTextBaseline, spacing:5) {
             
+            Text("\(mediaRating,specifier: "%.1f")") // media
+                .fontWeight(.semibold)
+                .font(.title2)
+                .foregroundColor(.seaTurtle_1)
+                .padding(.horizontal,5)
+                .background(
+                    RoundedRectangle(cornerRadius: 5.0)
+                        .fill(Color.seaTurtle_4)
+                        .shadow(color: .seaTurtle_1, radius:3)
+                )
+            
+            Text("\(ratingCount) recensioni") // valore da importare
+                    .italic()
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.seaTurtle_2)
+ 
             Button {
                 withAnimation {
                     self.reviewButton()
                 }
             } label: {
                 
-                Text("\(mediaRating,specifier: "%.1f")") // media
-                    .fontWeight(.light)
-                    .foregroundColor(.seaTurtle_1)
-                    .padding(.horizontal,5)
-                    .background(
-                        RoundedRectangle(cornerRadius: 5.0)
-                            .fill(Color.seaTurtle_2)
-                            .opacity(zeroCount ? 0.6 : 1.0)
-                            .shadow(color: .seaTurtle_1, radius: zeroCount ? 0 : 3)
-                    )
+                Image(systemName: "arrow.up.right")
+                    .imageScale(.medium)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.seaTurtle_3)
+                
             }.disabled(zeroCount)
             
-            Group {
-                Text("/")
-                Text("\(ratingCount) recensioni") // valore da importare
-                    .italic()
-            }
-            .fontWeight(.semibold)
-            .foregroundColor(.seaTurtle_2)
+         
         }
         
    
