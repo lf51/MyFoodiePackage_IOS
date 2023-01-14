@@ -15,7 +15,10 @@ public struct DishModelRow_ClientVersion: View {
     
     let item: DishModel
     // @Binding var carrelloOrdini:[String] // rif dei piatti
-    let backgroundView:Color // ?? Uso ??
+    let rowColor:Color
+    let rowOpacity:CGFloat
+    let rowBoundReduction:CGFloat
+    
     
     @State private var openInfo:Bool
     @State private var openPrices:Bool
@@ -31,14 +34,27 @@ public struct DishModelRow_ClientVersion: View {
     let moneyCode = Locale.current.currency?.identifier ?? "EUR"
     
  
-    public init(viewModel:FoodieViewModel,item: DishModel, backgroundView: Color,vistaEspansa:Bool = false,isSelectedActionCheck:() -> Bool, selectorAction:@escaping () -> Void,reviewButton:@escaping () -> Void) {
+    public init(
+        viewModel:FoodieViewModel,
+        item: DishModel,
+        rowColor: Color,
+        rowOpacity:CGFloat = 0.0,
+        riduzioneMainBounds:CGFloat = 20,
+        vistaEspansa:Bool = false,
+        isSelectedActionCheck:() -> Bool,
+        selectorAction:@escaping () -> Void,
+        reviewButton:@escaping () -> Void) {
         
         self.isItemIbrido = {
             item.ingredientiPrincipali.contains(item.id)
         }()
+            
         self.viewModel = viewModel
         self.item = item
-        self.backgroundView = backgroundView
+        self.rowColor = rowColor
+        self.rowOpacity = rowOpacity
+        self.rowBoundReduction = riduzioneMainBounds
+            
         _openInfo = State(initialValue: vistaEspansa)
         _openPrices = State(initialValue: vistaEspansa)
        
@@ -49,8 +65,15 @@ public struct DishModelRow_ClientVersion: View {
     
     public var body: some View {
         
-      CSZStackVB_OpenFrame {
-            
+     //CSZStackVB_OpenFrame {
+      
+        CSZStackVB_Framed(
+            backgroundOpacity:rowOpacity,
+            shadowColor: Color.black,
+            rowColor: rowColor,
+            cornerRadius: 1.0,
+            riduzioneMainBounds: rowBoundReduction) {
+     
         ZStack(alignment:.bottomTrailing) {
             
            VStack(alignment: .leading,spacing: 8) {
@@ -115,7 +138,7 @@ public struct DishModelRow_ClientVersion: View {
                     vbSelector()
             
             } // close ZStack Interno
-            .padding(.horizontal,10)
+           // .padding(.horizontal,10)
             .padding(.vertical,5)
         }
     }
@@ -455,6 +478,7 @@ public struct DishModelRow_ClientVersion: View {
                     .imageScale(.medium)
                     .fontWeight(.semibold)
                     .foregroundColor(.seaTurtle_3)
+                    .opacity(zeroCount ? 0.2 : 1.0)
                 
             }.disabled(zeroCount)
             
@@ -1015,7 +1039,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                         DishModelRow_ClientVersion(
                             viewModel: viewModel,
                             item: dish,
-                            backgroundView:.seaTurtle_1) {
+                            rowColor:.seaTurtle_4) {
                                 preSelection.contains(dish)
                             } selectorAction: {
                                 test(value: dish)
@@ -1028,7 +1052,11 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                             
                           test(value: dish)
                         } */
-                        
+                        CSDivider(
+                            visibleColor: .seaTurtle_3,
+                            height: 0.4,
+                            radius: 0)
+                        .padding(.horizontal)
 
                     }
                     
@@ -1082,7 +1110,7 @@ var testAccount: FoodieViewModel = {
 
 
 /// Sfondo della Row del Piatto nella versione Client. Derivata dalla CSZStack Framed, prevede di andare a tutto schermo ( in larghezza ) sui telefoni mentre sugli ipad si ferma a 650
- struct CSZStackVB_OpenFrame<Content:View>:View {
+/* struct CSZStackVB_OpenFrame<Content:View>:View {
         
         let frameWidth: CGFloat
         @ViewBuilder var content: Content
@@ -1112,7 +1140,7 @@ var testAccount: FoodieViewModel = {
             }
             .frame(width:frameWidth)
         }
-    } // da spostare
+    } */ //Deprecata 14.01 // da spostare
 
 
 

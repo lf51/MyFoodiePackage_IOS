@@ -12,14 +12,14 @@ struct SwiftUIView: View {
     
     var body: some View {
         
-        CSZStackVB_OpenFrame {
+       // CSZStackVB_OpenFrame {
             
             VStack(alignment: .leading,spacing: 5) {
                 
                 vbTesto()
               //  Text("Ola")
             }
-        }
+     //   }
        
         
         }
