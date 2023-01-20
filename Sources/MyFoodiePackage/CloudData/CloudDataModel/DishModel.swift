@@ -171,7 +171,15 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         
     }
     
-    public func hasAllIngredientSameQuality<T:MyProEnumPack_L0>(viewModel:FoodieViewModel,kpQuality:KeyPath<IngredientModel,T>,quality:T) -> Bool {
+    public func preCallHasAllIngredientSameQuality<T:MyProEnumPack_L0>(viewModel:FoodieViewModel,kpQuality:KeyPath<IngredientModel,T>,quality:T?) -> Bool {
+        
+        guard let unwrapQuality = quality else { return true }
+        
+       return self.hasAllIngredientSameQuality(viewModel: viewModel, kpQuality: kpQuality, quality: unwrapQuality)
+        
+    }
+    
+     func hasAllIngredientSameQuality<T:MyProEnumPack_L0>(viewModel:FoodieViewModel,kpQuality:KeyPath<IngredientModel,T>,quality:T) -> Bool {
         
         let allIngredient = self.allIngredientsAttivi(viewModel: viewModel)
         guard !allIngredient.isEmpty else { return false }
@@ -242,6 +250,15 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
  
         return (mediaPonderata,ratingCount,allLocalReviews)
         
+    }
+    
+    /// Torna un valore da usare per ordinare i model nella classifica TopRated. In questo caso torna il peso delle recensioni, ossia la media ponderata per il numero di recensioni
+   public func topRatedValue(readOnlyVM:FoodieViewModel) -> Double {
+        
+        let (media,count,_) = self.ratingInfo(readOnlyViewModel:readOnlyVM)
+       
+        return (media * Double(count))
+     
     }
     
     
