@@ -29,10 +29,8 @@ public struct DishModelRow_ClientVersion: View {
     private let isSelected:Bool
     private let isItemIbrido:Bool
     
-    
     let moneyCode = Locale.current.currency?.identifier ?? "EUR"
     
- 
     public init(
         viewModel:FoodieViewModel,
         item: DishModel,
@@ -1021,6 +1019,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
         
     @StateObject static var viewModel:FoodieViewModel = testAccount
     @State static var preSelection:[DishModel] = []
+    static var espanso:Bool = true
     
     static var previews: some View {
       
@@ -1028,8 +1027,14 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
             
             VStack(alignment:.leading) {
                 
-                Text("Selected:\(preSelection.count)")
-                    .padding(.horizontal)
+                HStack {
+                    Text("Selected:\(preSelection.count)")
+                        .padding(.horizontal)
+                    Image(systemName: "cart")
+                        .onTapGesture {
+                           // self.espanso.toggle()
+                        }
+                }
                 
                 ScrollView {
                     
@@ -1039,7 +1044,8 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                         DishModelRow_ClientVersion(
                             viewModel: viewModel,
                             item: dish,
-                            rowColor:.seaTurtle_4) {
+                            rowColor:.seaTurtle_4,
+                            vistaEspansa: espanso) {
                                 preSelection.contains(dish)
                             } selectorAction: {
                                 test(value: dish)

@@ -184,7 +184,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     }
     
     /// Calcola se la preparazione è a base di carne, pesce, o verdure
- /*  public func calcolaBaseDellaPreparazione(readOnlyVM:FoodieViewModel) -> BasePreparazione {
+   public func calcolaBaseDellaPreparazione(readOnlyVM:FoodieViewModel) -> BasePreparazione {
         
         let allING = self.allIngredientsAttivi(viewModel: readOnlyVM)
         let allInGMapped = allING.map({$0.origine})
@@ -205,7 +205,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     
         return .carne
         
-    } */
+    }
     
    public func calcolaAllergeniNelPiatto(viewModel:FoodieViewModel) -> [AllergeniIngrediente] {
       
@@ -267,7 +267,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     }
     
     /// Controlla l'origine degli ingredienti e restituisce un array con le diete compatibili
-    func returnDietAvaible(viewModel:FoodieViewModel) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
+    public func returnDietAvaible(viewModel:FoodieViewModel) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
         
         let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
         
@@ -298,7 +298,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         else if animalOrFish.isEmpty {dieteOk.append(.vegetariano)}
         else {dieteOk.append(.standard) }
  
-        var dieteOkInStringa:[String] = dieteOk.map({$0.simpleDescription()})
+        let dieteOkInStringa:[String] = dieteOk.map({$0.simpleDescription()})
  
       /*  for diet in dieteOk {
             
