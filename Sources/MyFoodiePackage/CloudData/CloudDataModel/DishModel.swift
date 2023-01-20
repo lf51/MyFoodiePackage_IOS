@@ -171,6 +171,12 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         
     }
     
+    /// Questa Pre Call serve nei filtri perchè la proprietà nel filterCore è optional e quindi la pre trattiamo prima di chiamare il metodo principale
+    /// - Parameters:
+    ///   - viewModel: <#viewModel description#>
+    ///   - kpQuality: <#kpQuality description#>
+    ///   - quality: <#quality description#>
+    /// - Returns: <#description#>
     public func preCallHasAllIngredientSameQuality<T:MyProEnumPack_L0>(viewModel:FoodieViewModel,kpQuality:KeyPath<IngredientModel,T>,quality:T?) -> Bool {
         
         guard let unwrapQuality = quality else { return true }
@@ -179,7 +185,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         
     }
     
-     func hasAllIngredientSameQuality<T:MyProEnumPack_L0>(viewModel:FoodieViewModel,kpQuality:KeyPath<IngredientModel,T>,quality:T) -> Bool {
+    public func hasAllIngredientSameQuality<T:MyProEnumPack_L0>(viewModel:FoodieViewModel,kpQuality:KeyPath<IngredientModel,T>,quality:T) -> Bool {
         
         let allIngredient = self.allIngredientsAttivi(viewModel: viewModel)
         guard !allIngredient.isEmpty else { return false }
