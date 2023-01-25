@@ -18,9 +18,9 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
     public let titolo: String // deve avere un limite di caratteri
     public let commento: String
     public var dataRilascio: Date // Messo in Var per i test, riportare come let
-    public let image: String // 19.10 Togliere le virgolette di default.
+    public let rifImage: String // 19.10 Togliere le virgolette di default.
     
-    public init(/*id:String,*/voto: String, titolo: String, commento: String, idPiatto: String) {
+    public init(/*id:String,*/voto: String, titolo: String, commento: String,rifImage:String,idPiatto: String) {
         
         // Utile solo per i test. Il cliente business non crea recensioni.
         self.id = UUID().uuidString
@@ -29,7 +29,7 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
         self.titolo = titolo
         self.commento = commento
         self.rifPiatto = idPiatto
-        self.image = "circle"
+        self.rifImage = rifImage
         
         self.dataRilascio = Date()
     }
@@ -107,7 +107,7 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
         else { completingRate = 0.2 }//(8) min 0.2 max 0.75
         
         if self.titolo != "" { completingRate += 0.05 }
-        if self.image != "" { completingRate += 0.15 }
+        if self.rifImage != "" { completingRate += 0.15 }
         if self.commento != "" {
             
             let countChar = self.commento.replacingOccurrences(of: " ", with: "").count
