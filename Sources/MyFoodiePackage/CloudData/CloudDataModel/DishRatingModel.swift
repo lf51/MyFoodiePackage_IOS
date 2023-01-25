@@ -20,7 +20,7 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
     public var dataRilascio: Date // Messo in Var per i test, riportare come let
     public let rifImage: String // 19.10 Togliere le virgolette di default.
     
-    public init(/*id:String,*/voto: String, titolo: String, commento: String,rifImage:String,idPiatto: String) {
+    public init(/*id:String,*/voto: String, titolo: String, commento: String,rifImage:String = "circle",idPiatto: String) {
         
         // Utile solo per i test. Il cliente business non crea recensioni.
         self.id = UUID().uuidString
