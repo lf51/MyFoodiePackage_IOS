@@ -428,28 +428,28 @@ var rate7 = DishRatingModel(voto: "8.0", titolo: "", commento: "", idPiatto: "la
 var rate8 = {
     
     var rate = DishRatingModel(voto: "10.0", titolo: "", commento: "", idPiatto: "lailo5")
-    rate.dataRilascio = oldDate
+  //  rate.dataRilascio = oldDate
     return rate
 } ()
 
 var rate9 = {
     
     var rate = DishRatingModel(voto: "10.0", titolo: "", commento: "", idPiatto: "lailo5")
-    rate.dataRilascio = otherDate
+  //  rate.dataRilascio = otherDate
     return rate
 } ()
 
 var rate10 = {
     
     var rate = DishRatingModel(voto: "8.0", titolo: "", commento: "", idPiatto: "lailo5")
-    rate.dataRilascio = otherDate1
+  // rate.dataRilascio = otherDate1
     return rate
 } ()
 
 var rate11 = {
     
     var rate = DishRatingModel(voto: "8.0", titolo: "", commento: "", idPiatto: "lailo5")
-    rate.dataRilascio = otherDate2
+  //  rate.dataRilascio = otherDate2
     return rate
 } ()
 
