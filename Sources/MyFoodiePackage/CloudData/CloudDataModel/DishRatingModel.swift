@@ -14,11 +14,11 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
     public let id: String
     public let rifPiatto: String
     /// il voto deve essere un INT ma vine salvato come double : ex 8.0. Quindi nelle trasformazioni lo trattiamo come Double. Da Creare una ghera con i valori selezionabili prestabiliti
-    public let voto: String
-    public let titolo: String // deve avere un limite di caratteri
-    public let commento: String
-    public var dataRilascio: Date // Messo in Var per i test, riportare come let
-    public let rifImage: String // 19.10 Togliere le virgolette di default.
+    public var voto: String
+    public var titolo: String // deve avere un limite di caratteri
+    public var commento: String
+    public var rifImage: String // 19.10 Togliere le virgolette di default.
+    public let dataRilascio: Date // Messo in Var per i test, riportare come let
     
     public init(/*id:String,*/voto: String, titolo: String, commento: String,rifImage:String = "circle",idPiatto: String) {
         
@@ -32,6 +32,21 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
         self.rifImage = rifImage
         
         self.dataRilascio = Date()
+    }
+    
+    public init(rifDish:String) {
+        
+        self.id = UUID().uuidString
+        self.rifPiatto = rifDish
+        
+        self.voto = ""
+        self.titolo = ""
+        self.commento = ""
+        self.rifImage = "photo.on.rectangle.angled"
+        
+        self.dataRilascio = Date()
+        
+        
     }
     
     // MyProCloudPack_L1
@@ -82,7 +97,7 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
       
         if vote <= 6.0 { return Color.red }
         else if vote <= 8.0 { return Color.orange }
-        else if vote == 9.0 { return Color.yellow }
+        else if vote <= 9.0 { return Color.yellow }
         else { return Color.green }
         
     }
