@@ -9,14 +9,15 @@ import Foundation
 import SwiftUI
 //import Firebase
 
-public struct DishRatingModel: MyProStarterPack_L0,Codable {
+public struct DishRatingModel: MyProStarterPack_L0,MyProDescriptionPack_L0,Codable {
   
     public let id: String
     public let rifPiatto: String
     /// il voto deve essere un INT ma vine salvato come double : ex 8.0. Quindi nelle trasformazioni lo trattiamo come Double. Da Creare una ghera con i valori selezionabili prestabiliti
     public var voto: String
     public var titolo: String // deve avere un limite di caratteri
-    public var commento: String
+    public var commento: String = "" // 30.01.23 Deprecata per sostituzione con - descrizione -
+    public var descrizione: String
     public var rifImage: String // 19.10 Togliere le virgolette di default.
     public let dataRilascio: Date // Messo in Var per i test, riportare come let
     
@@ -28,6 +29,7 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
         self.voto = voto
         self.titolo = titolo
         self.commento = commento
+        self.descrizione = commento
         self.rifPiatto = idPiatto
         self.rifImage = rifImage
         
@@ -41,7 +43,7 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
         
         self.voto = ""
         self.titolo = ""
-        self.commento = ""
+        self.descrizione = ""
         self.rifImage = "photo.on.rectangle.angled"
         
         self.dataRilascio = Date()
