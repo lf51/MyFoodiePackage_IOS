@@ -97,10 +97,25 @@ public func csCleanAndOrderArray<T:MyProOrganizerPack_L0>(array:[T]) -> [T] {
    return lastStep
 }
 
-/// Pulisce la stringa da spazi duplici, e da puntiAcapo
-public func csStringCleaner(string:String,eliminaPuntoACapo:Bool = true) -> String {
+/// 06.02.23 In questo ultimo update lo string cleaner pulisce i punti a capo a inizio e fine testo. Quelli nel mezzo li lascia.
+public func csStringCleaner(string:String) -> String {
     
-    let firstStep = eliminaPuntoACapo ? string.replacingOccurrences(of: "\n", with: "") : string
+   // let firstStep = eliminaPuntoACapo ? string.replacingOccurrences(of: "\n", with: "") : string
+    
+    let firstStep:String = {
+       
+        var local = string
+        
+        while local.hasPrefix("\n") {
+            local.removeFirst()
+        }
+        
+        while local.hasSuffix("\n") {
+            local.removeLast()
+        }
+        
+        return local
+    }()
     
     let subStringaTesto = firstStep.split(separator: " ")
     let newStringaTesto: String = {
