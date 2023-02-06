@@ -98,9 +98,9 @@ public func csCleanAndOrderArray<T:MyProOrganizerPack_L0>(array:[T]) -> [T] {
 }
 
 /// Pulisce la stringa da spazi duplici, e da puntiAcapo
-public func csStringCleaner(string:String) -> String {
+public func csStringCleaner(string:String,eliminaPuntoACapo:Bool = true) -> String {
     
-    let firstStep = string.replacingOccurrences(of: "\n", with: "")
+    let firstStep = eliminaPuntoACapo ? string.replacingOccurrences(of: "\n", with: "") : string
     
     let subStringaTesto = firstStep.split(separator: " ")
     let newStringaTesto: String = {

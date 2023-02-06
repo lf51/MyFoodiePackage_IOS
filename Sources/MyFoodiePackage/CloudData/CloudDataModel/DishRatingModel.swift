@@ -9,12 +9,118 @@ import Foundation
 import SwiftUI
 //import Firebase
 
+public struct ReviewModel {
+
+    public var id: String
+    public let rifPiatto: String
+    
+    public var titolo: String?
+    public var descrizione: String?
+    public var rifImage: String?
+    
+    public var voto: RateModel
+    public let dataRilascio: Date
+
+    public init(rifDish:String,percorsoProdotto:DishModel.PercorsoProdotto) {
+        
+        self.id = UUID().uuidString
+        self.rifPiatto = rifDish
+
+        self.voto = RateModel(percorsoProdotto: percorsoProdotto)
+        self.dataRilascio = Date()
+        
+        
+    }
+    
+    
+    
+    
+    
+}
+
+public struct RateModel {
+    
+    public var presentazione:Double
+    public var cottura:Double
+    public var mpQuality:Double
+    public var succulenza:Double
+    public var gusto:Double
+
+    let pesoPresentazione:Double
+    let pesoCottura:Double
+    let pesoMpQuality:Double
+    let pesoSucculenza:Double
+    let pesoGusto:Double
+    
+    var sommaPesi:Double {
+        pesoPresentazione +
+        pesoCottura +
+        pesoMpQuality +
+        pesoSucculenza +
+        pesoGusto
+    } // la vogliamo sempre uguale a 10
+        
+    public var generale:Double {
+        
+        get {
+            
+           ((presentazione * pesoPresentazione) +
+            (cottura * pesoCottura) +
+            (mpQuality * pesoMpQuality) +
+            (succulenza * pesoSucculenza) +
+            (gusto * pesoGusto)) / sommaPesi
+            
+        }
+        
+        set {
+            
+            presentazione = newValue
+            cottura = newValue
+            mpQuality = newValue
+            succulenza = newValue
+            gusto = newValue
+        }
+    }
+    
+    public init(percorsoProdotto:DishModel.PercorsoProdotto) {
+        
+        switch percorsoProdotto {
+
+        case .preparazioneFood:
+            
+            pesoPresentazione = 1
+            pesoCottura = 1
+            pesoMpQuality = 3
+            pesoSucculenza = 2.5
+            pesoGusto = 2.5
+            
+        default:
+            
+            pesoPresentazione = 1.5
+            pesoCottura = 0.0
+            pesoMpQuality = 3.0
+            pesoSucculenza = 2.75
+            pesoGusto = 2.75
+        }
+        
+        self.presentazione = 10.0
+        self.cottura = 10.0
+        self.mpQuality = 10.0
+        self.succulenza = 10.0
+        self.gusto = 10.0
+        
+    }
+    
+   
+}
+
+
 public struct DishRatingModel: MyProStarterPack_L0,MyProDescriptionPack_L0,Codable {
   
     public let id: String
     public let rifPiatto: String
     /// il voto deve essere un INT ma vine salvato come double : ex 8.0. Quindi nelle trasformazioni lo trattiamo come Double. Da Creare una ghera con i valori selezionabili prestabiliti
-    public var voto: String
+    public var voto: String // 01.02.23 Deprecato. Da sostituire con un oggetto specifico, RateModel costruito nella FoodieClient
     public var titolo: String // deve avere un limite di caratteri
     public var commento: String = "" // 30.01.23 Deprecata per sostituzione con - descrizione -
     public var descrizione: String
@@ -143,4 +249,4 @@ public struct DishRatingModel: MyProStarterPack_L0,MyProDescriptionPack_L0,Codab
         return (theVote,completingRate)
     }
     
-}
+} // 03.02.23 BackUp
