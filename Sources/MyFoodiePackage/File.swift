@@ -109,6 +109,47 @@ open class FoodieViewModel:ObservableObject {
             })
     }
     
+    /// ritorna il numero di recensioni totali, quelle delle ultime 24h, la media totale, la media delle ulteme 10
+    public func monitorRecensioni(rifReview:[String]? = nil) -> (totali:Int,l24:Int,mediaGen:Double,ml10:Double) {
+        
+        let starter:[DishRatingModel]
+        
+        if rifReview == nil {
+            
+            starter = self.allMyReviews
+            
+        } else {
+            starter = self.modelCollectionFromCollectionID(collectionId: rifReview!, modelPath: \.allMyReviews)
+        }
+        
+        
+        let currentDate = Date()
+        let totalCount = starter.count //.0
+        
+        let last24Count = starter.filter({
+            $0.dataRilascio < currentDate &&
+            $0.dataRilascio > currentDate.addingTimeInterval(-86400)
+        }).count // .1
+        
+        let reviewByDate = starter.sorted(by: {$0.dataRilascio > $1.dataRilascio})
+        
+        let onlyLastTen = reviewByDate.prefix(10)
+        let onlyL10 = Array(onlyLastTen)
+        
+        let mediaGeneralePonderata = csCalcoloMediaRecensioni(elementi: starter) //.2
+        let mediaL10 = csCalcoloMediaRecensioni(elementi: onlyL10) //.3
+        
+        return (totalCount,last24Count,mediaGeneralePonderata,mediaL10)
+    }
+    
+    /// Torna tutti i rif delle recensioni che riguardano un determinato Piatto, o tutti i model
+    public func reviewFilteredByDish(idPiatto:String) -> (model:[DishRatingModel],rif:[String]) {
+        
+        let dishRevModel = self.allMyReviews.filter({$0.rifPiatto == idPiatto})
+        let dishRevRif = dishRevModel.map({$0.id})
+        return (dishRevModel,dishRevRif)
+        
+    }
     
     
 }

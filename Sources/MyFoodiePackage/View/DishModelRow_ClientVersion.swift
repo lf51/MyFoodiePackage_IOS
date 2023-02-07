@@ -443,7 +443,10 @@ public struct DishModelRow_ClientVersion: View {
     
     @ViewBuilder private func vbReviewLine() -> some View {
         
-        let (mediaRating,ratingCount,_) = self.item.ratingInfo(readOnlyViewModel: self.viewModel)
+      /*  let (mediaRating,ratingCount,_) = self.item.ratingInfo(readOnlyViewModel: self.viewModel) */
+        // Upgrade 07.02.23
+        let dishRevRif = self.viewModel.reviewFilteredByDish(idPiatto: self.item.id).rif
+        let (ratingCount,_,mediaRating,_) = self.viewModel.monitorRecensioni(rifReview: dishRevRif)
     
         let zeroCount = ratingCount == 0
         
@@ -460,11 +463,17 @@ public struct DishModelRow_ClientVersion: View {
                         .shadow(color: .seaTurtle_1, radius:3)
                 )
             
-            Text("\(ratingCount) recensioni") // valore da importare
+          /*  Image(systemName: "arrow.up.right")
+                 .imageScale(.medium)
+                 .fontWeight(.semibold)
+                 .foregroundColor(.seaTurtle_3)
+                 .opacity(zeroCount ? 0.2 : 1.0) */
+            
+         /*   Text("\(ratingCount) recensioni") // valore da importare
                     .italic()
                     .font(.headline)
                     .fontWeight(.semibold)
-                    .foregroundColor(.seaTurtle_2)
+                    .foregroundColor(.seaTurtle_2) */
  
             Button {
                 withAnimation {
@@ -472,11 +481,24 @@ public struct DishModelRow_ClientVersion: View {
                 }
             } label: {
                 
-                Image(systemName: "arrow.up.right")
-                    .imageScale(.medium)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.seaTurtle_3)
-                    .opacity(zeroCount ? 0.2 : 1.0)
+            
+                HStack(spacing:5) {
+                    
+                    Text("\(ratingCount) recensioni")
+                                .italic()
+                                .font(.headline)
+                                //.fontWeight(.semibold)
+                                .foregroundColor(.seaTurtle_2)
+
+                    Image(systemName: "arrow.up.right")
+                            .imageScale(.medium)
+                            //.fontWeight(.semibold)
+                            .foregroundColor(.seaTurtle_3)
+                            .opacity(zeroCount ? 0.2 : 1.0)
+                }
+                .fontWeight(.semibold)
+                .foregroundColor(.seaTurtle_3)
+                
                 
             }.disabled(zeroCount)
             
