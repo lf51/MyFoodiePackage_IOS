@@ -9,47 +9,44 @@ import Foundation
 
 public struct DishFormat:Hashable,Codable {
     
-    var id:String = "DishFormatPrice_NoneID" // Non serve. Non lo salviamo su firebase e quindi ne viene assegnato uno nuovo ogni volta
+    static public var modelloCorrente:[Self]?
+    
+    let id:String // Non serve. Non lo salviamo su firebase e quindi ne viene assegnato uno nuovo ogni volta
     
     public var label: String
     public var price: String
     
-    public let type: DishFormatType
+    public var type: DishFormatType
    
-    public init(type: DishFormatType) {
+    public init(type: DishFormatType) { // deprecato in futuro
+      
+        self.price = ""
         self.label = ""
+        self.type = type
+        self.id = UUID().uuidString
+    }
+    
+   /* public init(label:String? = nil) { // deprecata in futuro
+        
+        self.label = label ?? ""
+        self.price = ""
+        self.type = label == nil ? .mandatory : .opzionale
+        
+        self.id = UUID().uuidString
+        
+    }*/
+    
+    public init(label:String,type:DishFormatType) {// 12.02.23
+        
+        self.label = label
         self.price = ""
         self.type = type
-    }
         
-  /*  public init(frMapData: [String:Any]) {
+        self.id = UUID().uuidString
         
-        let typeInt = frMapData[DataBaseField.type] as? Int ?? 0
-        
-        self.label = frMapData[DataBaseField.label] as? String ?? ""
-        self.price = frMapData[DataBaseField.price] as? String ?? ""
-        self.type = DishFormatType.convertiInCase(fromNumber: typeInt)
     }
     
-    public func documentDataForFirebaseSavingAction() -> [String : Any] {
-        
-        let documentData:[String:Any] = [
-            DataBaseField.label : self.label,
-            DataBaseField.price : self.price,
-            DataBaseField.type : self.type.orderAndStorageValue()
-        ]
-        return documentData
-    }
-    
-    public struct DataBaseField {
-        
-        static let label = "label"
-        static let price = "price"
-        static let type = "type"
-        
-    } */
-    
-    
+            
 }
 
 public enum DishFormatType:Codable {
@@ -62,14 +59,47 @@ public enum DishFormatType:Codable {
         case .opzionale: return 1
         }
     }
-    
-   /* public static func convertiInCase(fromNumber: Int) -> DishFormatType {
-        switch fromNumber {
-        case 0: return .mandatory
-        default: return .opzionale
-        }
-    } */
-
 }
 
-
+/*
+public struct DishFormat:Hashable,Codable {
+    
+    static public var modelloCorrente:[Self]?
+    
+    let id:String // Non serve. Non lo salviamo su firebase e quindi ne viene assegnato uno nuovo ogni volta
+    
+    public var label: String // trasformare in optional
+    public var price: String // trasformare in double
+    
+    public var type: DishFormatType
+   
+    public init(type: DishFormatType) { // deprecato in futuro
+        self.label = ""
+        self.price = ""
+        self.type = type
+        
+        self.id = UUID().uuidString
+    }
+    
+    public init(label:String? = nil) { // deprecata in futuro
+        
+        self.label = label ?? ""
+        self.price = ""
+        self.type = label == nil ? .mandatory : .opzionale
+        
+        self.id = UUID().uuidString
+        
+    }
+    
+    public init(label:String,type:DishFormatType) {// 12.02.23
+        
+        self.label = label
+        self.price = ""
+        self.type = type
+        
+        self.id = UUID().uuidString
+        
+    }
+    
+            
+} */ // Backup 17.02.23

@@ -37,7 +37,7 @@ public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyP
     public var produzione: ProduzioneIngrediente = .defaultValue //
     public var provenienza: ProvenienzaIngrediente = .defaultValue //
     
-    public var allergeni: [AllergeniIngrediente] = [] //
+    public var allergeni: [AllergeniIngrediente]? //
     public var origine: OrigineIngrediente = .defaultValue //
     
     public var status: StatusModel = .bozza() //
@@ -109,7 +109,9 @@ public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyP
 
     public func conversioneAllergeniInt() -> [Int] {
         
-        let numAllergeni = self.allergeni.map({$0.orderAndStorageValue()})
+        guard let allergeneIn = self.allergeni else { return []}
+        
+        let numAllergeni = allergeneIn.map({$0.orderAndStorageValue()})
         return numAllergeni
         
     }
@@ -126,22 +128,25 @@ public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyP
     public func associaImmagine() -> (name:String,size:Image.Scale) {
         
         var allergeneDiServizio:AllergeniIngrediente = .defaultValue
+        //
+        let allergeneIn = self.allergeni ?? []
+        // 09.02.23 Modifica per farlo funzionare con l'optional che richiede di essere migliorata
         
         if self.origine == .animale {
             
-            if self.allergeni.contains(where: {
+            if allergeneIn.contains(where: {
                 
                 $0 == .pesce || $0 == .crostacei || $0 == .molluschi
                 
             }) { allergeneDiServizio = .pesce }
             
-            else if self.allergeni.contains(where: {
+            else if allergeneIn.contains(where: {
                 
                 $0 == .latte_e_derivati
                 
             }) { allergeneDiServizio = .latte_e_derivati }
             
-            else if self.allergeni.contains(where: {
+            else if allergeneIn.contains(where: {
                 
                 $0 == .uova_e_derivati
                 
@@ -151,7 +156,7 @@ public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyP
             
         } else {
             
-            if self.allergeni.contains(where: {
+            if allergeneIn.contains(where: {
                 
                 $0 == .glutine
                 
@@ -159,7 +164,7 @@ public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyP
                 return (allergeneDiServizio.imageAssociated(),.medium)
             }// { allergeneDiServizio = .glutine }
             
-            else if self.allergeni.contains(where: {
+            else if allergeneIn.contains(where: {
                 
                 $0 == .arachidi_e_derivati || $0 == .fruttaAguscio
                 

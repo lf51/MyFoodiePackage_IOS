@@ -205,8 +205,10 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         
         guard allInGMapped.contains(.animale) else { return .vegetale }
         
-        let allergeneIn = allING.map({$0.allergeni})
-        
+       // let allergeneIn = allING.map({$0.allergeni})
+       let allergeneIn = allING.compactMap({$0.allergeni})
+        // 09.02.23
+       
         for arrAll in allergeneIn {
             
             if arrAll.contains(where: {
@@ -228,7 +230,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         
              for ingredient in allIngredients {
                  
-                 let allergeneIngre:[AllergeniIngrediente] = ingredient.allergeni
+                 let allergeneIngre:[AllergeniIngrediente] = ingredient.allergeni ?? []
                  allergeniPiatto.append(contentsOf: allergeneIngre)
              }
 
@@ -296,8 +298,23 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         
         // step 1 ->
         let animalOrFish: [IngredientModel] = allModelIngredients.filter({$0.origine.returnTypeCase() == .animale})
-        let milkIn: [IngredientModel] = allModelIngredients.filter({$0.allergeni.contains(.latte_e_derivati)})
-        let glutenIn: [IngredientModel] = allModelIngredients.filter({$0.allergeni.contains(.glutine)})
+        
+        let milkIn: [IngredientModel] = allModelIngredients.filter({
+            
+            if let allergeniIn = $0.allergeni {
+               return allergeniIn.contains(.latte_e_derivati)
+            } else { return false }
+        
+          //  $0.allergeni.contains(.latte_e_derivati)
+        
+        })
+        
+        let glutenIn: [IngredientModel] = allModelIngredients.filter({
+           // $0.allergeni.contains(.glutine)
+            if let allergeniIn = $0.allergeni {
+               return allergeniIn.contains(.glutine)
+            } else { return false }
+        })
         
        /* for ingredient in allModelIngredients {
             
@@ -631,6 +648,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
                 return "E' il frutto della combinazione e/o lavorazione di uno o più ingredienti"
             }
         }
+        
     }
     
 }

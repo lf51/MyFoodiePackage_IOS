@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol MyProViewModelPack_L1:ObservableObject {
+/*public protocol MyProViewModelPack_L1:ObservableObject {
     
     var allMyIngredients:[IngredientModel] { get set }
     var allMyDish:[DishModel] { get set }
@@ -19,7 +19,7 @@ public protocol MyProViewModelPack_L1:ObservableObject {
     // associatedType V:MyProXXXX
     // var cloudDataStore: V { get set }
     
-}
+} */
 
 //protocol MyProXXX {
  //   associatedtype CodingKeys:String,CodingKey
@@ -27,14 +27,18 @@ public protocol MyProViewModelPack_L1:ObservableObject {
 
 open class FoodieViewModel:ObservableObject {
     
-    @Published public var cloudData:CloudDataStore?
+ //   @Published public var cloudData:CloudDataStore
     
-    public var allMyIngredients:[IngredientModel]
-    public var allMyDish:[DishModel]
-    public var allMyMenu:[MenuModel]
-    public var allMyProperties:[PropertyModel]
-    public var allMyCategories:[CategoriaMenu]
-    public var allMyReviews:[DishRatingModel]
+    // aggiungere compiler
+    @Published public var setupAccount: AccountSetup
+    @Published public var inventarioScorte: Inventario // pensare di metterla optional
+    
+    @Published public var allMyIngredients:[IngredientModel]
+    @Published public var allMyDish:[DishModel]
+    @Published public var allMyMenu:[MenuModel]
+    @Published public var allMyProperties:[PropertyModel]
+    @Published public var allMyCategories:[CategoriaMenu]
+    @Published public var allMyReviews:[DishRatingModel]
     
     public init(userUID:String? = nil) {
         
@@ -45,6 +49,10 @@ open class FoodieViewModel:ObservableObject {
         self.allMyCategories = []
         self.allMyReviews = []
  
+        self.setupAccount = AccountSetup()
+        self.inventarioScorte = Inventario()
+ 
+      //  self.cloudData = CloudDataStore(userUID: userUID)
     }
     
    // Methods
@@ -64,8 +72,10 @@ open class FoodieViewModel:ObservableObject {
         let name = model.intestazione
         var allergeniIn:Bool = false
         
-        if let ingredient = model as? IngredientModel {
-            allergeniIn = !ingredient.allergeni.isEmpty
+        if let ingredient = model as? IngredientModel,
+           ingredient.allergeni != nil {
+            
+            allergeniIn = !ingredient.allergeni!.isEmpty
         }
         
         return (isActive,name,allergeniIn)
@@ -100,9 +110,11 @@ open class FoodieViewModel:ObservableObject {
     /// Ritorna un menuDiSistema Attivo. Se non lo trova ritorna nil
    public func trovaMenuDiSistema(menuDiSistema:TipologiaMenu.DiSistema) -> MenuModel? {
         
+      // guard let data = self.cloudData else { return nil }
+       
         let tipologia:TipologiaMenu = menuDiSistema.returnTipologiaMenu()
         
-        return self.allMyMenu.first(where:{
+       return self.allMyMenu.first(where:{
                //  $0.tipologia.returnTypeCase() == tipologia &&
                  $0.tipologia == tipologia && // Vedi Nota 09.11
                  $0.isOnAir()
@@ -111,6 +123,8 @@ open class FoodieViewModel:ObservableObject {
     
     /// ritorna il numero di recensioni totali, quelle delle ultime 24h, la media totale, la media delle ulteme 10
     public func monitorRecensioni(rifReview:[String]? = nil) -> (totali:Int,l24:Int,mediaGen:Double,ml10:Double) {
+        
+        
         
         let starter:[DishRatingModel]
         

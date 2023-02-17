@@ -27,14 +27,13 @@ public protocol MyProStarterPack_L01:MyProStarterPack_L0 {
 
 public protocol MyProStarterPack_L1:MyProStarterPack_L0,MyProVMPack_L0 {
     
-    
-    
     var id: String { get set } // sovrascrive il livello zero per non crearci problemi con le enum. Dobbiamo chiarire se quei pochi casi in cui sovrasciviamo gli id possono essere risolti diversamente, o altrimenti facciamo un po' di ordine. Proprietà da considerarsi QUI TEMPORANEA
     
     var intestazione: String { get set } // esistono view che richiedono solo questo valore
     
   //  func returnModelTypeName() -> String // deprecata in futuro. inglobata nella viewModelContainerInstance // deprecata 15.09
     
+  
     func basicModelInfoInstanceAccess() -> (vmPathContainer: ReferenceWritableKeyPath<VM,[Self]>, nomeContainer: String, nomeOggetto:String, imageAssociated:String)
    
     
@@ -189,7 +188,7 @@ public protocol MyProCloudPack_L0 {
 
  public protocol MyProVMPack_L0 {
     
-     associatedtype VM:MyProViewModelPack_L1
+     associatedtype VM:FoodieViewModel
    
     
 }

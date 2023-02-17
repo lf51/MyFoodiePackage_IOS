@@ -138,7 +138,7 @@ public func csStringCleaner(string:String) -> String {
 /// ritorna il valore della media Pesata di un array di Recensioni
 public func csCalcoloMediaRecensioni(elementi:[DishRatingModel]) -> Double {
     
-    let votiEPesi = elementi.map({$0.votoEPeso()})
+    let votiEPesi = elementi.map({ ($0.voto.generale,$0.pesoRecensione()) })
        
         var sommaVoti: Double = 0.0
         var sommaPesi: Double = 0.0
@@ -146,6 +146,7 @@ public func csCalcoloMediaRecensioni(elementi:[DishRatingModel]) -> Double {
         for (v,p) in votiEPesi {
             
             let votoPesato = v * p
+            
             sommaVoti += votoPesato
             sommaPesi += p
         }

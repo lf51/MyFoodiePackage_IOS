@@ -855,7 +855,12 @@ public struct DishModelRow_ClientVersion: View {
             if let modelSostituto = self.viewModel.modelFromId(id: idSostituto, modelPath: \.allMyIngredients),
                modelSostituto.status.checkStatusTransition(check: .disponibile){
                 
-                let hasAllergene = !modelSostituto.allergeni.isEmpty
+              //  let hasAllergene = !modelSostituto.allergeni.isEmpty
+                let hasAllergene:Bool = {
+                    if let allergeneIn = modelSostituto.allergeni {
+                        return !allergeneIn.isEmpty
+                    } else { return false }
+                }()
                 let isItBio = modelSostituto.produzione == .biologico
                 let isFreeze = modelSostituto.conservazione == .congelato || modelSostituto.conservazione == .surgelato
 
@@ -936,7 +941,12 @@ public struct DishModelRow_ClientVersion: View {
         let allTemporaryOff = self.item.elencoIngredientiOff
         
         let isPrincipal = self.item.ingredientiPrincipali.contains(ingredient.id)
-        let hasAllergene = !ingredient.allergeni.isEmpty
+      //  let hasAllergene = !ingredient.allergeni.isEmpty
+        let hasAllergene:Bool = {
+            if let allergeneIn = ingredient.allergeni {
+                return !allergeneIn.isEmpty
+            } else { return false }
+        }()
         let isItBio = ingredient.produzione == .biologico
         let isFreeze = ingredient.conservazione == .congelato || ingredient.conservazione == .surgelato
    
@@ -1115,7 +1125,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
 var testAccount: FoodieViewModel = {
 
     var vm = FoodieViewModel()
-     vm.allMyMenu = [menuSample_Test,menuSample2_Test,menuSample3_Test,menuDelGiorno_Test,menuDelloChef_Test]
+  /*  vm.allMyMenu = [menuSample_Test,menuSample2_Test,menuSample3_Test,menuDelGiorno_Test,menuDelloChef_Test]
      vm.allMyDish = [dishItem2_Test,dishItem3_Test,dishItem4_Test,dishItem5_Test,prodottoFinito]
      vm.allMyIngredients = [ingredientSample_Test,ingredientSample2_Test,ingredientSample3_Test,ingredientSample4_Test,ingredientSample5_Test,ingredientSample6_Test,ingredientSample7_Test,ingredientSample8_Test,ingredienteFinito,ingredientSample9_Test]
    /* vm.inventarioScorte.ingInEsaurimento = [/*ingredientSample5_Test.id,*/ingredientSample6_Test.id,ingredientSample7_Test.id,ingredientSample8_Test.id]
@@ -1127,7 +1137,7 @@ var testAccount: FoodieViewModel = {
     vm.inventarioScorte.archivioIngInEsaurimento = [todayString:[ingredientSample5_Test.id]]
     vm.allMyReviews = [rate1,rate2,rate3,rate4,rate5,rate6,rate7,rate8,rate9,rate10,rate11,rate12]*/
     vm.allMyReviews = [rate1,rate2,rate3,rate4,rate5,rate6,rate7,rate8,rate9,rate10,rate11,rate12]
-    vm.allMyCategories = [cat1,cat2,cat3,cat4,cat5,cat6,cat7]
+    vm.allMyCategories = [cat1,cat2,cat3,cat4,cat5,cat6,cat7] */
     
    /* vm.remoteStorage.modelRif_deleted = [ingredientSample_Test.id:ingredientSample_Test.intestazione]
     vm.remoteStorage.modelRif_newOne = [menuSample_Test.id,dishItem3_Test.id]

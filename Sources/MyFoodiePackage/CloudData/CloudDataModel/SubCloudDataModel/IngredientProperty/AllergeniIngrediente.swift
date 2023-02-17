@@ -51,7 +51,11 @@ public enum AllergeniIngrediente:MyProStarterPack_L0,Codable/*MyProStarterPack_L
     case noValue // lo usiamo per avere un valore di default Nullo
  
     public var id: String { get { self.createId() } set { } }
-    
+        
+    public func returnTypeCase() -> AllergeniIngrediente {
+        return self 
+    }
+ 
     public func simpleDescription() -> String {
         
         switch self {
@@ -74,12 +78,6 @@ public enum AllergeniIngrediente:MyProStarterPack_L0,Codable/*MyProStarterPack_L
         
         }
         
-    }
-    
-  
-    
-    public func returnTypeCase() -> AllergeniIngrediente {
-        return self 
     }
     
     public func extendedDescription() -> String {
@@ -114,20 +112,21 @@ public enum AllergeniIngrediente:MyProStarterPack_L0,Codable/*MyProStarterPack_L
         
         switch self {
             
-        case .arachidi_e_derivati: return 1
-        case .fruttaAguscio: return 2
-        case .latte_e_derivati: return 3
-        case .molluschi: return 4
-        case .crostacei: return 5
-        case .pesce: return 6
-        case .uova_e_derivati: return 7
-        case .sesamo: return 8
-        case .soia: return 9
-        case .glutine: return 10
-        case .lupini: return 11
-        case .senape: return 12
-        case .sedano: return 13
-        case .anidride_solforosa_e_solfiti: return 14
+        case .arachidi_e_derivati: return 2
+        case .fruttaAguscio: return 4
+        case .latte_e_derivati: return 6
+        case .molluschi: return 8
+        case .crostacei: return 3
+        case .pesce: return 9
+        case .uova_e_derivati: return 14
+        case .sesamo: return 12
+        case .soia: return 13
+        case .glutine: return 5
+        case .lupini: return 7
+        case .senape: return 11
+        case .sedano: return 9
+        case .anidride_solforosa_e_solfiti: return 1
+            
         case .noValue: return 0
           
         }
@@ -166,7 +165,8 @@ public enum AllergeniIngrediente:MyProStarterPack_L0,Codable/*MyProStarterPack_L
             
             for ingredient in list {
                 
-                let allergeneIngre:[AllergeniIngrediente] = ingredient.allergeni
+                let allergeneIngre:[AllergeniIngrediente] = ingredient.allergeni ?? []
+                
                 allergeniPiatto.append(contentsOf: allergeneIngre)
             }
  

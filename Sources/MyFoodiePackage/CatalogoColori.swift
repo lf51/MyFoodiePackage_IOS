@@ -9,20 +9,6 @@ import Foundation
 import SwiftUI
 import UIKit
 
-/*public enum CatalogoColori:String {
-    
-    case seaTurtle_1 = "SeaTurtlePalette_1"
-    case seaTurtle_2 = "SeaTurtlePalette_2"
-    case seaTurtle_3 = "SeaTurtlePalette_3"
-    case seaTurtle_4 = "SeaTurtlePalette_4"
-    
-   public func color() -> Color {
-        
-        Color(self.rawValue,bundle: .module)
-        
-    }
-}*/ // deprecata 31.12.22 Sostituita dall'extension al Color
-
 public extension Color {
     
     static let seaTurtle_1 = Color("SeaTurtlePalette_1", bundle: .module)
