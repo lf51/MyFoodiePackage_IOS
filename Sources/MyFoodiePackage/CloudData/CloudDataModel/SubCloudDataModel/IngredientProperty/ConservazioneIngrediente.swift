@@ -43,7 +43,8 @@ public enum ConservazioneIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol
             return "potrebbe essere Surgelato"
         case .altro:
             return "è conservato fresco o in altro modo"
-        case .noValue: return ""
+        case .noValue:
+            return "Indicare metodo di conservazione"
 
         }
 

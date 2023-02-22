@@ -41,7 +41,7 @@ public enum ProduzioneIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, M
         case .biologico:
             return "Prodotto con metodo Biologico: Esclude l'utilizzo di prodotti di sintesi, salvo deroghe limitate e regolate."
         case .noValue:
-            return "Metodo di Produzione non specificato."
+            return "Nessuna etichetta di produzione specificata"
         }
      
     }

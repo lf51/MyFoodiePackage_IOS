@@ -54,7 +54,6 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     public var status: StatusModel
     public var pricingPiatto:[DishFormat]
 
-    
     public init() {
         
         self.percorsoProdotto = .preparazioneFood
@@ -69,7 +68,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         self.categoriaMenu = CategoriaMenu.defaultValue.id
         self.mostraDieteCompatibili = false
         self.status = .bozza()
-        self.pricingPiatto = []
+        self.pricingPiatto = DishFormat.customInit()
         
     }
 
@@ -601,7 +600,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
             switch self {
                 
             case .prodottoFinito:
-                return "Prodotto Finito"
+                return "Prodotto di Terzi"
             case .preparazioneFood:
                 return "Piatto"
             case .preparazioneBeverage:
@@ -643,9 +642,9 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
             
             switch self {
             case .prodottoFinito:
-                return "Trattasi di un prodotto pronto che non richiede altri ingredienti per essere servito"
+                return "Prodotto pronto acquistato da terzi"
             default:
-                return "E' il frutto della combinazione e/o lavorazione di uno o più ingredienti"
+                return "Combinazione e/o lavorazione in loco di uno o più ingredienti"
             }
         }
         

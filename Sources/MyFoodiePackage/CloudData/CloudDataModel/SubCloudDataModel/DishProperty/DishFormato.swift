@@ -10,15 +10,22 @@ import Foundation
 public struct DishFormat:Hashable,Codable {
     
     static public var modelloCorrente:[Self]?
+    static func customInit() -> [Self] {
+        
+        guard let current = modelloCorrente else {
+            return [DishFormat(type: .mandatory)]
+        }
+        return current
+    }
     
-    let id:String // Non serve. Non lo salviamo su firebase e quindi ne viene assegnato uno nuovo ogni volta
+    let id:String
     
     public var label: String
     public var price: String
     
     public var type: DishFormatType
    
-    public init(type: DishFormatType) { // deprecato in futuro
+    public init(type: DishFormatType) {
       
         self.price = ""
         self.label = ""

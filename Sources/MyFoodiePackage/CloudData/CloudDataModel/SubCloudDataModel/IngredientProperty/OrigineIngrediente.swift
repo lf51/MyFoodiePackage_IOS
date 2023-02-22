@@ -37,7 +37,7 @@ public enum OrigineIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEn
         case .vegetale:
             return "Ingrediente di Origine Vegetale"
         case .noValue:
-            return ""
+            return "Indicare origine del prodotto"
         }
     }
     

@@ -38,8 +38,8 @@ public struct DishModelRow_ClientVersion: View {
         rowOpacity:CGFloat = 0.0,
         rowBoundReduction:CGFloat = 20,
         vistaEspansa:Bool = false,
-        isSelectedActionCheck:() -> Bool,
-        selectorAction:@escaping () -> Void,
+        isSelectedActionCheck:() -> Bool = {false},
+        selectorAction:@escaping () -> Void = {},
         reviewButton:@escaping () -> Void) {
         
         self.isItemIbrido = {
@@ -134,6 +134,7 @@ public struct DishModelRow_ClientVersion: View {
                 } // Close VStack
            
                     vbSelector()
+                    .disabled(selectorAction() == {}())
             
             } // close ZStack Interno
            // .padding(.horizontal,10)

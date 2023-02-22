@@ -28,7 +28,7 @@ public enum ProvenienzaIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, 
         switch self {
             
         case .km0: return "Km zero"
-        case .italia: return "Italia"
+        case .italia: return "Made in Italy"
         case .europa: return "UE"
         case .restoDelMondo: return "Extra UE"
         case .noValue: return "None"
@@ -37,8 +37,16 @@ public enum ProvenienzaIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, 
         }
     
     public func extendedDescription() -> String {
-        print("Dentro ProvenienzaIngrediente. DescrizioneEstesa non sviluppata")
-        return ""
+       
+        switch self {
+        case .km0:
+            return "Prodotto di qualità locale"
+        case .italia:
+            return "Prodotto di qualità italiana"
+        default:
+            return "Nessuna etichetta di luogo specificata"
+        }
+
     }
     
     func createId() -> String {

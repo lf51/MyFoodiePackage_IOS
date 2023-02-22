@@ -39,7 +39,7 @@ public struct DishRatingListView: View {
     }
     
   //  @State var opac:CGFloat = 1.0
-    @State private var frames:[CGRect] = []
+    @State private var frames:[CGRect]? = []
     
     public var body: some View {
        
@@ -56,9 +56,7 @@ public struct DishRatingListView: View {
                         .font(.system(.subheadline, design: .rounded, weight: .light))
                     
                    Spacer()
-                    
-                  
-                        
+
                         vbRatingvote()
                         
                 }
@@ -79,8 +77,8 @@ public struct DishRatingListView: View {
                                 DishRating_RowView(
                                     rating: rate,
                                     backgroundColorView: backgroundColorView,
-                                frames: $frames,
-                                coordinateSpace: "RatingList")
+                                    frames: $frames,
+                                    coordinateSpace: "RatingList")
                                     
                                 
                             }
