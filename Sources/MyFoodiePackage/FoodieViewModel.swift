@@ -123,9 +123,7 @@ open class FoodieViewModel:ObservableObject {
     
     /// ritorna il numero di recensioni totali, quelle delle ultime 24h, la media totale, la media delle ulteme 10
     public func monitorRecensioni(rifReview:[String]? = nil) -> (totali:Int,l24:Int,mediaGen:Double,ml10:Double) {
-        
-        
-        
+
         let starter:[DishRatingModel]
         
         if rifReview == nil {
@@ -135,7 +133,6 @@ open class FoodieViewModel:ObservableObject {
         } else {
             starter = self.modelCollectionFromCollectionID(collectionId: rifReview!, modelPath: \.allMyReviews)
         }
-        
         
         let currentDate = Date()
         let totalCount = starter.count //.0
