@@ -73,6 +73,7 @@ public protocol MyProStatusPack_L0 {
     
     var status: StatusModel { get set }
     func modelStatusDescription() -> String
+
 }
 
 /// ST = Status Transition / DPV = DestinationPathView

@@ -268,9 +268,6 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
      
     }
     
-    
-
-    
     // New 02.1.23
     
     /// Analizza gli ingredienti per verificare se ce ne sia almeno uno che ha la qualità richiesta
@@ -464,13 +461,13 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     }
     
     /// Ritorna tutti i rif degli ingredienti contenuti nel piatto, senza badare allo status, ritorna i principali, i secondari, e i sostituti
-    private func allIngredientsRif() -> [String] {
+    public func allIngredientsRif() -> [String] {
         
         let allIDSostituti = self.elencoIngredientiOff.values
         let allTheIngredients = self.ingredientiPrincipali + self.ingredientiSecondari + allIDSostituti
         
         return allTheIngredients
-    }
+    } // 16.03.23 Probabile fonte di bug qualora un ingrediente sostituito torni disponibile il suo sostituto non ci interessa nel monitor di servizio
     
     /// Controlla la presenza dell'idIngrediente sia fra gl iingredienti Principali e Secondari, sia fra i sostituti
     public func checkIngredientsIn(idIngrediente:String) -> Bool {

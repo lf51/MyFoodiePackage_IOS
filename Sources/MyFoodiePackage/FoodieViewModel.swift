@@ -91,7 +91,7 @@ open class FoodieViewModel:ObservableObject {
              
              if let model = modelFromId(id: id, modelPath: modelPath) {modelCollection.append(model)}
          }
-
+       
         return modelCollection
 
      }

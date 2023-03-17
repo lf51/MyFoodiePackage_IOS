@@ -45,6 +45,18 @@ public func csTimeFormatter() -> (ora:DateFormatter,data:DateFormatter) {
     
 }
 
+/// Compare due date in forma stringa: Utile per le closure Sort in ordine crescente (<)
+public func csCompareDateString(lhs:String,rhs:String) -> Bool {
+    
+    let lhsDate = csTimeFormatter().data.date(from: lhs)
+    let rhsDate = csTimeFormatter().data.date(from: rhs)
+    
+    guard let dateLhs = lhsDate,
+          let dateRhs = rhsDate else { return false }
+    return dateLhs < dateRhs
+    
+}
+
 /// estrapola l'ora da una data e la trasforma in un numero Assoluto (è il numero di minuti totale) utile per un confronto fra orari
 public func csTimeConversione(data:Date) -> Int {
     

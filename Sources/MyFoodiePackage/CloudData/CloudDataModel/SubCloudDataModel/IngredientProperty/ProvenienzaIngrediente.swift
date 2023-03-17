@@ -36,6 +36,17 @@ public enum ProvenienzaIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, 
             }
         }
     
+    public func shortDescription() -> String { // creata per la lista della spesa
+        
+        switch self {
+            
+        case .km0: return "Km0"
+        case .italia: return "Italia"
+        default: return "no quality Value"
+            
+            }
+    }
+    
     public func extendedDescription() -> String {
        
         switch self {

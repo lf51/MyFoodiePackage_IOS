@@ -44,7 +44,7 @@ public enum StatusTransition:MyProEnumPack_L0,Equatable,Codable {
         }
     }
     
-    func colorAssociated() -> Color {
+    public func colorAssociated() -> Color {
         
         switch self {
             
@@ -70,7 +70,7 @@ public enum StatusModel:Equatable,Codable { // vedi Nota Consegna 17.07
         case .bozza:
            return "hammer.circle.fill"//"doc.badge.gearshape" //  // moon.fill
         case .completo:
-            return "circle.dashed.inset.filled"//"circle.fill"
+            return "circle.fill"//"circle.dashed.inset.filled"//"circle.fill"
         }
     }
     

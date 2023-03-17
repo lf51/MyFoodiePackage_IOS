@@ -289,11 +289,11 @@ public struct Inventario:Equatable,Codable {
             case .inStock:
                 return "in Stock"
             case .inEsaurimento:
-                return "ai minimi"
+                return "ai Minimi"
             case .esaurito:
-                return "terminate"
+                return "Terminate"
             case .inArrivo:
-                return "in arrivo"
+                return "in Arrivo"
             }
         }
         
@@ -321,7 +321,7 @@ public struct Inventario:Equatable,Codable {
             switch self {
                 
             case .inStock:
-                return Color("SeaTurtlePalette_3")
+                return .seaTurtle_3
             case .inEsaurimento:
                 return .yellow.opacity(0.7)
             case .esaurito:
@@ -330,6 +330,21 @@ public struct Inventario:Equatable,Codable {
                 return .green.opacity(0.7)
             }
             
+        }
+        
+        public func coloreAssociatoNotOpacity() -> Color {
+            
+            switch self {
+                
+            case .inStock:
+                return .seaTurtle_3
+            case .inEsaurimento:
+                return .yellow
+            case .esaurito:
+                return .red
+            case .inArrivo:
+                return .green
+            }
         }
     }
 }
