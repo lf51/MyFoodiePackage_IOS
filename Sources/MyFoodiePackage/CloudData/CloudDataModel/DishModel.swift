@@ -574,13 +574,14 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     
     public enum PercorsoProdotto:MyProEnumPack_L0,Codable {
 
-        public static var allCases:[PercorsoProdotto] = [.preparazioneFood,.preparazioneBeverage,.prodottoFinito]
+        public static var allCases:[PercorsoProdotto] = [.preparazioneFood,.preparazioneBeverage,.composizione,.prodottoFinito]
         
         case prodottoFinito //= "Prodotto Finito"
         case preparazioneFood //= "Piatto" // case standard di default
         case preparazioneBeverage //= "Drink"
+        case composizione //composizione di piatti e/o ingredienti indicati in forma descrittiva. Es: Tris Caldo:Arancine,panelle,crocket // Nota 23.06.23
         
-        public func imageAssociated() -> String {
+      /* public func imageAssociated() -> String {
             switch self {
             case .prodottoFinito:
                 return "🧃"
@@ -588,6 +589,38 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
                 return "fork.knife.circle"
             case .preparazioneBeverage:
                 return "wineglass"
+            case .composizione:
+                return "takeoutbag.and.cup.and.straw"
+                
+            }
+        } */ // deprecata 24.06.23
+        
+        public func imageAssociated() -> (system:String,color:Color) {
+            
+            switch self {
+            case .prodottoFinito:
+                return ("takeoutbag.and.cup.and.straw",Color.gray)
+            case .preparazioneFood:
+                return ("fork.knife",Color.yellow)
+            case .preparazioneBeverage:
+                return ("wineglass",Color.orange)
+            case .composizione:
+                return ("swatchpalette",Color.mint)
+                
+            }
+        }
+        
+        public func pickerDescription() -> String {
+            
+            switch self {
+            case .prodottoFinito:
+                return "Pronto"
+            case .preparazioneFood:
+                return "Food"
+            case .preparazioneBeverage:
+                return "Beverage"
+            case .composizione:
+                return "Composto"
                 
             }
         }
@@ -602,6 +635,8 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
                 return "Piatto"
             case .preparazioneBeverage:
                 return "Drink"
+            case .composizione:
+                return "Composizione"
                 
             }
             
@@ -621,6 +656,8 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
                 return 1
             case .preparazioneBeverage:
                 return 2
+            case .composizione:
+                return 3
                 
             }
         }
@@ -639,9 +676,14 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
             
             switch self {
             case .prodottoFinito:
-                return "Prodotto pronto acquistato da terzi"
-            default:
-                return "Combinazione e/o lavorazione in loco di uno o più ingredienti"
+                return "Prodotto pronto acquistato da terzi. Es: CocaCola"
+            case .composizione:
+                return "Composizione di piatti in porzioni ridotte, ingredienti variabili, ecc... Es: Tagliere di Salumi e Formaggi locali "
+            case .preparazioneBeverage:
+                return "Combinazione e/o lavorazione in loco di uno o più ingredienti in forma liquida."
+            case .preparazioneFood:
+                return "Combinazione e/o lavorazione in loco di uno o più ingredienti in forma solida."
+                
             }
         }
         

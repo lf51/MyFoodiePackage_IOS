@@ -83,8 +83,8 @@ public struct DishRating_RowView: View {
                    .opacity(0.4)
            }
           // .sticky(frames, coordinateSpace: coordinateSpace)
-            .modifierIf(isStickyActive, transform: { view in
-                view.sticky(frames!, coordinateSpace: coordinateSpace!)
+            .csModifier(isStickyActive, transform: { view in
+                view.csSticky(frames!, coordinateSpace: coordinateSpace!)
             })
            .padding(.bottom,10)
             
