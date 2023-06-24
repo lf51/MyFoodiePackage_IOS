@@ -517,7 +517,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     
     /// ritorna true se tutte le proprietà optional sono state compilate, e dunque il modello è completo.
     public func optionalComplete() -> Bool {
-        
+            
         self.descrizione != "" &&
         self.mostraDieteCompatibili &&
         !self.ingredientiPrincipali.isEmpty
@@ -574,7 +574,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     
     public enum PercorsoProdotto:MyProEnumPack_L0,Codable {
 
-        public static var allCases:[PercorsoProdotto] = [.preparazioneFood,.preparazioneBeverage,.composizione,.prodottoFinito]
+        public static var allCases:[PercorsoProdotto] = [.preparazioneFood,.preparazioneBeverage,.prodottoFinito,composizione]
         
         case prodottoFinito //= "Prodotto Finito"
         case preparazioneFood //= "Piatto" // case standard di default
