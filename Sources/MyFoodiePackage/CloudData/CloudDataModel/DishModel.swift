@@ -54,6 +54,12 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     public var status: StatusModel
     public var pricingPiatto:[DishFormat]
 
+    /*
+     // 25.06.23 Serirebbe public init(percorso:PercorsoProdotto){ }
+     // Ma non lo abbiamo implementato perchè ci da una serie di errori sparsi che non comprendiamo. Abbiamo anche provato a implementarlo nella extensione. Non è essenziale, è solo per fare maggiore ordine
+     
+     */
+    
     public init() {
         
         self.percorsoProdotto = .preparazioneFood
@@ -66,7 +72,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         self.elencoIngredientiOff = [:]
         self.idIngredienteDaSostituire = nil
         self.categoriaMenu = CategoriaMenu.defaultValue.id
-        self.mostraDieteCompatibili = false
+        self.mostraDieteCompatibili = true 
         self.status = .bozza()
         self.pricingPiatto = DishFormat.customInit()
         
@@ -287,8 +293,11 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         
     }
     
-    /// Controlla l'origine degli ingredienti e restituisce un array con le diete compatibili
-    public func returnDietAvaible(viewModel:FoodieViewModel) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
+    /// Controlla l'origine degli ingredienti e restituisce un array con le diete compatibili. Il byPass di default su false, se true byPassa la scelta dell'utente di mostrare o meno le diete e calcola le compatibilità
+    public func returnDietAvaible(viewModel:FoodieViewModel,byPassShowCompatibility:Bool = false) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
+        
+        // Step 0 -> controlliamo che l'utente abbia scelto o meno di mostrare le diete. In caso negativo mandiamo la dieta standard
+        guard self.mostraDieteCompatibili || byPassShowCompatibility else { return ([TipoDieta.standard],[TipoDieta.standard.simpleDescription()])}
         
         let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
         
@@ -298,42 +307,59 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         let milkIn: [IngredientModel] = allModelIngredients.filter({
             
             if let allergeniIn = $0.allergeni {
-               return allergeniIn.contains(.latte_e_derivati)
+                return allergeniIn.contains(.latte_e_derivati)
             } else { return false }
-        
-          //  $0.allergeni.contains(.latte_e_derivati)
-        
+            
+            //  $0.allergeni.contains(.latte_e_derivati)
+            
         })
         
         let glutenIn: [IngredientModel] = allModelIngredients.filter({
-           // $0.allergeni.contains(.glutine)
+            // $0.allergeni.contains(.glutine)
             if let allergeniIn = $0.allergeni {
-               return allergeniIn.contains(.glutine)
+                return allergeniIn.contains(.glutine)
             } else { return false }
         })
         
-       /* for ingredient in allModelIngredients {
-            
-            if ingredient.origine == .animale {
-                
-                if ingredient.allergeni.contains(.latte_e_derivati) { milkIn.append(ingredient) }
-                
-                else { animalOrFish.append(ingredient) }
-                        }
-
-            if ingredient.allergeni.contains(.glutine) { glutenIn.append(ingredient)}
-        } */
+        /* for ingredient in allModelIngredients {
+         
+         if ingredient.origine == .animale {
+         
+         if ingredient.allergeni.contains(.latte_e_derivati) { milkIn.append(ingredient) }
+         
+         else { animalOrFish.append(ingredient) }
+         }
+         
+         if ingredient.allergeni.contains(.glutine) { glutenIn.append(ingredient)}
+         } */
         
         // step 2 -->
         
         var dieteOk:[TipoDieta] = []
         
         if glutenIn.isEmpty {dieteOk.append(.glutenFree)}
-        if milkIn.isEmpty && animalOrFish.isEmpty {dieteOk.append(contentsOf: [.vegano,.vegariano,.vegetariano])}
-        else if milkIn.isEmpty { dieteOk.append(.vegariano)}
-        else if animalOrFish.isEmpty {dieteOk.append(.vegetariano)}
-        else {dieteOk.append(.standard) }
- 
+        
+        /*  if milkIn.isEmpty && animalOrFish.isEmpty {dieteOk.append(contentsOf: [.vegano,.vegariano,.vegetariano])}
+         else if milkIn.isEmpty { dieteOk.append(.vegariano)}
+         else if animalOrFish.isEmpty {dieteOk.append(.vegetariano)}
+         else {dieteOk.append(.standard) } */ // 25.06 bug dieta vegetariana
+        
+        // Soluzione bug 25.06
+        
+        let animalCount = animalOrFish.count
+        let milkCount = milkIn.count
+        
+        if (animalCount + milkCount) == 0 {
+            dieteOk.append(contentsOf: [.vegano,.vegariano,.vegetariano])
+        }
+        else if milkCount == 0 { dieteOk.append(.vegariano) }
+        else if (animalCount - milkCount) == 0 { dieteOk.append(.vegetariano) }
+       // else { dieteOk.append(.standard) }
+        
+        else if dieteOk.isEmpty { dieteOk.append(.standard) }
+        
+        // fine soluzione bug
+        
         let dieteOkInStringa:[String] = dieteOk.map({$0.simpleDescription()})
  
       /*  for diet in dieteOk {
@@ -562,11 +588,11 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
             
             switch self {
             case .vegetale:
-                return "🥗"
+                return "🥬"
             case .carne:
-                return "🥩"
+                return "🐂"
             case .pesce:
-                return "🍤"
+                return "🐟"
             }
 
         }

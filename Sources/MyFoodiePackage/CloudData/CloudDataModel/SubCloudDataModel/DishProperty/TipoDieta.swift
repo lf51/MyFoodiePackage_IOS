@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 public enum TipoDieta:Identifiable,MyProEnumPack_L0 /*: MyEnumProtocol,MyEnumProtocolMapConform*/ {
 
@@ -96,6 +97,23 @@ public enum TipoDieta:Identifiable,MyProEnumPack_L0 /*: MyEnumProtocol,MyEnumPro
             return 3
         case .glutenFree:
             return 4
+        }
+    }
+    
+    public func coloreAssociato() -> Color {
+        
+        switch self {
+            
+        case .standard:
+            return Color.black
+        case .vegetariano:
+            return Color.yellow
+        case .vegariano:
+            return Color.teal
+        case .vegano:
+            return Color.green
+        case .glutenFree:
+            return Color.orange
         }
     }
     

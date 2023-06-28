@@ -55,7 +55,7 @@ public enum OrigineIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEn
         case .animale:
             return "🐂"
         case .vegetale:
-            return "🌱"
+            return "🥬"
         case .noValue:
             return "circle.slash"
         }

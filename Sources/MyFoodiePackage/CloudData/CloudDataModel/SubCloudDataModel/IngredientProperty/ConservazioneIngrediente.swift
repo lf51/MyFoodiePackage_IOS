@@ -9,13 +9,14 @@ import Foundation
 
 public enum ConservazioneIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform */{
     
-    public static var allCases: [ConservazioneIngrediente] = [.altro,.congelato,.surgelato]
+    public static var allCases: [ConservazioneIngrediente] = [.fresco,.congelato,.surgelato,.altro]
     public static var defaultValue: ConservazioneIngrediente = .noValue // deprecato in futuro togliere dal protocollo
     
     public var id: String {self.createId()}
 
     case congelato
     case surgelato
+    case fresco
     case altro
     case noValue
  
@@ -26,6 +27,7 @@ public enum ConservazioneIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol
 
         case .surgelato: return "Surgelato"
         case .congelato: return "Congelato"
+        case .fresco: return "Fresco"
         case .altro: return "Altro"
         case .noValue: return ""
             
@@ -41,8 +43,10 @@ public enum ConservazioneIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol
             return "potrebbe essere Congelato"
         case .surgelato:
             return "potrebbe essere Surgelato"
+        case .fresco:
+            return "prodotto fresco"
         case .altro:
-            return "è conservato fresco o in altro modo"
+            return "metodo di conservazione generico"
         case .noValue:
             return "Indicare metodo di conservazione"
 
@@ -64,8 +68,10 @@ public enum ConservazioneIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol
             return "🥶"
         case .surgelato:
             return "❄️"
+        case .fresco:
+            return "🌱"
         case .altro:
-            return "☀️"//"🌞"//"🌀" //heart"
+            return "🥫"//☀️"//"🌞"//"🌀" //heart"
         case .noValue:
             return "circle.slash"
    
@@ -81,6 +87,8 @@ public enum ConservazioneIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol
             return 2
         case .surgelato:
             return 1
+        case .fresco:
+            return 4
         case .altro:
             return 3
         case .noValue:
