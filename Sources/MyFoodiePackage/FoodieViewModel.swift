@@ -117,7 +117,7 @@ open class FoodieViewModel:ObservableObject {
        return self.allMyMenu.first(where:{
                //  $0.tipologia.returnTypeCase() == tipologia &&
                  $0.tipologia == tipologia && // Vedi Nota 09.11
-                 $0.isOnAir()
+                 $0.isOnAirValue().today
             })
     }
     

@@ -28,7 +28,7 @@ public struct AccountSetup: Codable {
     public init() {
         
         self.id = "userSetup"
-        self.startCountDownMenuAt = .sixty
+        self.startCountDownMenuAt = .trenta
         self.autoPauseDish_byPauseING = .sempre
         self.autoPauseDish_byDeleteING = .sempre
         self.autoPauseDish_byArchiveING = .sempre
@@ -106,9 +106,9 @@ public struct AccountSetup: Codable {
     }
     
     public enum TimeValue:Int,Codable {
-        
+        //04.07.23 Abbiamo deciso di deprecare la scelta e impostare un unico tempo a 30 minuti. Tenere presente che questo data è utilizzato per il nextCheck del timer nei Menu. E' una scelta senza sensa, per cui uniformia con un valore di 30. Punto. Vedere se c'è nota vocale di spiegazione
        public static var allCases:[TimeValue] = [.quarter,.trenta,.fortyfive,.sixty,.seventyFive,.novanta,.twoHour]
-       public static var defaultValue:TimeValue = .sixty
+       public static var defaultValue:TimeValue = .trenta
         
         case quarter = 15
         case trenta = 30

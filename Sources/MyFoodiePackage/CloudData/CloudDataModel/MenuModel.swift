@@ -187,28 +187,91 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
     // Metodi riguardanti la programmazione - onLine vs offLine
     
     /// Di default il check del timeRange viene effettuato. Se messo su false non viene eseguito e dunque viene controllato solo la compatibilità con i giorni. Utile per il monitor Servizio
-    public func isOnAir(checkTimeRange:Bool = true) -> Bool {
+    private func isOnAir() -> MenuModel.CodiceOnOffLive {
         
         // !! VEDI NOTA VOCALE 17.09 !! UPDATE 03.10 - Nota Vocale !!
         
-        guard self.status.checkStatusTransition(check: .disponibile) else { return false }
+        guard self.status.checkStatusTransition(check: .disponibile) else { return .offByStatus }
         
         switch self.isAvaibleWhen {
             
         case .dataEsatta:
-            return isOnAirDataEsatta(checkTimeRange: checkTimeRange)
+            return isOnAirDataEsatta()
         case .intervalloChiuso:
-            return isOnAirClosedRange(checkTimeRange: checkTimeRange)
+            return isOnAirClosedRange()
         case .intervalloAperto:
-            return isOnAirOpenRange(checkTimeRange: checkTimeRange)
+            return isOnAirOpenRange()
         case .noValue:
-            return false
+            return .scadutoForEver//non dovrebbe mai verificarsi
             
         }
         
     }
+    
+    private func isOnAirDataEsatta() -> MenuModel.CodiceOnOffLive {
+        
+        let calendario = Calendar(identifier: .gregorian)
+        let isSame = calendario.isDateInToday(self.dataInizio)
+        
+        guard isSame else {
+     
+            let isPasted = isInsideFromTheStartDay() // darebbe un => ma l'uguale non lo considera perchè se è uguale il guard continua
+            if isPasted { return .scadutoForEver}
+            else { return .inProgrammaNextDays}
+                }
+        
+        let timeRange = isOnTimeRange()
+        
+        return timeRange
+        
+    }
+    
+    private func isOnAirOpenRange() -> MenuModel.CodiceOnOffLive { // lf51 18.09.22
+        
+        let(_,_,currentDay) = dateCalendario()
+        let giorniServizioIntegerMap = self.giorniDelServizio.map({$0.orderAndStorageValue()})
+        
+        let isInTheRange = isInsideFromTheStartDay()
+        
+        guard isInTheRange else {
+            return .inProgrammaNextDays
+        }
+        
+        let isTheDay = giorniServizioIntegerMap.contains(currentDay.weekday!)
+        
+        guard isTheDay else {
+            return .inProgrammaNextDays
+        }
+        
+        let timeRange = isOnTimeRange()
+        return timeRange
+
+    }
+    
+    private func isOnAirClosedRange() -> MenuModel.CodiceOnOffLive { // lf51 18.09.22
+        
+        let(_,_,currentDay) = dateCalendario()
+        let giorniServizioIntegerMap = self.giorniDelServizio.map({$0.orderAndStorageValue()})
+        
+        let isIn = isInsideFromTheStartDay()
+        
+        guard isIn else { return .inProgrammaNextDays }
+        
+        let isInByTheEnd = isInsideByTheEnd()
+        
+        guard isInByTheEnd else { return .scadutoForEver }
+        
+        let isTheDay = giorniServizioIntegerMap.contains(currentDay.weekday!)
+        
+        guard isTheDay else { return .inProgrammaNextDays }
+        
+        let timeRange = isOnTimeRange()
+        
+        return timeRange
+
+    }
  
-    private func isOnAirClosedRange(checkTimeRange:Bool) -> Bool { // lf51 18.09.22
+   /* private func isOnAirClosedRange(checkTimeRange:Bool) -> Bool { // lf51 18.09.22
         
         let(_,endDay,currentDay) = dateCalendario()
         let giorniServizioIntegerMap = self.giorniDelServizio.map({$0.orderAndStorageValue()})
@@ -228,24 +291,24 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
         
         return currentDay.day! <= endDay.day!
         
-        
-    }
+    }*/ // deprecata 03.07.23
     
-    private func isOnAirOpenRange(checkTimeRange:Bool) -> Bool { // lf51 18.09.22
+   /* private func isOnAirOpenRange(checkTimeRange:Bool) -> Bool { // lf51 18.09.22
         
         let(_,_,currentDay) = dateCalendario()
         let giorniServizioIntegerMap = self.giorniDelServizio.map({$0.orderAndStorageValue()})
         
         guard giorniServizioIntegerMap.contains(currentDay.weekday!) else { return false }
+        
         guard isOnTimeRange(checkTimeRange: checkTimeRange) else { return false }
         
         return isInsideFromTheStartDay()
 
         
         // !! NOTA VOCALE 17.09 !!
-    }
+    } */ // Deprecata 03.07.23
     
-    private func isOnAirDataEsatta(checkTimeRange:Bool) -> Bool { // lf51 18.09.22
+   /* private func isOnAirDataEsatta(checkTimeRange:Bool) -> Bool { // lf51 18.09.22
         
        /* let(startDay,_,currentDay) = dateCalendario()
         let startDayPlain = [startDay.year!,startDay.month!,startDay.day!]
@@ -266,7 +329,7 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
         guard isSame else { return false }
         return isOnTimeRange(checkTimeRange: checkTimeRange)
         
-    }
+    } */ // deprecata 03.07.23
 
     private func isInsideFromTheStartDay() -> Bool { // lf51 18.09.22
         
@@ -284,7 +347,35 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
         return currentDay.day! >= startDay.day!
     }
     
-    private func isOnTimeRange(checkTimeRange:Bool) -> Bool { // lf51 18.09.22 // deprecata 05.10
+    private func isInsideByTheEnd() -> Bool {
+        
+        let(_,endDay,currentDay) = dateCalendario()
+        
+        guard currentDay.year! == endDay.year! else {
+            return currentDay.year! < endDay.year!
+        }
+        
+        guard currentDay.month! == endDay.month! else {
+            return currentDay.month! < endDay.month!
+        }
+        
+        return currentDay.day! <= endDay.day!
+        
+    }
+    
+    private func isOnTimeRange() -> CodiceOnOffLive { // lf51 18.09.22 // deprecata 05.10
+        
+        let absoluteStart = csTimeConversione(data: self.oraInizio)
+        let absoluteEnd = csTimeConversione(data: self.oraFine)
+        let absoluteCurrent = csTimeConversione(data: Date.now)
+        
+        if (absoluteCurrent >= absoluteStart) && (absoluteCurrent < absoluteEnd) { return .liveNow }
+        else if absoluteCurrent < absoluteStart { return .inProgrammaToday }
+        else { return .scadutoToday }
+        
+    }
+    
+   /* private func isOnTimeRange(checkTimeRange:Bool) -> Bool { // lf51 18.09.22 // deprecata 05.10
         
         guard checkTimeRange else { return true } // !! Nota Vocale 03.10
          
@@ -318,7 +409,7 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
         if (absoluteCurrent >= absoluteStart) && (absoluteCurrent < absoluteEnd) { return true }
         else { return false }
         
-    }
+    } */ // 04.07.23 deprecata
   
     
     private func dateCalendario() -> (startDay:DateComponents,endDay:DateComponents,currentDay:DateComponents) { // lf51 18.09.22
@@ -347,30 +438,89 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
     
     // Test 05.10
    
-    public func timeScheduleInfo() -> (isOnAirNow:Bool,nextCheck:TimeInterval,invalidateForEver:Bool,countDown:Int) {
-        //Nota 06.10 - Da rielaborare. Occorre rielaborare tutte le funzioni che portano all'isOnAir per ottenere maggiorni informazioni, di modo da schedulare meglio il timer ed eventualmente invalidarlo
+    public func isOnAirValue() -> (today:Bool,now:Bool) {
+        // rimpiazza la vecchia isOnAir con checktime range per avere un informazione veloce bool
         let isOn = self.isOnAir()
         
-        guard isOn else { return (false,1.0,false,0)} // provvisorio }
+        switch isOn {
+        case .liveNow:
+            return (true,true)
+        case .inProgrammaToday:
+            return (true,false)
+        case .scadutoToday:
+            return (true,false)
+        default: return (false,false)
+        }
+    }
+    
+    public func timeScheduleInfo() -> (codiceTemporale:CodiceOnOffLive,nextCheck:TimeInterval?,countDown:Int?) {
+   // volessimo ripristinare la facoltà di scegliere lo start del countDown, quel valore dovrà essere passato qui dal TimerVM
+        let isOn = self.isOnAir()
         
-       /* let(_,end,current) = timeCalendario()
-        
-        let currentHourInMinute = (current.hour! * 60) + current.minute!
-        let endHourInMinute = (end.hour! * 60) + end.minute! */ // deprecato 29.10
-        let currentHourInMinute = csTimeConversione(data: Date.now)
-        let endHourInMinute = csTimeConversione(data: self.oraFine)
-        
-        let differenceToEnd = endHourInMinute - currentHourInMinute
+        switch isOn {
             
-       return (true,60.0,false,differenceToEnd)
+        case .liveNow:
+            let (distance,countDown) = calcoloNextCheckToday(oraRiferimento: self.oraFine)
+            return(isOn,distance,countDown)
+            
+        case .inProgrammaToday:
+            let (distance,countDown) = calcoloNextCheckToday(oraRiferimento: self.oraInizio)
+            return(isOn,distance,countDown)
+            
+        case .scadutoToday:
+            return(isOn,calcoloNextCheckTomorrow(),nil)
+            
+        case .offByStatus:
+            return(isOn,nil,nil)
+            
+        case .inProgrammaNextDays:
+            return(isOn,calcoloNextCheckTomorrow(),nil)
+            
+        case .scadutoForEver:
+            return(isOn,nil,nil)
+        }
         
     }
     
+    private func calcoloNextCheckTomorrow() -> TimeInterval {
+        
+        let today = Date.now
+  
+        let mimuteNow = csTimeConversione(data: today)
+        let allMinuteInAday = 24 * 60
+        let distanceToMidnight = allMinuteInAday - mimuteNow
+        let distanceToMidPlusOne = distanceToMidnight + 1
+        let nextCheck = distanceToMidPlusOne * 60
+        let nextCheckTimeIn = TimeInterval(nextCheck)
+         // Test
+       //  let dataNextCheck = Date(timeIntervalSinceNow: nextCheckTimeIn)
+         //
+         
+        return nextCheckTimeIn
+    }
+    
+    private func calcoloNextCheckToday(oraRiferimento:Date) -> (distance:TimeInterval,countDown:Int?) {
+        // Valore di default del count down è 30 minuti prima dell'inizio o della fine del servizio // Nota Countdown 06.07
 
+        let today = Date.now
+        let currentHourInMinute = csTimeConversione(data: today)
+        
+        let inizioCount_0 = oraRiferimento.advanced(by: -1800)
+        let inizioCount = csTimeConversione(data: inizioCount_0)
+        
+        let step_2 = inizioCount - currentHourInMinute
+        let coundDown = step_2 * -1
+        let step_3 = step_2 * 60 // convertiamo in secondi
+        let distanceFromCountDown = TimeInterval(step_3)
+        
+        
+        if step_2 > 0 { return (distanceFromCountDown,nil) } // il countDown non è iniziato
+        else { return (60.0,coundDown) } // il countDown è iniziato e il timer aggiorna ogni 60sec
+        
+    }
+    
     // end Test 05.10
     // Fine Metodi riguardanti la programmazione - onLine vs offLine
-    
- 
     
     public enum OnlineStatus:MyProEnumPack_L0 {
 
@@ -399,7 +549,73 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
                 return 0
             }
         }
+        
+    } // 06.07 deprecata in futuro
+    
+   /* public enum CodiceOnOffStatus {
+        
+        case online(_ :CodiceOnOffTemporale)
+        case offline(_ :CodiceOnOffTemporale)
+        
+        func nextCheck() -> TimeInterval {
+            
+            switch self {
+                
+            case .online(let codiceTemp):
+                return codiceTemp.nextCheck()
+                
+            case .offline(let codiceTemp):
+                return codiceTemp.nextCheck()
+                
+                
+            }
+            
+        }
+        
+    } */// 06.07.23 Deprecata
+    
+    public enum CodiceOnOffLive {
+
+        case liveNow
+        case inProgrammaToday
+        case scadutoToday
+        
+        case offByStatus
+        case inProgrammaNextDays
+        case scadutoForEver
+        
+       public func simpleDescription() -> String {
+            
+            switch self {
+                
+            case .liveNow: return "in servizio"
+            case .inProgrammaToday: return "in arrivo"
+            case .scadutoToday: return "appena chiuso"
+            case .offByStatus: return "non attivo"
+            case .inProgrammaNextDays: return "apre in futuro"
+            case .scadutoForEver: return "scaduto"
+                
+                
+            }
+            
+        }
+        
+        public func openCloseDescription() -> String {
+             
+             switch self {
+                 
+             case .liveNow: return "Chiude in "
+             case .inProgrammaToday: return "Apre in "
+             default: return ""
+                 
+                 
+             }
+             
+         }
+        
     }
+
+        
 } // end Model
 
 
