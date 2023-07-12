@@ -194,6 +194,11 @@ public protocol MyProCloudPack_L0 {
     
 }
 
+public protocol MyProProgressBar {
+    
+    var countProgress:Double { get }
+    
+}
 
 
 

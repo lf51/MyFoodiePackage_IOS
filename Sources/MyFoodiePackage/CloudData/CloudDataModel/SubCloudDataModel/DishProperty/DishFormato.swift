@@ -10,6 +10,7 @@ import Foundation
 public struct DishFormat:Hashable,Codable {
     
     static public var modelloCorrente:[Self]?
+    
     static func customInit() -> [Self] {
         
         guard let current = modelloCorrente else {

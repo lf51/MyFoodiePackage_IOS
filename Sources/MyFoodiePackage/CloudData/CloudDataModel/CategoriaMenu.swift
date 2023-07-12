@@ -84,14 +84,15 @@ public struct CategoriaMenu:
         self.intestazione.replacingOccurrences(of: " ", with: "").lowercased()
     }
     
-    public func simpleDescription() -> String { // Deprecata
+    public func simpleDescription() -> String { //
         self.intestazione
       //  "Dessert"
     }
     
     public func extendedDescription() -> String { // Deprecata
         print("Dentro ExtendedDescription in CategoriaMenu")
-        return ""
+        guard self.descrizione != "" else { return "No description yet"}
+        return self.descrizione
     }
     
     public func imageAssociated() -> String { // Deprecata

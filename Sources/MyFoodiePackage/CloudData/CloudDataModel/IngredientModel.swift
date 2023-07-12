@@ -180,9 +180,9 @@ public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyP
     /// ritorna true se tutte le proprietà optional sono state compilate, e dunque il modello è completo.
     public func optionalComplete() -> Bool {
         
-        self.descrizione != "" &&
-        self.produzione != .defaultValue &&
-        self.provenienza != .defaultValue
+        self.descrizione != ""// &&
+      //  self.produzione != .defaultValue &&
+      //  self.provenienza != .defaultValue
     }
 }
 

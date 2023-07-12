@@ -327,7 +327,7 @@ public struct Inventario:Equatable,Codable {
             case .esaurito:
                 return .red.opacity(0.6)
             case .inArrivo:
-                return .green.opacity(0.7)
+                return .seaTurtle_4.opacity(0.7)
             }
             
         }
@@ -343,7 +343,7 @@ public struct Inventario:Equatable,Codable {
             case .esaurito:
                 return .red
             case .inArrivo:
-                return .green
+                return .seaTurtle_4
             }
         }
     }

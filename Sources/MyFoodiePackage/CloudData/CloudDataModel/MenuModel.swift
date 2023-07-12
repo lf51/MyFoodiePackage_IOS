@@ -89,6 +89,7 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
         self.giorniDelServizio = [giornoDataInizio]
         self.oraInizio = Date.distantFuture.advanced(by: -3540)
         self.oraFine = Date.distantFuture.advanced(by: 82740)
+      //  self.oraFine = Date.distantFuture.advanced(by: 59600)
         
     }
 
@@ -216,7 +217,7 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
         guard isSame else {
      
             let isPasted = isInsideFromTheStartDay() // darebbe un => ma l'uguale non lo considera perchè se è uguale il guard continua
-            if isPasted { return .scadutoForEver}
+            if isPasted { return .scadutoForEver }
             else { return .inProgrammaNextDays}
                 }
         
@@ -509,10 +510,10 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
         let inizioCount = csTimeConversione(data: inizioCount_0)
         
         let step_2 = inizioCount - currentHourInMinute
-        let coundDown = step_2 * -1
+        let coundDown = 30 + step_2 // quando scatta il countDown step_2 sarà un numero negativo
+        
         let step_3 = step_2 * 60 // convertiamo in secondi
         let distanceFromCountDown = TimeInterval(step_3)
-        
         
         if step_2 > 0 { return (distanceFromCountDown,nil) } // il countDown non è iniziato
         else { return (60.0,coundDown) } // il countDown è iniziato e il timer aggiorna ogni 60sec
