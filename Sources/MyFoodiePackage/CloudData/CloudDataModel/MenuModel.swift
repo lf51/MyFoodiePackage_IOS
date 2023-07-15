@@ -11,8 +11,6 @@ import SwiftUI
 
 public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToolPack_L1,MyProDescriptionPack_L0,MyProVisualPack_L1,MyProCloudPack_L1*//*MyModelStatusConformity */ {
      
-   
-    
     public static func == (lhs: MenuModel, rhs: MenuModel) -> Bool {
         
         lhs.id == rhs.id &&
@@ -89,7 +87,7 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
         self.giorniDelServizio = [giornoDataInizio]
         self.oraInizio = Date.distantFuture.advanced(by: -3540)
         self.oraFine = Date.distantFuture.advanced(by: 82740)
-      //  self.oraFine = Date.distantFuture.advanced(by: 59600)
+       // self.oraFine = Date.distantFuture.advanced(by: 56500)
         
     }
 

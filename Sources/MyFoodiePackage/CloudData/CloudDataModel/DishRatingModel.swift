@@ -114,7 +114,6 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
         public var succulenza:Double
         public var gusto:Double
 
-      
         let pesoPresentazione:Double
         let pesoCottura:Double
         let pesoMpQuality:Double

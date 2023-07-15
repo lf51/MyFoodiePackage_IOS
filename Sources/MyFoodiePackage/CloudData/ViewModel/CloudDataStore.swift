@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public struct CloudDataStore { // deprecata in futuro
+public struct CloudDataStore {
     
     public var setupAccount: AccountSetup // caricato
     public var inventarioScorte: Inventario // caricato
@@ -42,7 +42,7 @@ public struct CloudDataStore { // deprecata in futuro
         
     }
     
-    public init(userUID:String? = nil) {
+   /* public init(userUID:String? = nil) { // deprecata in futuro
         
         self.allMyIngredients = []
         self.allMyDish = []
@@ -53,7 +53,7 @@ public struct CloudDataStore { // deprecata in futuro
  
         self.setupAccount = AccountSetup()
         self.inventarioScorte = Inventario()
-    }
+    } */
     
         
    public init() { // Deprecata in futuro
@@ -70,7 +70,7 @@ public struct CloudDataStore { // deprecata in futuro
         
     }
     
-   public init(accountSetup: AccountSetup, inventarioScorte: Inventario, allMyIngredients: [IngredientModel], allMyDish: [DishModel], allMyMenu: [MenuModel], allMyProperties: [PropertyModel], allMyCategory: [CategoriaMenu], allMyReviews: [DishRatingModel]) {
+  /* public init(accountSetup: AccountSetup, inventarioScorte: Inventario, allMyIngredients: [IngredientModel], allMyDish: [DishModel], allMyMenu: [MenuModel], allMyProperties: [PropertyModel], allMyCategory: [CategoriaMenu], allMyReviews: [DishRatingModel]) {
         self.setupAccount = accountSetup
         self.inventarioScorte = inventarioScorte
         self.allMyIngredients = allMyIngredients
@@ -79,6 +79,6 @@ public struct CloudDataStore { // deprecata in futuro
         self.allMyProperties = allMyProperties
         self.allMyCategories = allMyCategory
         self.allMyReviews = allMyReviews
-    } // deprecata in futuro
+    }*/ // deprecata in futuro
 
 }

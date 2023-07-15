@@ -200,8 +200,13 @@ public protocol MyProProgressBar {
     
 }
 
-
-
+/// Stabilisce un tipo associato dove sarà racchiusa la logica di compilazione del database. Il tipo sarà definito a valle nelle applicazioni client e Business
+public protocol MyProDataCompiler {
+    
+    associatedtype DBCompiler
+    
+    var dbCompiler:DBCompiler { get set }
+}
 
 
 

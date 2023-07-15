@@ -27,10 +27,11 @@ import Foundation
 
 open class FoodieViewModel:ObservableObject {
     
+    
  //   @Published public var cloudData:CloudDataStore
     
     // aggiungere compiler
-    @Published public var setupAccount: AccountSetup
+   /* @Published public var setupAccount: AccountSetup
     @Published public var inventarioScorte: Inventario // pensare di metterla optional
     
     @Published public var allMyIngredients:[IngredientModel]
@@ -38,11 +39,19 @@ open class FoodieViewModel:ObservableObject {
     @Published public var allMyMenu:[MenuModel]
     @Published public var allMyProperties:[PropertyModel]
     @Published public var allMyCategories:[CategoriaMenu]
-    @Published public var allMyReviews:[DishRatingModel]
+    @Published public var allMyReviews:[DishRatingModel] */
     
-    public init(userUID:String? = nil) {
+   // public var dbCompiler:Any?
+    
+    @Published public var cloudData:CloudDataStore
+
+    public init() {
+        self.cloudData = CloudDataStore()
+    }
+    
+  /*  public init(userUID:String? = nil) { // deprecata
         
-        self.allMyIngredients = []
+       /* self.allMyIngredients = []
         self.allMyDish = []
         self.allMyMenu = []
         self.allMyProperties = []
@@ -50,10 +59,10 @@ open class FoodieViewModel:ObservableObject {
         self.allMyReviews = []
  
         self.setupAccount = AccountSetup()
-        self.inventarioScorte = Inventario()
+        self.inventarioScorte = Inventario() */
  
-      //  self.cloudData = CloudDataStore(userUID: userUID)
-    }
+        self.cloudData = CloudDataStore(userUID: userUID)
+    } */
     
    // Methods
     
@@ -63,8 +72,7 @@ open class FoodieViewModel:ObservableObject {
         return containerM.first(where: {$0.id == id})
     }
 
-    
-    public func infoFromId<M:MyProStarterPack_L01>(id:String,modelPath:KeyPath<FoodieViewModel,[M]>) -> (isActive:Bool,nome:String,hasAllergeni:Bool) {
+   public func infoFromId<M:MyProStarterPack_L01>(id:String,modelPath:KeyPath<FoodieViewModel,[M]>) -> (isActive:Bool,nome:String,hasAllergeni:Bool) {
         
         guard let model = modelFromId(id: id, modelPath: modelPath) else { return (false,"",false) }
         
@@ -114,7 +122,7 @@ open class FoodieViewModel:ObservableObject {
        
         let tipologia:TipologiaMenu = menuDiSistema.returnTipologiaMenu()
         
-       return self.allMyMenu.first(where:{
+       return self.cloudData.allMyMenu.first(where:{
                //  $0.tipologia.returnTypeCase() == tipologia &&
                  $0.tipologia == tipologia && // Vedi Nota 09.11
                  $0.isOnAirValue().today
@@ -128,10 +136,10 @@ open class FoodieViewModel:ObservableObject {
         
         if rifReview == nil {
             
-            starter = self.allMyReviews
+            starter = self.cloudData.allMyReviews
             
         } else {
-            starter = self.modelCollectionFromCollectionID(collectionId: rifReview!, modelPath: \.allMyReviews)
+            starter = self.modelCollectionFromCollectionID(collectionId: rifReview!, modelPath: \.cloudData.allMyReviews)
         }
         
         let currentDate = Date()
@@ -156,7 +164,7 @@ open class FoodieViewModel:ObservableObject {
     /// Torna tutti i rif delle recensioni che riguardano un determinato Piatto, o tutti i model
     public func reviewFilteredByDish(idPiatto:String) -> (model:[DishRatingModel],rif:[String]) {
         
-        let dishRevModel = self.allMyReviews.filter({$0.rifPiatto == idPiatto})
+        let dishRevModel = self.cloudData.allMyReviews.filter({$0.rifPiatto == idPiatto})
         let dishRevRif = dishRevModel.map({$0.id})
         return (dishRevModel,dishRevRif)
         

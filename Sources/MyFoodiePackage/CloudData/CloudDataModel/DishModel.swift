@@ -133,7 +133,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         // Innesto 06.10
         guard !self.ingredientiPrincipali.contains(self.id) else {
            // Trattasi di ibrido
-            if let model = viewModel.modelFromId(id: self.id, modelPath: \.allMyIngredients) { return [model] }
+            if let model = viewModel.modelFromId(id: self.id, modelPath: \.cloudData.allMyIngredients) { return [model] }
             else { return [] }
         }
         
@@ -159,7 +159,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
             
             if let sostituto = self.elencoIngredientiOff[ingredient.id] {
                 
-                let(isActive,_,_) = viewModel.infoFromId(id: sostituto, modelPath: \.allMyIngredients)
+                let(isActive,_,_) = viewModel.infoFromId(id: sostituto, modelPath: \.cloudData.allMyIngredients)
                 
                 if isActive {
                     allActiveIDs[position!] = sostituto
@@ -169,7 +169,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
             
         }
         
-        let allActiveModels = viewModel.modelCollectionFromCollectionID(collectionId: allActiveIDs, modelPath: \.allMyIngredients)
+        let allActiveModels = viewModel.modelCollectionFromCollectionID(collectionId: allActiveIDs, modelPath: \.cloudData.allMyIngredients)
         
         return allActiveModels
     }
@@ -177,7 +177,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     public func allMinusArchiviati(viewModel:FoodieViewModel) -> [IngredientModel] {
         
         let allIngredientsID = self.ingredientiPrincipali + self.ingredientiSecondari
-        let allTheIngredients = viewModel.modelCollectionFromCollectionID(collectionId: allIngredientsID, modelPath: \.allMyIngredients)
+        let allTheIngredients = viewModel.modelCollectionFromCollectionID(collectionId: allIngredientsID, modelPath: \.cloudData.allMyIngredients)
         let allMinusBozzeEArchiviati = allTheIngredients.filter({
             !$0.status.checkStatusTransition(check: .archiviato)
         })
@@ -261,7 +261,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         
         // Nota 13.09
 
-        let allLocalReviews:[DishRatingModel] = readOnlyViewModel.modelCollectionFromCollectionID(collectionId: self.rifReviews, modelPath: \.allMyReviews)
+        let allLocalReviews:[DishRatingModel] = readOnlyViewModel.modelCollectionFromCollectionID(collectionId: self.rifReviews, modelPath: \.cloudData.allMyReviews)
         
         guard !allLocalReviews.isEmpty else {
             

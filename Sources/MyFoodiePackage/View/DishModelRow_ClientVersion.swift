@@ -853,7 +853,7 @@ public struct DishModelRow_ClientVersion: View {
         if let idSostituto = ing.idSostituto,
            ing.isTemporaryOff {
             
-            if let modelSostituto = self.viewModel.modelFromId(id: idSostituto, modelPath: \.allMyIngredients),
+            if let modelSostituto = self.viewModel.modelFromId(id: idSostituto, modelPath: \.cloudData.allMyIngredients),
                modelSostituto.status.checkStatusTransition(check: .disponibile){
                 
               //  let hasAllergene = !modelSostituto.allergeni.isEmpty
@@ -1072,7 +1072,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                 ScrollView {
                     
                     
-                    ForEach(viewModel.allMyDish) { dish in
+                    ForEach(viewModel.cloudData.allMyDish) { dish in
                         
                         DishModelRow_ClientVersion(
                             viewModel: viewModel,
