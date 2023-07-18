@@ -29,9 +29,11 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
     public var commento: String?
     public var rifImage: String? // sarà uguale all'id del reviewModel
     
+    public var ownerReply:String? // 16.07.23 da implementare
+    
     public var voto: DishRatingModel.RateModel
     public let dataRilascio: Date
-
+    
     public init(idPiatto:String,percorsoProdotto:DishModel.PercorsoProdotto = .preparazioneFood) {
         
         self.id = UUID().uuidString
