@@ -42,12 +42,15 @@ open class FoodieViewModel:ObservableObject {
     @Published public var allMyReviews:[DishRatingModel] */
     
    // public var dbCompiler:Any?
-    
+    @Published public var currentUserRoleModel:UserRoleModel
+    @Published public var currentProperty:PropertyModel?
     @Published public var cloudData:CloudDataStore
-
+   
     public init() {
         self.cloudData = CloudDataStore()
-    }
+        self.currentProperty = nil
+        self.currentUserRoleModel = UserRoleModel() //
+    } // 29.07.23 Studiare la relazione fra init delle classi con le superClassi per capire come ottimizzare l'init del viewModel nelle sottoclassi
     
   /*  public init(userUID:String? = nil) { // deprecata
         

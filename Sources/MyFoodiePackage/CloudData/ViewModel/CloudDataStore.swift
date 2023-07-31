@@ -8,6 +8,28 @@
 import Foundation
 import SwiftUI
 
+public enum RoleModel:String,Codable {
+    
+    case admin
+    case collab
+    case client
+    case guest
+    
+    public func orderValue() -> Int {
+        switch self {
+        case .admin:
+            return 0
+        case .collab:
+            return 1
+        case .client:
+            return 2
+        case .guest:
+            return 3
+            
+        }
+    }
+}
+
 public struct CloudDataStore {
     
     public var setupAccount: AccountSetup // caricato
@@ -16,8 +38,10 @@ public struct CloudDataStore {
     public var allMyIngredients:[IngredientModel] // caricato
     public var allMyDish:[DishModel] // caricato
     public var allMyMenu:[MenuModel] // caricato
-    public var allMyProperties:[PropertyModel] // caricato
-    
+    //update 23.07.23
+    public var allMyProperties:[PropertyModel] // deprecata
+    public var allMyPropertiesRef:[RoleModel:String]
+    // end update
     public var allMyCategories: [CategoriaMenu] // caricato
     public var allMyReviews:[DishRatingModel] // caricato
     
@@ -27,6 +51,7 @@ public struct CloudDataStore {
        case allMyDish = "allUserProducts"
        case allMyMenu = "allUserMenu"
        case allMyProperties =  "allUserProperties"
+       case allMyPropertiesRef = "allUserRolePropertiesRef"
        
        case allMyCategories = "allUserCategories"
        case allMyReviews = "allUserReviews"
@@ -65,6 +90,7 @@ public struct CloudDataStore {
         self.allMyDish = []
         self.allMyMenu = []
         self.allMyProperties = []
+        self.allMyPropertiesRef = [:]
         self.allMyCategories = [] // vanno inserite le categorie di default
         self.allMyReviews = [] // vanno inserite review fake
         

@@ -10,6 +10,145 @@ import MapKit
 import SwiftUI
 //import Firebase
 
+public enum RestrictionLevel:Codable {
+    
+    // le restrizioni funzionano per esclusione. Quelle contenute nei livelli sono quelle che verranno bloccate
+    
+    public static let allCases:[RestrictionLevel] = [.listaDellaSpesa,.modificheDiFunzionamento,.creaMod_ing,.creaMod_dish,.creaMod_categorie,.creaMod_menu,.replyReview]
+    
+    public static let allLevel:[String:[RestrictionLevel]] = [
+        "Level 1":RestrictionLevel.level_1,
+        "Level 2":RestrictionLevel.level_2,
+        "Level 3":RestrictionLevel.level_3,
+        "Level 4":RestrictionLevel.level_4
+    ]
+    
+    public static let level_1:[RestrictionLevel] = [.creaMod_ing,.creaMod_dish,.creaMod_menu,.creaMod_categorie,.replyReview]
+    public static let level_2:[RestrictionLevel] = [.creaMod_menu,.replyReview]
+    public static let level_3:[RestrictionLevel] = [.replyReview]
+    public static let level_4:[RestrictionLevel] = []
+    
+    case listaDellaSpesa
+    case modificheDiFunzionamento // cambio di Status // Livello Scorte
+    
+    case creaMod_dish
+    case creaMod_ing
+    
+    case creaMod_categorie
+    case creaMod_menu
+    
+    case replyReview
+    
+    public static func namingLevel(allRestriction:[RestrictionLevel]) -> String {
+        
+        for level in RestrictionLevel.allLevel {
+            
+            if allRestriction == level.value { return level.key}
+            else { continue }
+        }
+        
+        return "Custom"
+    }
+    
+   public func simpleDescription() -> String {
+        
+        switch self {
+            
+        case .listaDellaSpesa:
+            return "Abilita modifiche lista della spesa"
+        case .modificheDiFunzionamento:
+            return "Abilita modifiche di status dei modelli"
+        case .creaMod_dish:
+            return "Abilita crea e modifica i prodotti"
+        case .creaMod_ing:
+            return "Abilita crea e modifica gli ingredienti"
+        case .creaMod_menu:
+            return "Abilita crea e modifica i menu"
+        case .replyReview:
+            return "Abilita a rispondere alle recensioni"
+        case .creaMod_categorie:
+            return "Abilita crea e modifica categorie dei Menu"
+        }
+    }
+
+}
+
+public struct UserRoleModel:Codable,Hashable,Identifiable {
+    // authInfo
+    public let id:String
+    public var userName:String
+    public let mail:String
+    // additional Info
+    public var ruolo:RoleModel
+    public var restrictionLevel:[RestrictionLevel]?
+    public var inizioCollaborazione:Date?
+    
+    /// lo usiamo nell'auth utente
+    public init(uid:String,userName:String,mail:String) {
+        self.id = uid
+        self.userName = userName
+        self.mail = mail
+        
+        self.ruolo = .guest
+        self.restrictionLevel = nil
+        self.inizioCollaborazione = nil
+    }
+    
+    /// add new Collaborator
+    public init() { // deprecato
+            
+        self.id = "NON_ACCOPPIATO" + UUID().uuidString
+        self.inizioCollaborazione = Date.now
+        self.mail = ""
+        self.userName = ""
+        self.restrictionLevel = nil
+        self.ruolo = .collab
+    }
+    
+    /// add empty role Guest
+    public init(ruolo:RoleModel = .guest) {
+        
+        self.id = ""
+        self.inizioCollaborazione = nil
+        self.mail = ""
+        self.userName = ruolo.rawValue
+        self.restrictionLevel = nil
+        self.ruolo = ruolo
+        
+    }
+
+    
+    /// Init UserRoleModel as Admin
+  /*  public init(
+        adminUID: String,
+        registrazioneProperty: Date,
+        userName: String) {
+            
+        self.id = adminUID
+        self.inizioCollaborazione = registrazioneProperty
+        self.userName = userName
+        
+        self.mail = nil
+        self.restrictionLevel = nil
+    }
+    
+    /// Init UserRoleModel as collab
+    public init(
+        collabUID: String,
+        inizioCollaborazione: Date,
+        userName: String,
+        mail: String,
+        restrictionLevel: [RestrictionLevel]) {
+            
+        self.id = collabUID
+        self.inizioCollaborazione = inizioCollaborazione
+        self.mail = mail
+        self.userName = userName
+        self.restrictionLevel = restrictionLevel
+    }*/
+    
+}
+
 // Nota 19.09
 
 public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyProVisualPack_L0,MyProDescriptionPack_L0,MyProCloudPack_L1*/{
@@ -31,6 +170,8 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         case phoneNumber
         case streetAdress
         case numeroCivico
+       
+        case organigramma
         
     }
     
@@ -50,6 +191,7 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         try container.encode(phoneNumber, forKey: .phoneNumber)
         try container.encode(streetAdress, forKey: .streetAdress)
         try container.encode(numeroCivico, forKey: .numeroCivico)
+        try container.encode(organigramma, forKey: .organigramma)
         
     }
     
@@ -69,6 +211,7 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         self.phoneNumber = try values.decode(String.self, forKey: .phoneNumber)
         self.streetAdress = try values.decode(String.self, forKey: .streetAdress)
         self.numeroCivico = try values.decode(String.self, forKey: .numeroCivico)
+        self.organigramma = try values.decode([UserRoleModel].self, forKey: .organigramma)
          
     }
     
@@ -109,6 +252,7 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
     public var streetAdress: String
     public var numeroCivico: String
     
+    public var organigramma:[UserRoleModel]
     // MyProCloudPack_L1
     
    /* public init(frDocID:String,frDoc: [String:Any]) {
@@ -147,7 +291,7 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         
     } */
             
-    public init() { // utile quando creaiamo la @State NewProperty
+   /* public init() { // utile quando creaiamo la @State NewProperty
         
         let coordinates = CLLocationCoordinate2D(latitude: 37.510977, longitude: 13.041434)
 
@@ -161,9 +305,17 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         self.streetAdress = ""
         self.numeroCivico = ""
         
-    }
-    
-    public init (intestazione: String, cityName: String, coordinates: CLLocationCoordinate2D, webSite: String, phoneNumber: String, streetAdress: String, numeroCivico: String) {
+    } */
+    /// La property model è registrata solo ed esclusivamente da un utente che assume in automico il ruolo di admin
+    public init (
+        intestazione: String,
+        cityName: String,
+        coordinates: CLLocationCoordinate2D,
+        webSite: String,
+        phoneNumber: String,
+        streetAdress: String,
+        numeroCivico: String,
+        admin:UserRoleModel) {
         
         self.id = Self.creaID(coordinates: coordinates,cityName: cityName)
         self.intestazione = intestazione
@@ -174,10 +326,12 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         self.phoneNumber = phoneNumber
         self.streetAdress = streetAdress
         self.numeroCivico = numeroCivico
+            
+        self.organigramma = [admin]
     
     }
     
-    public init(nome: String) {
+  /*  public init(nome: String) {
         
         let coordinates = CLLocationCoordinate2D(latitude: 37.510977, longitude: 13.041434)
 
@@ -191,9 +345,9 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         self.streetAdress = ""
         self.numeroCivico = ""
         
-    }
+    }*/
     
-    public init(nome: String, coordinates: CLLocationCoordinate2D) {
+   /* public init(nome: String, coordinates: CLLocationCoordinate2D) {
         
         self.id = Self.creaID(coordinates: coordinates,cityName: "X")
         self.intestazione = nome
@@ -205,7 +359,7 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         self.streetAdress = ""
         self.numeroCivico = ""
         
-    }
+    }*/
     
     // Method
 
