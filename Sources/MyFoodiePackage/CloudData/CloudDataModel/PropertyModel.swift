@@ -229,7 +229,7 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
     
    
         
-    private static func creaID(coordinates:CLLocationCoordinate2D,cityName:String) -> String {
+    public static func creaID(coordinates:CLLocationCoordinate2D,cityName:String) -> String {
         
         let city = cityName.uppercased()
         let latitude = String(coordinates.latitude).replacingOccurrences(of: ".", with: "A")
