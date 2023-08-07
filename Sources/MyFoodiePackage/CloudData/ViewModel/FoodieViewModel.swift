@@ -25,6 +25,8 @@ import Foundation
  //   associatedtype CodingKeys:String,CodingKey
 //}
 
+
+
 open class FoodieViewModel:ObservableObject {
     
     
@@ -42,14 +44,20 @@ open class FoodieViewModel:ObservableObject {
     @Published public var allMyReviews:[DishRatingModel] */
     
    // public var dbCompiler:Any?
-    @Published public var currentUserRoleModel:UserRoleModel
-    @Published public var currentProperty:PropertyModel?
-    @Published public var cloudData:CloudDataStore
+    @Published public var currentUserRoleModel:UserRoleModel // deprecata
+    @Published public var currentProperty:PropertyModel? // deprecata
+    @Published public var cloudData:CloudDataStore // deprecata
+    
+   // @Published public var onProperty:PropertyDataModel
+    
    
     public init() {
         self.cloudData = CloudDataStore()
         self.currentProperty = nil
         self.currentUserRoleModel = UserRoleModel() //
+        
+       // self.onProperty = PropertyDataModel(userAuth: authUser)
+        
     } // 29.07.23 Studiare la relazione fra init delle classi con le superClassi per capire come ottimizzare l'init del viewModel nelle sottoclassi
     
   /*  public init(userUID:String? = nil) { // deprecata
