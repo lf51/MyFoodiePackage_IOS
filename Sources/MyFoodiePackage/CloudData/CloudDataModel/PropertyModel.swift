@@ -91,7 +91,7 @@ public struct UserRoleModel:Codable,Hashable,Identifiable {
         self.userName = userName
         self.mail = mail
         
-        self.ruolo = .guest
+        self.ruolo = .auth
         self.restrictionLevel = nil
         self.inizioCollaborazione = nil
     }

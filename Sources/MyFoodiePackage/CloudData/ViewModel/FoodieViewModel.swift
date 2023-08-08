@@ -24,12 +24,99 @@ import Foundation
 //protocol MyProXXX {
  //   associatedtype CodingKeys:String,CodingKey
 //}
+public struct PropertyDataObject {
+    
+    public var info:PropertyModel?
+    public var db:CloudDataStore
+    
+    public enum CodingKeys:String,CodingKey {
+        
+        case info = "propertyInfo"
+        case db = "propertyData"
+        
+    }
+    
+    public init() {
+        
+        self.info = nil
+        self.db = CloudDataStore()
+    }
+    
+    public init(registra newProperty:PropertyModel,dataBase:CloudDataStore?) {
+        self.info = newProperty
+        
+        if let data = dataBase {
+            self.db = data
+        } else {
+            self.db = CloudDataStore()
+        }
+        
+    }
+    
+}
 
+public struct PropertyDataModel {
 
+    public var user:UserRoleModel
+    public var cloudData:PropertyDataObject // valutare Optional
+   // public var propertyInfo:PropertyModel?
+   // public var propertyData:CloudDataStore // valutare di metterlo come optional
+      
+    public init(userAuth:UserRoleModel?) {
+        
+        if let authUser = userAuth {
+            
+            self.user = authUser
+            
+        } else {
+            
+            self.user = UserRoleModel(ruolo: .guest)
+        }
+        
+        self.cloudData = PropertyDataObject()
+    }
+    
+    public init(user:UserRoleModel,propertyData:PropertyDataObject) {
+        
+        self.user = user
+        self.cloudData = propertyData
+        
+    }
+    
+   /* public init(from decoder: Decoder) throws {
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        let property = try container.decodeIfPresent(PropertyModel.self, forKey: .propertyInfo)
+        
+        guard let organigramma = property?.organigramma,
+              let user = organigramma.first(where: {$0.id == FoodieViewModel.userAuthData.id}) else {
+            // lo user NON è autenticato / verifica superflua in quanto già effettuata nella PropertyLocalImage ma necessaria per tirare fuori lo userRoleModel. Da valutare meccanismi più efficienti
+            let context = DecodingError.Context(codingPath: [Self.CodingKeys.propertyInfo], debugDescription: "Organigramma non trovato o User Non Autorizzato")
+            throw DecodingError.valueNotFound(String.self, context)
+        }
+        
+        self.propertyData = try container.decode(CloudDataStore.self, forKey: .propertyData)
+        self.currentUser = user
+        self.propertyInfo = property
+ 
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(propertyInfo, forKey: .propertyInfo)
+        try container.encode(propertyData, forKey: .propertyData)
+        
+        
+    } */
+    
+}
 
 open class FoodieViewModel:ObservableObject {
     
-    
+    public static var userAuthData:(id:String,userName:String,mail:String) = ("","","")
  //   @Published public var cloudData:CloudDataStore
     
     // aggiungere compiler
@@ -44,18 +131,27 @@ open class FoodieViewModel:ObservableObject {
     @Published public var allMyReviews:[DishRatingModel] */
     
    // public var dbCompiler:Any?
-    @Published public var currentUserRoleModel:UserRoleModel // deprecata
-    @Published public var currentProperty:PropertyModel? // deprecata
-    @Published public var cloudData:CloudDataStore // deprecata
+   // @Published public var currentUserRoleModel:UserRoleModel // deprecata
+   // @Published public var currentProperty:PropertyModel? // deprecata
+   // @Published public var cloudData:CloudDataStore // deprecata
     
-   // @Published public var onProperty:PropertyDataModel
+    @Published public var currentProperty:PropertyDataModel
     
    
-    public init() {
-        self.cloudData = CloudDataStore()
-        self.currentProperty = nil
-        self.currentUserRoleModel = UserRoleModel() //
+    public init(userAuth:UserRoleModel?) {
         
+        if let user = userAuth {
+            
+            Self.userAuthData = (user.id,user.userName,user.mail)
+            
+        }
+        
+        
+       // self.cloudData = CloudDataStore()
+       // self.currentProperty = nil
+       // self.currentUserRoleModel = UserRoleModel() //
+        
+        self.currentProperty = PropertyDataModel(userAuth: userAuth)
        // self.onProperty = PropertyDataModel(userAuth: authUser)
         
     } // 29.07.23 Studiare la relazione fra init delle classi con le superClassi per capire come ottimizzare l'init del viewModel nelle sottoclassi
@@ -133,7 +229,7 @@ open class FoodieViewModel:ObservableObject {
        
         let tipologia:TipologiaMenu = menuDiSistema.returnTipologiaMenu()
         
-       return self.cloudData.allMyMenu.first(where:{
+       return self.currentProperty.cloudData.db.allMyMenu.first(where:{
                //  $0.tipologia.returnTypeCase() == tipologia &&
                  $0.tipologia == tipologia && // Vedi Nota 09.11
                  $0.isOnAirValue().today
@@ -147,10 +243,10 @@ open class FoodieViewModel:ObservableObject {
         
         if rifReview == nil {
             
-            starter = self.cloudData.allMyReviews
+            starter = self.currentProperty.cloudData.db.allMyReviews
             
         } else {
-            starter = self.modelCollectionFromCollectionID(collectionId: rifReview!, modelPath: \.cloudData.allMyReviews)
+            starter = self.modelCollectionFromCollectionID(collectionId: rifReview!, modelPath: \.currentProperty.cloudData.db.allMyReviews)
         }
         
         let currentDate = Date()
@@ -175,7 +271,7 @@ open class FoodieViewModel:ObservableObject {
     /// Torna tutti i rif delle recensioni che riguardano un determinato Piatto, o tutti i model
     public func reviewFilteredByDish(idPiatto:String) -> (model:[DishRatingModel],rif:[String]) {
         
-        let dishRevModel = self.cloudData.allMyReviews.filter({$0.rifPiatto == idPiatto})
+        let dishRevModel = self.currentProperty.cloudData.db.allMyReviews.filter({$0.rifPiatto == idPiatto})
         let dishRevRif = dishRevModel.map({$0.id})
         return (dishRevModel,dishRevRif)
         

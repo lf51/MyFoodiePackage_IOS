@@ -9,20 +9,21 @@ import Foundation
 import SwiftUI
 
 public enum RoleModel:String,Codable {
-    
+    // app business
     case admin
     case collab
-    case client
-    case guest
+    
+    case auth // user autenticato non assegnato ad alcuna property
+    case guest // user Non Authenticato
     
     public func orderValue() -> Int {
         switch self {
         case .admin:
-            return 0
-        case .collab:
             return 1
-        case .client:
+        case .collab:
             return 2
+        case .auth:
+            return 0
         case .guest:
             return 3
             
