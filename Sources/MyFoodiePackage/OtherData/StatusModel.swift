@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public enum StatusTransition:MyProEnumPack_L0,Equatable,Codable {
+public enum StatusTransition:String,MyProEnumPack_L0,Equatable,Codable {
     
     public static var allCases: [StatusTransition] = [.disponibile,.inPausa,.archiviato]
  //   static var defaultValue: StatusTransition = .archiviato

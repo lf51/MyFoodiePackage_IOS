@@ -124,6 +124,44 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
         
         let sommaPesi:Double // la vogliamo sempre uguale a 10
             
+      /*  public enum CodingKeys:String,CodingKey {
+            
+            case presentazione
+            case cottura
+            case mpQuality = "mp_quality"
+            case succulenza
+            case gusto
+        }
+        
+        public init(from decoder: Decoder) throws {
+            let container: KeyedDecodingContainer<DishRatingModel.RateModel.CodingKeys> = try decoder.container(keyedBy: DishRatingModel.RateModel.CodingKeys.self)
+            
+            self.presentazione = try container.decode(Double.self, forKey: DishRatingModel.RateModel.CodingKeys.presentazione)
+            self.cottura = try container.decode(Double.self, forKey: DishRatingModel.RateModel.CodingKeys.cottura)
+            self.mpQuality = try container.decode(Double.self, forKey: DishRatingModel.RateModel.CodingKeys.mpQuality)
+            self.succulenza = try container.decode(Double.self, forKey: DishRatingModel.RateModel.CodingKeys.succulenza)
+            self.gusto = try container.decode(Double.self, forKey: DishRatingModel.RateModel.CodingKeys.gusto)
+            
+           /* self.pesoPresentazione = try container.decode(Double.self, forKey: DishRatingModel.RateModel.CodingKeys.pesoPresentazione)
+            self.pesoCottura = try container.decode(Double.self, forKey: DishRatingModel.RateModel.CodingKeys.pesoCottura)
+            self.pesoMpQuality = try container.decode(Double.self, forKey: DishRatingModel.RateModel.CodingKeys.pesoMpQuality)
+            self.pesoSucculenza = try container.decode(Double.self, forKey: DishRatingModel.RateModel.CodingKeys.pesoSucculenza)
+            self.pesoGusto = try container.decode(Double.self, forKey: DishRatingModel.RateModel.CodingKeys.pesoGusto)
+            self.sommaPesi = try container.decode(Double.self, forKey: DishRatingModel.RateModel.CodingKeys.sommaPesi) */
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var values = encoder.container(keyedBy: CodingKeys.self)
+            
+            try values.encode(presentazione, forKey: .presentazione)
+            try values.encode(cottura, forKey: .cottura)
+            try values.encode(mpQuality, forKey: .mpQuality)
+            try values.encode(succulenza, forKey: .succulenza)
+            try values.encode(gusto, forKey: .gusto)
+        } */
+        
+        
+        
         public var generale:Double {
             
             get {

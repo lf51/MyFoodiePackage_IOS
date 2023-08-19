@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MyPackView_L0
+import CoreLocation
 
 public struct DishModelRow_ClientVersion: View {
     
@@ -853,7 +854,7 @@ public struct DishModelRow_ClientVersion: View {
         if let idSostituto = ing.idSostituto,
            ing.isTemporaryOff {
             
-            if let modelSostituto = self.viewModel.modelFromId(id: idSostituto, modelPath: \.currentProperty.cloudData.db.allMyIngredients),
+            if let modelSostituto = self.viewModel.modelFromId(id: idSostituto, modelPath: \.currentProperty.db.allMyIngredients),
                modelSostituto.status.checkStatusTransition(check: .disponibile){
                 
               //  let hasAllergene = !modelSostituto.allergeni.isEmpty
@@ -1072,7 +1073,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                 ScrollView {
                     
                     
-                    ForEach(viewModel.currentProperty.cloudData.db.allMyDish) { dish in
+                    ForEach(viewModel.currentProperty.db.allMyDish) { dish in
                         
                         DishModelRow_ClientVersion(
                             viewModel: viewModel,
@@ -1123,9 +1124,16 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
     
 }
 
+let testCurrentProperty = PropertyCurrentData(
+   userRole: UserRoleModel(),
+   info: PropertyModel(intestazione: "", cityName: "", coordinates: CLLocationCoordinate2D(latitude: 37.510977, longitude: 13.041434), webSite: "", phoneNumber: "", streetAdress: "", numeroCivico: "", admin: UserRoleModel()),
+   inventario: Inventario(),
+   setup: AccountSetup(),
+   db: CloudDataStore())
+
 var testAccount: FoodieViewModel = {
 
-    var vm = FoodieViewModel(userAuth: nil)
+    var vm = FoodieViewModel(currentProperty: testCurrentProperty)//FoodieViewModel(userAuth: nil)
   /*  vm.allMyMenu = [menuSample_Test,menuSample2_Test,menuSample3_Test,menuDelGiorno_Test,menuDelloChef_Test]
      vm.allMyDish = [dishItem2_Test,dishItem3_Test,dishItem4_Test,dishItem5_Test,prodottoFinito]
      vm.allMyIngredients = [ingredientSample_Test,ingredientSample2_Test,ingredientSample3_Test,ingredientSample4_Test,ingredientSample5_Test,ingredientSample6_Test,ingredientSample7_Test,ingredientSample8_Test,ingredienteFinito,ingredientSample9_Test]

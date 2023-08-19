@@ -33,40 +33,60 @@ public enum RoleModel:String,Codable {
 
 public struct CloudDataStore {
     
-    public var setupAccount: AccountSetup // caricato
-    public var inventarioScorte: Inventario // caricato
+  //  public var setupAccount: AccountSetup // caricato
+   // public var inventarioScorte: Inventario // caricato
+    
     
     public var allMyIngredients:[IngredientModel] // caricato
+    
+    public var allMyIngredientsImage:[IngredientModelImage] = [] // deprecata
+    
     public var allMyDish:[DishModel] // caricato
     public var allMyMenu:[MenuModel] // caricato
     //update 23.07.23
-    public var allMyProperties:[PropertyModel] // deprecata
-    public var allMyPropertiesRef:[RoleModel:String]
+  //  public var allMyProperties:[PropertyModel] // deprecata
+  //  public var allMyPropertiesRef:[RoleModel:String] // deprecata
     // end update
     public var allMyCategories: [CategoriaMenu] // caricato
     public var allMyReviews:[DishRatingModel] // caricato
     
-   public enum CodingKeys:String,CodingKey {
+   public enum CodingKeys:String,CodingKey { // deprecata
     
-       case allMyIngredients = "allUserIngredients"
-       case allMyDish = "allUserProducts"
-       case allMyMenu = "allUserMenu"
-       case allMyProperties =  "allUserProperties"
-       case allMyPropertiesRef = "allUserRolePropertiesRef"
+       case allMyIngredients = "user_ingredients"
+       case allMyIngredientsImage = "ingredients_mage"
+       case allMyDish = "user_products"
+       case allMyMenu = "user_menu"
+      // case allMyProperties =  "user_properties"
+     //  case allMyPropertiesRef = "user_properties_ref"
        
-       case allMyCategories = "allUserCategories"
-       case allMyReviews = "allUserReviews"
+       case allMyCategories = "user_categories"
+       case allMyReviews = "dish_reviews"
        
-       case otherDocument = "otherDocuments"
+      // case otherDocument = "property_setting"
        
     }
     
-    public enum AdditionalInfoKeys:String,CodingKey {
+   /* public enum AdditionalInfoKeys:String,CodingKey {
         
-        case setupAccount = "userAccountSetup"
-        case inventarioScorte = "userInventarioScorte"
+      //  case setupAccount = "property_setup"
+      //  case inventarioScorte = "property_inventario"
+        
+    } */
+    
+    public enum SubCollectionKey:String,CaseIterable {
+        
+        
+        case allMyIngredients = "user_ingredients"
+        case allMyDish = "user_products"
+        case allMyMenu = "user_menu"
+        
+        case allMyCategories = "user_categories"
+        case allMyReviews = "dish_reviews"
         
     }
+    
+
+
     
    /* public init(userUID:String? = nil) { // deprecata in futuro
         
@@ -84,14 +104,15 @@ public struct CloudDataStore {
         
    public init() { // Deprecata in futuro
         
-        self.setupAccount = AccountSetup()
-        self.inventarioScorte = Inventario()
+       // self.setupAccount = AccountSetup()
+       // self.inventarioScorte = Inventario()
        
+        self.allMyIngredientsImage = []
         self.allMyIngredients = [] // vanno inseriti gli ing,dish,menu,property fake
         self.allMyDish = []
         self.allMyMenu = []
-        self.allMyProperties = []
-        self.allMyPropertiesRef = [:]
+       // self.allMyProperties = []
+       // self.allMyPropertiesRef = [:]
         self.allMyCategories = [] // vanno inserite le categorie di default
         self.allMyReviews = [] // vanno inserite review fake
         

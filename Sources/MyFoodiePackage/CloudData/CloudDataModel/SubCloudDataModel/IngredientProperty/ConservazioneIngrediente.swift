@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ConservazioneIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform */{
+public enum ConservazioneIngrediente:String,MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform */{
     
     public static var allCases: [ConservazioneIngrediente] = [.fresco,.congelato,.surgelato,.altro]
     public static var defaultValue: ConservazioneIngrediente = .noValue // deprecato in futuro togliere dal protocollo

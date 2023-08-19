@@ -24,6 +24,7 @@ import Foundation
 //protocol MyProXXX {
  //   associatedtype CodingKeys:String,CodingKey
 //}
+/*
 public struct PropertyDataObject {
     
     public var info:PropertyModel?
@@ -53,8 +54,8 @@ public struct PropertyDataObject {
         
     }
     
-}
-
+}*/ // deprecato in futuro
+/*
 public struct PropertyDataModel {
 
     public var user:UserRoleModel
@@ -112,7 +113,33 @@ public struct PropertyDataModel {
         
     } */
     
+}*/ // deprecato in futuro
+
+
+public struct PropertyCurrentData {
+    
+    public var userRole:UserRoleModel // non direct save su firebase
+    public var info:PropertyModel?
+    public var inventario:Inventario
+    public var setup:AccountSetup
+    public var db:CloudDataStore // no direct Save - decodificato come subCollection
+    
+    public init(
+        userRole: UserRoleModel,
+        info: PropertyModel,
+        inventario: Inventario,
+        setup: AccountSetup,
+        db: CloudDataStore) {
+        self.userRole = userRole
+        self.info = info
+        self.inventario = inventario
+        self.setup = setup
+        self.db = db
+    }
+        
 }
+
+
 
 open class FoodieViewModel:ObservableObject {
     
@@ -135,10 +162,38 @@ open class FoodieViewModel:ObservableObject {
    // @Published public var currentProperty:PropertyModel? // deprecata
    // @Published public var cloudData:CloudDataStore // deprecata
     
-    @Published public var currentProperty:PropertyDataModel
+    @Published public var currentProperty:PropertyCurrentData
+   // @Published public var propertyMainObject:PropertyCurrentData
     
-   
-    public init(userAuth:UserRoleModel?) {
+    public init(currentProperty: PropertyCurrentData) {
+
+        self.currentProperty = currentProperty
+    }
+    
+    
+   /*public init(userAuth:UserRoleModel?,currentProperty:PropertyDataModel?) {
+        // 13.08.23 Temporaneo da sistemare
+        if let user = userAuth {
+            
+            Self.userAuthData = (user.id,user.userName,user.mail)
+            
+        }
+        
+        if let currentProperty {
+            
+            self.currentProperty = PropertyCurrentData
+            
+        } else {
+            
+            self.currentProperty = PropertyDataModel(userAuth: nil)
+        }
+        
+        
+        
+    } */
+    
+    
+   /* public init(userAuth:UserRoleModel?) {
         
         if let user = userAuth {
             
@@ -154,7 +209,7 @@ open class FoodieViewModel:ObservableObject {
         self.currentProperty = PropertyDataModel(userAuth: userAuth)
        // self.onProperty = PropertyDataModel(userAuth: authUser)
         
-    } // 29.07.23 Studiare la relazione fra init delle classi con le superClassi per capire come ottimizzare l'init del viewModel nelle sottoclassi
+    }*/ // 29.07.23 Studiare la relazione fra init delle classi con le superClassi per capire come ottimizzare l'init del viewModel nelle sottoclassi
     
   /*  public init(userUID:String? = nil) { // deprecata
         
@@ -229,7 +284,7 @@ open class FoodieViewModel:ObservableObject {
        
         let tipologia:TipologiaMenu = menuDiSistema.returnTipologiaMenu()
         
-       return self.currentProperty.cloudData.db.allMyMenu.first(where:{
+       return self.currentProperty.db.allMyMenu.first(where:{
                //  $0.tipologia.returnTypeCase() == tipologia &&
                  $0.tipologia == tipologia && // Vedi Nota 09.11
                  $0.isOnAirValue().today
@@ -243,10 +298,10 @@ open class FoodieViewModel:ObservableObject {
         
         if rifReview == nil {
             
-            starter = self.currentProperty.cloudData.db.allMyReviews
+            starter = self.currentProperty.db.allMyReviews
             
         } else {
-            starter = self.modelCollectionFromCollectionID(collectionId: rifReview!, modelPath: \.currentProperty.cloudData.db.allMyReviews)
+            starter = self.modelCollectionFromCollectionID(collectionId: rifReview!, modelPath: \.currentProperty.db.allMyReviews)
         }
         
         let currentDate = Date()
@@ -271,7 +326,7 @@ open class FoodieViewModel:ObservableObject {
     /// Torna tutti i rif delle recensioni che riguardano un determinato Piatto, o tutti i model
     public func reviewFilteredByDish(idPiatto:String) -> (model:[DishRatingModel],rif:[String]) {
         
-        let dishRevModel = self.currentProperty.cloudData.db.allMyReviews.filter({$0.rifPiatto == idPiatto})
+        let dishRevModel = self.currentProperty.db.allMyReviews.filter({$0.rifPiatto == idPiatto})
         let dishRevRif = dishRevModel.map({$0.id})
         return (dishRevModel,dishRevRif)
         

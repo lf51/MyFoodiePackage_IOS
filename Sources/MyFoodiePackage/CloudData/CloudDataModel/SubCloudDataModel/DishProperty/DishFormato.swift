@@ -57,7 +57,7 @@ public struct DishFormat:Hashable,Codable {
             
 }
 
-public enum DishFormatType:Codable {
+public enum DishFormatType:String,Codable {
     
     case mandatory,opzionale
     

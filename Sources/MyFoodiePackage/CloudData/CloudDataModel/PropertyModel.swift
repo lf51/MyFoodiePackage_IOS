@@ -164,7 +164,7 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         case descrizione
        
         case cityName
-       // case coordinates
+        //case coordinates // test
         case latitude
         case longitude
         
@@ -177,14 +177,13 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         
     }
     
-    
     public func encode(to encoder: Encoder) throws {
         
         var container = encoder.container(keyedBy: CodingKeys.self)
         
         try container.encode(coordinates.latitude, forKey: .latitude)
         try container.encode(coordinates.longitude, forKey: .longitude)
-        
+            
         try container.encode(id, forKey: .id)
         try container.encode(intestazione, forKey: .intestazione)
         try container.encode(descrizione, forKey: .descrizione)

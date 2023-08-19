@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ProvenienzaIngrediente:MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform*/ {
+public enum ProvenienzaIngrediente:String,MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform*/ {
  
     // Nota Vocale 18.10
     

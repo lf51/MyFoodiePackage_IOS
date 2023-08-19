@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum GiorniDelServizio:MyProEnumPack_L2,Identifiable,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform*/ {
+public enum GiorniDelServizio:String,MyProEnumPack_L2,Identifiable,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform*/ {
 
     public static var allCases:[GiorniDelServizio] = [.lunedi,.martedi,.mercoledi,.giovedi,.venerdi,.sabato,.domenica]
     public static var defaultValue: GiorniDelServizio = .lunedi

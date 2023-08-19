@@ -10,6 +10,20 @@ import SwiftUI
 
 // Creare Oggetto Ingrediente
 
+/// oggetto di servizio per salvare i dati variabili da utente a utente ad esclusione dell'Id
+public struct IngredientModelImage:MyProStarterPack_L0,Codable {
+    
+    public var id:String
+    public var descrizione:String
+    public var status:StatusModel
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    
+}
+
 public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1*/ /*MyModelStatusConformity */ {
  
     public static func == (lhs: IngredientModel, rhs: IngredientModel) -> Bool {
@@ -44,6 +58,49 @@ public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyP
    // var inventario:Inventario = Inventario()
 
     // Method
+
+    public enum CodingKeys: CodingKey {
+        
+        case id
+        case intestazione
+       // case descrizione
+        case conservazione
+        case produzione
+        case provenienza
+        case allergeni
+        case origine
+       // case status
+    }
+    
+ 
+    
+  
+    
+   /* private var sharedKey:[CodingKeys] = [.allergeni,.conservazione,.conservazione,.intestazione,.origine,.produzione,.provenienza]
+    private var privateKey:[CodingKeys] = [.id,.descrizione,.status]
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(descrizione, forKey: .descrizione)
+        try container.encode(status, forKey: .status)
+        
+        
+        
+    } */
+
+  /* public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.intestazione = try container.decode(String.self, forKey: .intestazione)
+        self.descrizione = try container.decode(String.self, forKey: .descrizione)
+        self.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
+        self.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
+        self.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
+        self.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
+        self.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)
+        self.status = try container.decode(StatusModel.self, forKey: .status)
+    }*/
     
     public init(intestazione:String,descrizione:String,conservazione:ConservazioneIngrediente,produzione:ProduzioneIngrediente,provenienza:ProvenienzaIngrediente,allergeni:[AllergeniIngrediente],origine:OrigineIngrediente,status:StatusModel) {
         
@@ -216,4 +273,26 @@ public struct IngredientModelInSintesi:Hashable {
     }
 }
 
-
+extension IngredientModel {
+    
+    /// Metodo con in quale aggiornamo l'ingredient Model pubblico all'immagine custom data dal singolo User
+    public func updateModel(from image:IngredientModelImage) -> Self {
+        
+        var updatedIng = self
+        updatedIng.descrizione = image.descrizione
+        updatedIng.status = image.status
+        return updatedIng
+        
+    }
+    
+    public func retrieveImageFromSelf() -> IngredientModelImage {
+        
+        return IngredientModelImage(
+            id: self.id,
+            descrizione: self.descrizione,
+            status: self.status)
+    }
+    
+    
+    
+}
