@@ -115,7 +115,7 @@ public struct DishModelRow_ClientVersion: View {
                         
                         Image(systemName: "chevron.\(sign).circle.fill")
                         //.imageScale(.medium)
-                            .foregroundColor(self.openInfo ? .seaTurtle_4 : .seaTurtle_3)
+                            .foregroundColor(self.openInfo ? Color.seaTurtle_4 : Color.seaTurtle_3)
                             .shadow(color: .seaTurtle_1, radius: 5)
                     }
                     

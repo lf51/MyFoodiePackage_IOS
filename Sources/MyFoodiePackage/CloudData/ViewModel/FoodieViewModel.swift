@@ -136,7 +136,18 @@ public struct PropertyCurrentData {
         self.setup = setup
         self.db = db
     }
-        
+    
+    public init(
+        userRole: UserRoleModel,
+        propertyModel: PropertyModel) {
+            // init prima registrazione proprietà
+        self.userRole = userRole
+        self.info = propertyModel
+        self.inventario = Inventario()
+        self.setup = AccountSetup()
+        self.db = CloudDataStore()
+    }
+    
 }
 
 

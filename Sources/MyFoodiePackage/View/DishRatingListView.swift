@@ -105,7 +105,7 @@ public struct DishRatingListView: View {
                 
         }
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Text("+ Add")
                 }
             }

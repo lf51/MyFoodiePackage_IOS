@@ -157,21 +157,25 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
   
     // Set Codable 14.12
     
-   enum CodingKeys:String,CodingKey {
+  public enum MainCodingKeys:String,CodingKey {
+        case propertyInfo = "property_info"
+    }
+    
+  public enum CodingKeys:String,CodingKey {
         
         case id
         case intestazione
         case descrizione
        
-        case cityName
+        case cityName  //"city_name"
         //case coordinates // test
         case latitude
         case longitude
         
-        case webSite
-        case phoneNumber
-        case streetAdress
-        case numeroCivico
+        case webSite  //"website"
+        case phoneNumber // "phone_number"
+        case streetAdress // "street_adress"
+        case numeroCivico // "numero_civico"
        
         case organigramma
         
@@ -179,8 +183,9 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
     
     public func encode(to encoder: Encoder) throws {
         
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        
+        var main = encoder.container(keyedBy: MainCodingKeys.self)
+        var container = main.nestedContainer(keyedBy: CodingKeys.self, forKey: .propertyInfo)
+      
         try container.encode(coordinates.latitude, forKey: .latitude)
         try container.encode(coordinates.longitude, forKey: .longitude)
             
@@ -197,8 +202,15 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
     }
     
     public init(from decoder: Decoder) throws {
-
+        print("Dentro Decodifica PropertyModel")
+        let main = try decoder.container(keyedBy: MainCodingKeys.self)
+        print("Dentro Decodifica PropertyModel/creato main")
+      //  let values = try main.nestedContainer(keyedBy: CodingKeys.self, forKey: .propertyInfo)
+    
+       // print("Dentro Decodifica PropertyModel/ create Values")
+        
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        print("Dentro Decodifica PropertyModel/ create Values")
         
         let decodeLatitude = try values.decode(Double.self, forKey: .latitude)
         let decodedLongitude = try values.decode(Double.self, forKey: .longitude)
@@ -213,6 +225,7 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         self.streetAdress = try values.decode(String.self, forKey: .streetAdress)
         self.numeroCivico = try values.decode(String.self, forKey: .numeroCivico)
         self.organigramma = try values.decode([UserRoleModel].self, forKey: .organigramma)
+        print("Fine_decodifica prop:\(self.intestazione)")
          
     }
     
