@@ -5,238 +5,258 @@
 //  Created by Calogero Friscia on 10/12/22.
 //
 
+// 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 // 05.09.23 githib token
+
 import Foundation
+import SwiftUI
 
-/*public protocol MyProViewModelPack_L1:ObservableObject {
-    
-    var allMyIngredients:[IngredientModel] { get set }
-    var allMyDish:[DishModel] { get set }
-    var allMyMenu:[MenuModel] { get set }
-    var allMyProperties:[PropertyModel] { get set }
-    var allMyCategories:[CategoriaMenu] { get set }
-    var allMyReviews:[DishRatingModel] { get set }
-    
-    // associatedType V:MyProXXXX
-    // var cloudDataStore: V { get set }
-    
-} */
 
-//protocol MyProXXX {
- //   associatedtype CodingKeys:String,CodingKey
-//}
-/*
-public struct PropertyDataObject {
+public struct PropertyCurrentData:Codable { // deprecata
     
+   // public var userRole:UserRoleModel // non direct save su firebase
     public var info:PropertyModel?
-    public var db:CloudDataStore
+    public var inventario:Inventario
+    public var setup:AccountSetup
+   // public var db:CloudDataStore // no direct Save - decodificato come subCollection
+
+    public init(
+       // userRole: UserRoleModel,
+        info: PropertyModel,
+        inventario: Inventario,
+        setup: AccountSetup/*,
+        db: CloudDataStore*/) {
+       // self.userRole = userRole
+        self.info = info
+        self.inventario = inventario
+        self.setup = setup
+      //  self.db = db
+    }
+    
+    public init(
+      //  userRole: UserRoleModel,
+        propertyModel: PropertyModel) {
+            // init prima registrazione proprietà
+       // self.userRole = userRole
+        self.info = propertyModel
+        self.inventario = Inventario()
+        self.setup = AccountSetup()
+       // self.db = CloudDataStore()
+    }
     
     public enum CodingKeys:String,CodingKey {
         
-        case info = "propertyInfo"
-        case db = "propertyData"
+       // case info = "property_info"
+        case inventario = "property_inventario"
+        case setup = "property_setup"
         
     }
     
-    public init() {
+    public init(from decoder: Decoder) throws {
         
-        self.info = nil
-        self.db = CloudDataStore()
-    }
-    
-    public init(registra newProperty:PropertyModel,dataBase:CloudDataStore?) {
-        self.info = newProperty
-        
-        if let data = dataBase {
-            self.db = data
-        } else {
-            self.db = CloudDataStore()
-        }
-        
-    }
-    
-}*/ // deprecato in futuro
-/*
-public struct PropertyDataModel {
+        print("[DECODE]_propertyCurrentData")
 
-    public var user:UserRoleModel
-    public var cloudData:PropertyDataObject // valutare Optional
-   // public var propertyInfo:PropertyModel?
-   // public var propertyData:CloudDataStore // valutare di metterlo come optional
-      
-    public init(userAuth:UserRoleModel?) {
-        
-        if let authUser = userAuth {
-            
-            self.user = authUser
-            
-        } else {
-            
-            self.user = UserRoleModel(ruolo: .guest)
-        }
-        
-        self.cloudData = PropertyDataObject()
-    }
-    
-    public init(user:UserRoleModel,propertyData:PropertyDataObject) {
-        
-        self.user = user
-        self.cloudData = propertyData
-        
-    }
-    
-   /* public init(from decoder: Decoder) throws {
-        
+        let infoContainer = try decoder.singleValueContainer()
+        self.info = try infoContainer.decode(PropertyModel.self)
+
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        let property = try container.decodeIfPresent(PropertyModel.self, forKey: .propertyInfo)
-        
-        guard let organigramma = property?.organigramma,
-              let user = organigramma.first(where: {$0.id == FoodieViewModel.userAuthData.id}) else {
-            // lo user NON è autenticato / verifica superflua in quanto già effettuata nella PropertyLocalImage ma necessaria per tirare fuori lo userRoleModel. Da valutare meccanismi più efficienti
-            let context = DecodingError.Context(codingPath: [Self.CodingKeys.propertyInfo], debugDescription: "Organigramma non trovato o User Non Autorizzato")
-            throw DecodingError.valueNotFound(String.self, context)
-        }
-        
-        self.propertyData = try container.decode(CloudDataStore.self, forKey: .propertyData)
-        self.currentUser = user
-        self.propertyInfo = property
- 
+        self.inventario = try container.decodeIfPresent(Inventario.self, forKey: .inventario) ?? Inventario()
+       
+        self.setup = try container.decodeIfPresent(AccountSetup.self, forKey: .setup) ?? AccountSetup()
+
     }
+    
+    
+} // deprecato
+
+/// oggetto di servizio per salvare i riferimenti delle proprietà dello User
+public struct UserCloudData:Codable {
+    
+    // Auth info
+    public let id:String
+    public let email:String
+    public var userName:String
+    public let dataRegistrazione:Date?
+    // Assunta di ufficio in fase di creazione post Auth
+    public var isPremium:Bool?
+    // Creata in fase di registrazione della Property
+    public var propertiesRef:[String]?
+    // Creata in base alla proprietà caricata
+    public var propertyRole:CurrentUserRoleModel? // viene salvata nell'organigramma della property
+    
+    public init(
+        id: String,
+        email: String,
+        userName: String,
+        isPremium: Bool ) {
+            
+        self.id = id
+        self.email = email
+        self.userName = userName
+        self.isPremium = isPremium
+        self.dataRegistrazione = Date.now
+            
+        self.propertiesRef = nil
+        self.propertyRole = nil
+    }
+    
+    public enum CodingKeys:String,CodingKey {
+        
+        case id = "user_id"
+        case email = "user_email"
+        case userName = "user_name"
+        case dataRegistrazione = "registered_since"
+        
+        case isPremium = "user_is_premium"
+        case propertiesRef = "user_properties_ref"
+        
+    }
+    
+    public enum SubRoleKey:String,CodingKey {
+        // necessario per salvare il currentUserRole in linea con le CodingKey
+        case ruolo
+        case restrizioni
+        case inizioCollaborazione = "inizio_collaborazione"
+    }
+    
+    
+    /// Lo usiamo per switchare le due configurazioni di salvataggio. Una per il business, una per l'organigramma. Default Value is True.
+    /// True Salva le chiavi:
+    /// • id, email, username, isPremium e propertiesRef se presente
+    /// False salva le chiavi:
+    /// • id, email,username, propertyRole se presente
+    public var codeForBusinessCollection:CodingUserInfoKey = CodingUserInfoKey(rawValue: "businessCodable")!
     
     public func encode(to encoder: Encoder) throws {
         
         var container = encoder.container(keyedBy: CodingKeys.self)
+        // salvate sia nello userBusiness sia nell'organigramma
+        try container.encode(self.id, forKey: .id)
+        try container.encode(self.email, forKey: .email)
+        try container.encode(self.userName, forKey: .userName)
         
-        try container.encode(propertyInfo, forKey: .propertyInfo)
-        try container.encode(propertyData, forKey: .propertyData)
+        let isCodeForBusiness = encoder.userInfo[codeForBusinessCollection] as? Bool ?? true
         
-        
-    } */
-    
-}*/ // deprecato in futuro
+        if isCodeForBusiness {
+            print("[ENCODE]_userCloudData_businessSection")
+            // salvate solo nello user Business
+            try container.encodeIfPresent(self.isPremium, forKey: .isPremium)
+            try container.encodeIfPresent(self.dataRegistrazione, forKey: .dataRegistrazione)
+            try container.encodeIfPresent(self.propertiesRef, forKey: .propertiesRef)
+            
+        } else {
+            print("[ENCODE]_userCloudData_organigrammaSection")
+            // salvate solo nell'organigramma
+          //  try container.encodeIfPresent(self.propertyRole, forKey: .propertyRole)
+            var side = encoder.container(keyedBy: SubRoleKey.self)
+            
+            try side.encodeIfPresent(self.propertyRole?.ruolo, forKey: .ruolo)
+            try side.encodeIfPresent(self.propertyRole?.restrictionLevel, forKey: .restrizioni)
+            try side.encodeIfPresent(self.propertyRole?.inizioCollaborazione, forKey: .inizioCollaborazione)
 
+        }
 
-public struct PropertyCurrentData {
-    
-    public var userRole:UserRoleModel // non direct save su firebase
-    public var info:PropertyModel?
-    public var inventario:Inventario
-    public var setup:AccountSetup
-    public var db:CloudDataStore // no direct Save - decodificato come subCollection
-    
-    public init(
-        userRole: UserRoleModel,
-        info: PropertyModel,
-        inventario: Inventario,
-        setup: AccountSetup,
-        db: CloudDataStore) {
-        self.userRole = userRole
-        self.info = info
-        self.inventario = inventario
-        self.setup = setup
-        self.db = db
     }
     
-    public init(
-        userRole: UserRoleModel,
-        propertyModel: PropertyModel) {
-            // init prima registrazione proprietà
-        self.userRole = userRole
-        self.info = propertyModel
-        self.inventario = Inventario()
-        self.setup = AccountSetup()
-        self.db = CloudDataStore()
-    }
     
+    public static let decoderCase = CodingUserInfoKey(rawValue: "decoding_case")!
+    
+    public init(from decoder: Decoder) throws {
+        //
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let decodingCase = decoder.userInfo[Self.decoderCase] as? DecodingCase ?? .userCollection
+      
+        let savedUID = try container.decode(String.self, forKey: .id)
+        
+        self.id = savedUID
+        self.userName = try container.decode(String.self, forKey: .userName)
+        self.email = try container.decode(String.self, forKey: .email)
+        
+        switch decodingCase {
+            
+        case .userCollection:
+            print("[DECODE]_userCloudData_userCollection")
+            
+            
+            self.isPremium = try container.decodeIfPresent(Bool.self, forKey: .isPremium)
+            self.dataRegistrazione = try container.decodeIfPresent(Date.self, forKey: .dataRegistrazione)
+            self.propertiesRef = try container.decodeIfPresent([String].self, forKey: .propertiesRef)
+            
+            self.propertyRole = nil
+            
+        case .propertyLocalImage(let userUID):
+            
+            print("[DECODE]_userCloudData_forPropertyLocalImage")
+
+            guard savedUID == userUID else {
+                // controllo autorizzazione
+                let context = DecodingError.Context(codingPath: [Self.CodingKeys.id], debugDescription: "User Non Autorizzato")
+                print("[DECODE_ERROR]_userCloudData_fromOrganigramma: \(context.debugDescription)")
+                throw DecodingError.valueNotFound(String.self, context)
+              
+            }
+            
+        fallthrough
+            
+        case .organigramma:
+            // da rifare
+            print("[DECODE]_userCloudData_forOrganigramma")
+          
+            let side = try decoder.container(keyedBy: SubRoleKey.self)
+            
+            let ruolo = try side.decode(RoleModel.self, forKey: .ruolo)
+            let restrizioni = try side.decodeIfPresent([RestrictionLevel].self, forKey: .restrizioni)
+            let inizioCollaborazione = try side.decode(Date.self, forKey: .inizioCollaborazione)
+            
+            self.propertyRole = CurrentUserRoleModel(
+                ruolo: ruolo,
+                restrictionLevel: restrizioni,
+                inizioCollaborazione: inizioCollaborazione)
+
+            self.isPremium = nil
+            self.dataRegistrazione = nil
+            self.propertiesRef = nil
+        }
+     
+
+            
+
+        
+    } // close init decoder
+    
+    
+  public enum DecodingCase {
+        
+        case userCollection
+        case propertyLocalImage(_ userUID:String)
+        case organigramma
+    
+    }
+   
 }
-
 
 
 open class FoodieViewModel:ObservableObject {
     
-    public static var userAuthData:(id:String,userName:String,mail:String) = ("","","")
- //   @Published public var cloudData:CloudDataStore
+    //06.09.23 La superClasse o va abolita o va usata come contenitore di metodi trasfersali alle due/tre app, generiche e riutilizzabili. Incastrarcia a dare ad antrambe le app la stessa logia di partenza è un esercizio di coding, nulla in più. Ci ha fatto e ci fa perdere molto tempo, e non lo si può ottimizzare fin quando non si ha una visione finale, alta e completa sul funzionamento di entrambe. Al client, per intenderci, non frega niente dell'inventario. Potrebbe fregargli del setup. Tutto da valutare. Cmq sarebbe più da beginner ma più utile e veloce sviluppare su due canali autonomi. Dopo aver finito vedere se e come accorpare più funzioni.
     
-    // aggiungere compiler
-   /* @Published public var setupAccount: AccountSetup
-    @Published public var inventarioScorte: Inventario // pensare di metterla optional
     
-    @Published public var allMyIngredients:[IngredientModel]
-    @Published public var allMyDish:[DishModel]
-    @Published public var allMyMenu:[MenuModel]
-    @Published public var allMyProperties:[PropertyModel]
-    @Published public var allMyCategories:[CategoriaMenu]
-    @Published public var allMyReviews:[DishRatingModel] */
+    // comune alla business, alla client e in futuro a quella fornitori
     
-   // public var dbCompiler:Any?
-   // @Published public var currentUserRoleModel:UserRoleModel // deprecata
-   // @Published public var currentProperty:PropertyModel? // deprecata
-   // @Published public var cloudData:CloudDataStore // deprecata
-    
+    @Published public var currentUser:UserCloudData?
     @Published public var currentProperty:PropertyCurrentData
-   // @Published public var propertyMainObject:PropertyCurrentData
-    
-    public init(currentProperty: PropertyCurrentData) {
+    @Published public var db:CloudDataStore
+        
+    // deprecato
+    public static var userAuthData:(id:String,userName:String,mail:String) = ("","","") // deprecata
 
+    
+  
+    public init(currentProperty: PropertyCurrentData) {
+        self.db = CloudDataStore()
         self.currentProperty = currentProperty
-    }
+    } // deprecato
     
-    
-   /*public init(userAuth:UserRoleModel?,currentProperty:PropertyDataModel?) {
-        // 13.08.23 Temporaneo da sistemare
-        if let user = userAuth {
-            
-            Self.userAuthData = (user.id,user.userName,user.mail)
-            
-        }
         
-        if let currentProperty {
-            
-            self.currentProperty = PropertyCurrentData
-            
-        } else {
-            
-            self.currentProperty = PropertyDataModel(userAuth: nil)
-        }
-        
-        
-        
-    } */
-    
-    
-   /* public init(userAuth:UserRoleModel?) {
-        
-        if let user = userAuth {
-            
-            Self.userAuthData = (user.id,user.userName,user.mail)
-            
-        }
-        
-        
-       // self.cloudData = CloudDataStore()
-       // self.currentProperty = nil
-       // self.currentUserRoleModel = UserRoleModel() //
-        
-        self.currentProperty = PropertyDataModel(userAuth: userAuth)
-       // self.onProperty = PropertyDataModel(userAuth: authUser)
-        
-    }*/ // 29.07.23 Studiare la relazione fra init delle classi con le superClassi per capire come ottimizzare l'init del viewModel nelle sottoclassi
-    
-  /*  public init(userUID:String? = nil) { // deprecata
-        
-       /* self.allMyIngredients = []
-        self.allMyDish = []
-        self.allMyMenu = []
-        self.allMyProperties = []
-        self.allMyCategories = []
-        self.allMyReviews = []
- 
-        self.setupAccount = AccountSetup()
-        self.inventarioScorte = Inventario() */
- 
-        self.cloudData = CloudDataStore(userUID: userUID)
-    } */
-    
    // Methods
     
    public func modelFromId<M:MyProStarterPack_L0>(id:String,modelPath:KeyPath<FoodieViewModel,[M]>) -> M? {
@@ -295,7 +315,7 @@ open class FoodieViewModel:ObservableObject {
        
         let tipologia:TipologiaMenu = menuDiSistema.returnTipologiaMenu()
         
-       return self.currentProperty.db.allMyMenu.first(where:{
+       return self.db.allMyMenu.first(where:{
                //  $0.tipologia.returnTypeCase() == tipologia &&
                  $0.tipologia == tipologia && // Vedi Nota 09.11
                  $0.isOnAirValue().today
@@ -309,10 +329,10 @@ open class FoodieViewModel:ObservableObject {
         
         if rifReview == nil {
             
-            starter = self.currentProperty.db.allMyReviews
+            starter = self.db.allMyReviews
             
         } else {
-            starter = self.modelCollectionFromCollectionID(collectionId: rifReview!, modelPath: \.currentProperty.db.allMyReviews)
+            starter = self.modelCollectionFromCollectionID(collectionId: rifReview!, modelPath: \.db.allMyReviews)
         }
         
         let currentDate = Date()
@@ -337,7 +357,7 @@ open class FoodieViewModel:ObservableObject {
     /// Torna tutti i rif delle recensioni che riguardano un determinato Piatto, o tutti i model
     public func reviewFilteredByDish(idPiatto:String) -> (model:[DishRatingModel],rif:[String]) {
         
-        let dishRevModel = self.currentProperty.db.allMyReviews.filter({$0.rifPiatto == idPiatto})
+        let dishRevModel = self.db.allMyReviews.filter({$0.rifPiatto == idPiatto})
         let dishRevRif = dishRevModel.map({$0.id})
         return (dishRevModel,dishRevRif)
         

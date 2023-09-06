@@ -25,6 +25,15 @@ public struct AccountSetup: Codable {
         self.autoPauseDish_byPauseING = mettiInPausaDishByIngredient
     } */
     
+    public enum CodingKeys:String,CodingKey {
+        
+        case id
+        case startCountDownMenuAt = "start_countdown"
+        case autoPauseDish_byPauseING = "autopausedish_bypause_ing"
+        case autoPauseDish_byArchiveING = "autopausedish_byarchive_ing"
+        case autoPauseDish_byDeleteING = "autopausedish_bydelete_ing"
+    }
+    
     public init() {
         
         self.id = "userSetup"

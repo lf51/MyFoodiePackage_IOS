@@ -22,6 +22,20 @@ public struct Inventario:Equatable,Codable {
     public var lockedId:[String:[String]] // Key: data || value:[id oggetti a cui è stato cambiato lo status]
     public var archivioIngInEsaurimento: [String:[String]] // key:DataCorrente || value = [id ingredienti Esauriti depennati]
     
+    
+    public enum CodingKeys:String,CodingKey {
+        
+        case id
+        case ingInEsaurimento = "ingredienti_in_esaurimento"
+        case ingEsauriti = "ingredienti_esauriti"
+        case archivioNotaAcquisto = "archivio_nota_acquisto"
+        case cronologiaAcquisti = "cronologia_acquisti"
+        case lockedId = "ingredienti_locked"
+        case archivioIngInEsaurimento = "archivio_ingredienti_in_esaurimento"
+        
+    }
+    
+    
    public init(id: String, ingInEsaurimento: [String], ingEsauriti: [String], archivioNotaAcquisto: [String : String], cronologiaAcquisti: [String : [String]], lockedId: [String : [String]], archivioIngInEsaurimento: [String : [String]]) {
         
         // Non dovrebbe essere in uso. Deprecabile

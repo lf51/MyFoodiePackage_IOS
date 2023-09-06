@@ -854,7 +854,7 @@ public struct DishModelRow_ClientVersion: View {
         if let idSostituto = ing.idSostituto,
            ing.isTemporaryOff {
             
-            if let modelSostituto = self.viewModel.modelFromId(id: idSostituto, modelPath: \.currentProperty.db.allMyIngredients),
+            if let modelSostituto = self.viewModel.modelFromId(id: idSostituto, modelPath: \.db.allMyIngredients),
                modelSostituto.status.checkStatusTransition(check: .disponibile){
                 
               //  let hasAllergene = !modelSostituto.allergeni.isEmpty
@@ -1073,7 +1073,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                 ScrollView {
                     
                     
-                    ForEach(viewModel.currentProperty.db.allMyDish) { dish in
+                    ForEach(viewModel.db.allMyDish) { dish in
                         
                         DishModelRow_ClientVersion(
                             viewModel: viewModel,
@@ -1125,11 +1125,11 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
 }
 
 let testCurrentProperty = PropertyCurrentData(
-   userRole: UserRoleModel(),
-   info: PropertyModel(intestazione: "", cityName: "", coordinates: CLLocationCoordinate2D(latitude: 37.510977, longitude: 13.041434), webSite: "", phoneNumber: "", streetAdress: "", numeroCivico: "", admin: UserRoleModel()),
+ //  userRole: UserRoleModel(),
+   info: PropertyModel(intestazione: "", cityName: "", coordinates: CLLocationCoordinate2D(latitude: 37.510977, longitude: 13.041434), webSite: "", phoneNumber: "", streetAdress: "", numeroCivico: "", admin: UserCloudData(id: "test", email: "test@", userName: "@test", isPremium: false)),
    inventario: Inventario(),
-   setup: AccountSetup(),
-   db: CloudDataStore())
+   setup: AccountSetup()/*,
+   db: CloudDataStore()*/)
 
 var testAccount: FoodieViewModel = {
 

@@ -73,13 +73,34 @@ public enum RestrictionLevel:Codable {
 
 }
 
+public struct CurrentUserRoleModel:Hashable, Codable {
+    
+    public var ruolo:RoleModel
+    public var restrictionLevel:[RestrictionLevel]?
+    public var inizioCollaborazione:Date
+    
+    public init(ruolo: RoleModel, restrictionLevel: [RestrictionLevel]? = nil) {
+        self.ruolo = ruolo
+        self.restrictionLevel = restrictionLevel
+        self.inizioCollaborazione = Date.now
+    }
+    
+    public init(ruolo: RoleModel, restrictionLevel: [RestrictionLevel]? = nil, inizioCollaborazione:Date) {
+        self.ruolo = ruolo
+        self.restrictionLevel = restrictionLevel
+        self.inizioCollaborazione = inizioCollaborazione
+    }
+    
+}
 
 
-public struct UserRoleModel:Codable,Hashable,Identifiable {
+
+public struct UserRoleModel:Codable,Hashable,Identifiable { // deprecata
     // authInfo
-    public let id:String
-    public var userName:String
-    public let mail:String
+    public let id:String// deprecata
+    public var userName:String// deprecata
+    public let mail:String// deprecata
+    
     // additional Info
     public var ruolo:RoleModel
     public var restrictionLevel:[RestrictionLevel]?
@@ -94,7 +115,7 @@ public struct UserRoleModel:Codable,Hashable,Identifiable {
         self.ruolo = .auth
         self.restrictionLevel = nil
         self.inizioCollaborazione = nil
-    }
+    } // deprecata
     
     /// add new Collaborator
     public init() { // deprecato
@@ -158,7 +179,8 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
     // Set Codable 14.12
     
   public enum MainCodingKeys:String,CodingKey {
-        case propertyInfo = "property_info"
+      case propertyInfo = "property_info"
+
     }
     
   public enum CodingKeys:String,CodingKey {
@@ -197,20 +219,17 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         try container.encode(phoneNumber, forKey: .phoneNumber)
         try container.encode(streetAdress, forKey: .streetAdress)
         try container.encode(numeroCivico, forKey: .numeroCivico)
+
         try container.encode(organigramma, forKey: .organigramma)
         
     }
     
     public init(from decoder: Decoder) throws {
-        print("Dentro Decodifica PropertyModel")
-        let main = try decoder.container(keyedBy: MainCodingKeys.self)
-        print("Dentro Decodifica PropertyModel/creato main")
-      //  let values = try main.nestedContainer(keyedBy: CodingKeys.self, forKey: .propertyInfo)
-    
-       // print("Dentro Decodifica PropertyModel/ create Values")
+        print("[DECODE]_PropertyModel")
+        //throw URLError(.badURL)
         
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        print("Dentro Decodifica PropertyModel/ create Values")
+        let main = try decoder.container(keyedBy: MainCodingKeys.self)
+        let values = try main.nestedContainer(keyedBy: CodingKeys.self, forKey: .propertyInfo)
         
         let decodeLatitude = try values.decode(Double.self, forKey: .latitude)
         let decodedLongitude = try values.decode(Double.self, forKey: .longitude)
@@ -224,9 +243,8 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         self.phoneNumber = try values.decode(String.self, forKey: .phoneNumber)
         self.streetAdress = try values.decode(String.self, forKey: .streetAdress)
         self.numeroCivico = try values.decode(String.self, forKey: .numeroCivico)
-        self.organigramma = try values.decode([UserRoleModel].self, forKey: .organigramma)
-        print("Fine_decodifica prop:\(self.intestazione)")
-         
+        self.organigramma = try values.decode([UserCloudData].self, forKey: .organigramma)
+   
     }
     
     
@@ -266,7 +284,7 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
     public var streetAdress: String
     public var numeroCivico: String
     
-    public var organigramma:[UserRoleModel]
+    public var organigramma:[UserCloudData]
     // MyProCloudPack_L1
     
    /* public init(frDocID:String,frDoc: [String:Any]) {
@@ -329,7 +347,7 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
         phoneNumber: String,
         streetAdress: String,
         numeroCivico: String,
-        admin:UserRoleModel) {
+        admin:UserCloudData) {
         
         self.id = Self.creaID(coordinates: coordinates,cityName: cityName)
         self.intestazione = intestazione
