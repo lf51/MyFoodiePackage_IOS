@@ -43,6 +43,12 @@ public struct PropertyCurrentData:Codable { // deprecata
        // self.db = CloudDataStore()
     }
     
+    public init() {
+        self.info = nil
+        self.inventario = Inventario()
+        self.setup = AccountSetup()
+    }
+    
     public enum CodingKeys:String,CodingKey {
         
        // case info = "property_info"

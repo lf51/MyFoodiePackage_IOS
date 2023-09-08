@@ -9,8 +9,7 @@ import Foundation
 //import Firebase
 
 public struct CategoriaMenu:
-    MyProStarterPack_L0,
-    Codable
+    MyProStarterPack_L0
    /*MyProStarterPack_L1,
     MyProEnumPack_L2,
     MyProDescriptionPack_L0,
@@ -30,8 +29,8 @@ public struct CategoriaMenu:
     public var id: String
     
     public var intestazione: String
-    public var image: String
-    public var descrizione: String
+    public var image: String // non è optional ma ha un valore di default
+    public var descrizione: String // sarà optional
     public var listIndex:Int?
         
     public init(id: String, intestazione: String, image: String, descrizione: String) {
@@ -52,28 +51,7 @@ public struct CategoriaMenu:
     }
     
     // MyProCloudPack_L1
-    
-   /* public init(frDocID:String,frDoc: [String:Any]) {
         
-        self.id = frDocID
-        self.intestazione = frDoc[DataBaseField.intestazione] as? String ?? ""
-        self.image = frDoc[DataBaseField.image] as? String ?? ""
-        self.descrizione = frDoc[DataBaseField.descrizione] as? String ?? ""
-        self.listIndex = frDoc[DataBaseField.listIndex] as? Int ?? nil
-    }
-    
-
-    public struct DataBaseField {
-        
-        public static let intestazione = "intestazione"
-        public static let descrizione = "descrizione"
-        public static let image = "image"
-        public static let listIndex = "listIndex"
-        
-    } */
-    
-    //
-    
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     } // forse inutile
@@ -112,7 +90,61 @@ public struct CategoriaMenu:
     
     // method added 13.09
     
-  
+}
+
+
+
+extension CategoriaMenu:Codable {
     
- 
+    public static let decodingInfo:CodingUserInfoKey = CodingUserInfoKey(rawValue: "categoriaMenu")!
+    
+    public enum CodingKeys:String,CodingKey {
+        
+        case id
+        // vanno nel cloud
+        case intestazione
+        case emoji
+        // a discrezione dell'utente
+        case descrizione
+        case menuIndex = "menu_index" // la posizione in menu
+    }
+    
+    public init(from decoder: Decoder) throws {
+    
+        let decodingCase = decoder.userInfo[Self.decodingInfo] as? DecodingCase ?? .categoriesSubCollection
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.id = try container.decode(String.self, forKey: .id)
+        
+        switch decodingCase {
+            
+        case .categoriesMainCollection:
+            
+            self.intestazione = try container.decode(String.self, forKey: .intestazione)
+            self.image = try container.decode(String.self, forKey: .emoji)
+            self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione) ?? ""
+           
+        case .categoriesSubCollection:
+            
+            self.intestazione = ""
+            self.image = ""
+            self.descrizione = ""
+            
+        }
+        
+        
+        
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        //
+    }
+    
+    public enum DecodingCase {
+        
+        case categoriesMainCollection
+        case categoriesSubCollection
+    }
+    
 }
