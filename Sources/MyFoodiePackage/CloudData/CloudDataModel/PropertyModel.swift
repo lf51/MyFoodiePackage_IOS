@@ -275,7 +275,7 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
     
     public var id: String
     public var intestazione: String // deve sostituire il nome
-    public var descrizione: String
+    public var descrizione: String?
    
     public var cityName: String
     public var coordinates: CLLocationCoordinate2D

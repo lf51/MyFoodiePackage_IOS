@@ -45,7 +45,7 @@ public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyP
     public var id: String = UUID().uuidString //
 
     public var intestazione: String = "" //
-    public var descrizione: String = "" //
+    public var descrizione: String? = "" //
     
     public var conservazione: ConservazioneIngrediente = .defaultValue //
     public var produzione: ProduzioneIngrediente = .defaultValue //
@@ -289,7 +289,7 @@ extension IngredientModel {
         
         return IngredientModelImage(
             id: self.id,
-            descrizione: self.descrizione,
+            descrizione: self.descrizione ?? "",
             status: self.status)
     }
     

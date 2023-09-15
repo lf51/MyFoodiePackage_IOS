@@ -24,7 +24,10 @@ public enum AllergeniIngrediente:String, MyProStarterPack_L0,Codable/*MyProStart
         EmptyView()
     }
     
-    public var intestazione: String {get { self.simpleDescription() } set{ } }
+    public var intestazione: String {
+        get { self.simpleDescription() }
+        set { }
+     }
     public var descrizione: String { get { self.extendedDescription() } set { } }
     
     public static var allCases: [AllergeniIngrediente] = [.arachidi_e_derivati,.anidride_solforosa_e_solfiti,.crostacei,.fruttaAguscio,.glutine,.latte_e_derivati,.lupini,.molluschi,.pesce,.sedano,.senape,.sesamo,.soia,.uova_e_derivati]

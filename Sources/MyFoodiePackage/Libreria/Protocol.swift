@@ -43,7 +43,8 @@ public protocol MyProStarterPack_L1:MyProStarterPack_L0,MyProVMPack_L0 {
 
 public protocol MyProDescriptionPack_L0 {
 
-    var descrizione: String { get set }
+    var descrizione: String? { get set }
+    
 }
 
 /*public protocol MyProSearchPack_Sub_0 {

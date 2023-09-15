@@ -30,7 +30,7 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
     public var id: String
     
     public var intestazione: String // Categoria Filtraggio
-    public var descrizione: String
+    public var descrizione: String?
     public var rifDishIn: [String] // riferimenti del piatti
     
     public var tipologia: TipologiaMenu // Categoria di Filtraggio

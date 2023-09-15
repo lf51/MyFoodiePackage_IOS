@@ -377,8 +377,11 @@ public struct DishModelRow_ClientVersion: View {
         let areAllMentioned:Bool = {
             
             guard !mapByName.isEmpty else { return false }
+            guard let description = self.item.descrizione?.lowercased() else {
+                return false }
             
-            let description = self.item.descrizione.lowercased()
+           // description.lowercased()
+           // let description = self.item.descrizione.lowercased()
             
             for ing in mapByName {
                 
@@ -1011,20 +1014,28 @@ public struct DishModelRow_ClientVersion: View {
     }
     
     private func atomizzaDescrizionePiatto(ing:[IngredientModelInSintesi]) -> (texts:[Text],isEmpty:Bool) {
-        // 1. Creaiamo un dictionary String:Text per gli ingredienti.
-        let ingText = ing.reduce(into: [:]) { partialResult, ing in
-            partialResult[ing.intestazione.lowercased()] = textMapIngMain(ing: ing)
-        }
-        let description = self.item.descrizione
-        
-        var atomicDescription:[Text] = []
-        //2. Separiamo le parole della descrizione
-        
-        guard !description.isEmpty else {
+        // check description
+        guard let description = self.item.descrizione,
+                 !description.isEmpty else {
             
             let emptyText:Text = Text("(nessuno)")
             return ([emptyText],true)
         }
+        
+        // 1. Creaiamo un dictionary String:Text per gli ingredienti.
+        let ingText = ing.reduce(into: [:]) { partialResult, ing in
+            partialResult[ing.intestazione.lowercased()] = textMapIngMain(ing: ing)
+        }
+       // let description = self.item.descrizione
+        
+        var atomicDescription:[Text] = []
+        //2. Separiamo le parole della descrizione
+        
+       /* guard !description.isEmpty else {
+            
+            let emptyText:Text = Text("(nessuno)")
+            return ([emptyText],true)
+        } */
         
         let descrArray:[String] = description.components(separatedBy: " ")
         

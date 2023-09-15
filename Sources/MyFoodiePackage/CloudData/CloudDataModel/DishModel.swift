@@ -36,7 +36,8 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     public var percorsoProdotto:PercorsoProdotto
     
     public var intestazione: String
-    public var descrizione: String
+    
+    public var descrizione: String?
     public var rifReviews: [String] // Nota 13.09 // deprecata in futuro. Gestire da lato review con riferimento al piatto.
     
     /// array con i Rif degli ingredienti Principali

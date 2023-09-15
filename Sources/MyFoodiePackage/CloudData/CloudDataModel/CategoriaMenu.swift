@@ -30,10 +30,10 @@ public struct CategoriaMenu:
     
     public var intestazione: String
     public var image: String // non è optional ma ha un valore di default
-    public var descrizione: String // sarà optional
+    public var descrizione: String? // sarà optional
     public var listIndex:Int?
-        
-    public init(id: String, intestazione: String, image: String, descrizione: String) {
+ 
+    public init(id: String, intestazione: String, image: String, descrizione: String?) {
         // Probabilmente Inutile - Verificare
         self.id = id
         self.intestazione = intestazione
@@ -47,7 +47,7 @@ public struct CategoriaMenu:
         self.id = UUID().uuidString
         self.intestazione = ""
         self.image = "🍽"
-        self.descrizione = ""
+       // self.descrizione = nil
     }
     
     // MyProCloudPack_L1
@@ -57,10 +57,15 @@ public struct CategoriaMenu:
     } // forse inutile
     
     
+    public func isStrictlyEqual(to otherCategory:CategoriaMenu) -> Bool {
+        self.id == otherCategory.id &&
+        self.intestazione.lowercased() == otherCategory.intestazione.lowercased() &&
+        self.image == otherCategory.image
+        }
     
-    func createId() -> String { // Deprecata
+   /* func createId() -> String { // Deprecata
         self.intestazione.replacingOccurrences(of: " ", with: "").lowercased()
-    }
+    }*/
     
     public func simpleDescription() -> String { //
         self.intestazione
@@ -69,8 +74,13 @@ public struct CategoriaMenu:
     
     public func extendedDescription() -> String { // Deprecata
         print("Dentro ExtendedDescription in CategoriaMenu")
-        guard self.descrizione != "" else { return "No description yet"}
-        return self.descrizione
+        guard let descrizione,
+              descrizione != "" else {
+            return "No description yet"
+        }
+        
+      //  guard self.descrizione != "" else { return "No description yet"}
+        return descrizione
     }
     
     public func imageAssociated() -> String { // Deprecata
@@ -92,11 +102,9 @@ public struct CategoriaMenu:
     
 }
 
-
-
 extension CategoriaMenu:Codable {
     
-    public static let decodingInfo:CodingUserInfoKey = CodingUserInfoKey(rawValue: "categoriaMenu")!
+    public static let codingInfo:CodingUserInfoKey = CodingUserInfoKey(rawValue: "categoriaMenu")!
     
     public enum CodingKeys:String,CodingKey {
         
@@ -111,7 +119,7 @@ extension CategoriaMenu:Codable {
     
     public init(from decoder: Decoder) throws {
     
-        let decodingCase = decoder.userInfo[Self.decodingInfo] as? DecodingCase ?? .categoriesSubCollection
+        let decodingCase = decoder.userInfo[Self.codingInfo] as? DecodingCase ?? .categoriesSubCollection
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -123,13 +131,14 @@ extension CategoriaMenu:Codable {
             
             self.intestazione = try container.decode(String.self, forKey: .intestazione)
             self.image = try container.decode(String.self, forKey: .emoji)
-            self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione) ?? ""
-           
+        
         case .categoriesSubCollection:
             
             self.intestazione = ""
             self.image = ""
-            self.descrizione = ""
+            
+            self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)
+            self.listIndex = try container.decodeIfPresent(Int.self, forKey: .menuIndex)
             
         }
         
@@ -138,7 +147,22 @@ extension CategoriaMenu:Codable {
     }
     
     public func encode(to encoder: Encoder) throws {
-        //
+        print("[ENCODE]_CategoriaMenu")
+        let codingCase = encoder.userInfo[Self.codingInfo] as? DecodingCase ?? .categoriesSubCollection
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.id, forKey: .id)
+        
+        switch codingCase {
+            
+        case .categoriesMainCollection:
+            try container.encode(self.intestazione, forKey: .intestazione)
+            try container.encode(self.image, forKey: .emoji)
+            
+        case .categoriesSubCollection:
+            try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
+            try container.encodeIfPresent(self.listIndex, forKey: .menuIndex)
+        }
+
     }
     
     public enum DecodingCase {
