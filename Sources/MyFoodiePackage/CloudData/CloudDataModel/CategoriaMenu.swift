@@ -20,7 +20,8 @@ public struct CategoriaMenu:
         lhs.id == rhs.id &&
         lhs.intestazione == rhs.intestazione &&
         lhs.image == rhs.image &&
-        lhs.descrizione == rhs.descrizione
+        lhs.descrizione == rhs.descrizione &&
+        lhs.listIndex == rhs.listIndex
     } // forse inutile
      
     public static var allCases: [CategoriaMenu] = [] // Deprecata 02.06 -> Passa i dati ad una published nel viewModel // deprecata definitivamente 13.09
@@ -56,12 +57,6 @@ public struct CategoriaMenu:
         hasher.combine(id)
     } // forse inutile
     
-    
-    public func isStrictlyEqual(to otherCategory:CategoriaMenu) -> Bool {
-        self.id == otherCategory.id &&
-        self.intestazione.lowercased() == otherCategory.intestazione.lowercased() &&
-        self.image == otherCategory.image
-        }
     
    /* func createId() -> String { // Deprecata
         self.intestazione.replacingOccurrences(of: " ", with: "").lowercased()
