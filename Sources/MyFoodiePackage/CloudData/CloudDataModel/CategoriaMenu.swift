@@ -124,7 +124,7 @@ extension CategoriaMenu:Codable {
             
         case .categoriesMainCollection:
             
-            self.intestazione = try container.decode(String.self, forKey: .intestazione)
+            self.intestazione = try container.decode(String.self, forKey: .intestazione).capitalized
             self.image = try container.decode(String.self, forKey: .emoji)
         
         case .categoriesSubCollection:
@@ -132,7 +132,7 @@ extension CategoriaMenu:Codable {
             self.intestazione = ""
             self.image = ""
             
-            self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)
+            self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)?.capitalizeFirst()
             self.listIndex = try container.decodeIfPresent(Int.self, forKey: .menuIndex)
             
         }
@@ -143,18 +143,20 @@ extension CategoriaMenu:Codable {
     
     public func encode(to encoder: Encoder) throws {
         print("[ENCODE]_CategoriaMenu")
+        
         let codingCase = encoder.userInfo[Self.codingInfo] as? DecodingCase ?? .categoriesSubCollection
+        
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.id, forKey: .id)
         
         switch codingCase {
             
         case .categoriesMainCollection:
-            try container.encode(self.intestazione, forKey: .intestazione)
+            try container.encode(self.intestazione.lowercased(), forKey: .intestazione)
             try container.encode(self.image, forKey: .emoji)
             
         case .categoriesSubCollection:
-            try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
+            try container.encodeIfPresent(self.descrizione?.lowercased(), forKey: .descrizione)
             try container.encodeIfPresent(self.listIndex, forKey: .menuIndex)
         }
 

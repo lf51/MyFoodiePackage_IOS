@@ -6,3 +6,11 @@
 //
 
 import Foundation
+
+extension String {
+    
+    func capitalizeFirst() -> String {
+        
+        prefix(1).capitalized + dropFirst()
+    }
+}
