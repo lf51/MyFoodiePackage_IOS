@@ -8,6 +8,13 @@
 import Foundation
 //import Firebase
 
+public enum MyCodingCase {
+    
+    case mainCollection
+    case subCollection
+}
+
+
 public struct CategoriaMenu:
     MyProStarterPack_L0
    /*MyProStarterPack_L1,
@@ -113,8 +120,8 @@ extension CategoriaMenu:Codable {
     }
     
     public init(from decoder: Decoder) throws {
-    
-        let decodingCase = decoder.userInfo[Self.codingInfo] as? DecodingCase ?? .categoriesSubCollection
+        print("[DECODE]_CategoriaMenu")
+        let decodingCase = decoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -122,12 +129,12 @@ extension CategoriaMenu:Codable {
         
         switch decodingCase {
             
-        case .categoriesMainCollection:
+        case .mainCollection:
             
             self.intestazione = try container.decode(String.self, forKey: .intestazione).capitalized
             self.image = try container.decode(String.self, forKey: .emoji)
         
-        case .categoriesSubCollection:
+        case .subCollection:
             
             self.intestazione = ""
             self.image = ""
@@ -144,28 +151,37 @@ extension CategoriaMenu:Codable {
     public func encode(to encoder: Encoder) throws {
         print("[ENCODE]_CategoriaMenu")
         
-        let codingCase = encoder.userInfo[Self.codingInfo] as? DecodingCase ?? .categoriesSubCollection
+        let codingCase = encoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
         
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.id, forKey: .id)
         
         switch codingCase {
             
-        case .categoriesMainCollection:
+        case .mainCollection:
             try container.encode(self.intestazione.lowercased(), forKey: .intestazione)
             try container.encode(self.image, forKey: .emoji)
             
-        case .categoriesSubCollection:
+        case .subCollection:
             try container.encodeIfPresent(self.descrizione?.lowercased(), forKey: .descrizione)
             try container.encodeIfPresent(self.listIndex, forKey: .menuIndex)
         }
 
     }
     
-    public enum DecodingCase {
-        
-        case categoriesMainCollection
-        case categoriesSubCollection
-    }
+ 
     
+}
+
+
+
+extension CategoriaMenu {
+    
+   public func rigeneraCategoria(newId:String) -> CategoriaMenu {
+        // rigeneriamo una categoria passandogli un nuovo Id. Utile quando l'utente crea localmente una categoria che già esiste nella libreria in cloud
+        var new = self
+        new.id = newId
+        return new
+        
+    }
 }

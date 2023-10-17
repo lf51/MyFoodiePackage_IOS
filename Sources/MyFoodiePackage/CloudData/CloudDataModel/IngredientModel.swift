@@ -22,9 +22,9 @@ public struct IngredientModelImage:MyProStarterPack_L0,Codable {
     }
     
     
-}
+} // deprecato 
 
-public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1*/ /*MyModelStatusConformity */ {
+public struct IngredientModel:MyProStarterPack_L01/*MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1*/ /*MyModelStatusConformity */ {
  
     public static func == (lhs: IngredientModel, rhs: IngredientModel) -> Bool {
        return
@@ -59,18 +59,7 @@ public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyP
 
     // Method
 
-    public enum CodingKeys: CodingKey {
-        
-        case id
-        case intestazione
-       // case descrizione
-        case conservazione
-        case produzione
-        case provenienza
-        case allergeni
-        case origine
-       // case status
-    }
+
     
  
     
@@ -243,7 +232,95 @@ public struct IngredientModel:MyProStarterPack_L01,Codable/*MyProToolPack_L1,MyP
     }
 }
 
-public struct IngredientModelInSintesi:Hashable {
+extension IngredientModel:Codable {
+    
+    public static let codingInfo:CodingUserInfoKey = CodingUserInfoKey(rawValue: "ingredientModel")!
+    
+    public enum CodingKeys:String,CodingKey {
+        
+        case id
+        // vanno nel cloud
+        case intestazione
+        case conservazione
+        case produzione
+        case provenienza
+        case allergeni
+        case origine
+        // a discrezione dell'utente
+        case descrizione
+        case status
+    }
+    
+    public init(from decoder: Decoder) throws {
+        print("[DECODE]_IngredientModel")
+        let decodingCase = decoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.id = try container.decode(String.self, forKey: .id)
+        
+        switch decodingCase {
+            
+        case .mainCollection:
+           
+            self.intestazione = try container.decode(String.self, forKey: .intestazione)
+            self.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
+            self.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
+            self.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
+            self.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
+            self.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)
+            
+            self.status = .bozza(.inPausa)
+            
+        case .subCollection:
+            
+            self.intestazione = ""
+            self.conservazione = .defaultValue
+            self.produzione = .defaultValue
+            self.provenienza = .defaultValue
+            self.allergeni = nil
+            self.origine = .defaultValue
+            
+            self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)
+            self.status = try container.decode(StatusModel.self, forKey: .status)
+            
+        }
+ 
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        print("[ENCODE]_IngredientModel")
+        
+        let codingCase = encoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
+        
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.id, forKey: .id)
+        
+        switch codingCase {
+            
+        case .mainCollection:
+            
+            try container.encode(self.intestazione, forKey: .intestazione)
+            try container.encode(self.conservazione, forKey: .conservazione)
+            try container.encode(self.produzione, forKey: .produzione)
+            try container.encode(self.provenienza, forKey: .provenienza)
+            try container.encodeIfPresent(self.allergeni, forKey: .allergeni)
+            try container.encode(self.origine, forKey: .origine)
+            
+        case .subCollection:
+            
+            try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
+            try container.encode(self.status, forKey: .status)
+            
+        }
+        
+        
+    }
+    
+    
+}
+
+public struct IngredientModelInSintesi:Hashable { // ricapire a che serve
     
     var intestazione:String
     var isPrincipal:Bool
@@ -295,4 +372,4 @@ extension IngredientModel {
     
     
     
-}
+} // deprecata in futuro
