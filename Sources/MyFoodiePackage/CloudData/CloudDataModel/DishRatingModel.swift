@@ -13,7 +13,7 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
     
     public static func == (lhs: DishRatingModel, rhs: DishRatingModel) -> Bool {
         lhs.id == rhs.id &&
-        lhs.voto.generale == rhs.voto.generale
+        lhs.voto.generale == rhs.voto.generale // da vedere ????
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -25,10 +25,11 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
     public var id: String
     public let rifPiatto: String
     
-    public var titolo: String?
+    public var intestazione: String?
     public var commento: String?
     public var rifImage: String? // sarà uguale all'id del reviewModel
     
+    public var authorID:String?
     public var ownerReply:String? // 16.07.23 da implementare
     
     public var voto: DishRatingModel.RateModel
@@ -80,7 +81,7 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
         // image
         // Tot: 1.0
                 
-        if self.titolo != nil { completingRate += 0.15 }
+        if self.intestazione != nil { completingRate += 0.15 }
         else { completingRate -= 0.05 }
         
         if let commento = self.commento {

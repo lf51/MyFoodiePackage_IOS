@@ -22,7 +22,7 @@ public struct IngredientModelImage:MyProStarterPack_L0,Codable {
     }
     
     
-} // deprecato 
+} // deprecato
 
 public struct IngredientModel:MyProStarterPack_L01/*MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1*/ /*MyModelStatusConformity */ {
  
@@ -304,7 +304,7 @@ extension IngredientModel:Codable {
             try container.encode(self.conservazione, forKey: .conservazione)
             try container.encode(self.produzione, forKey: .produzione)
             try container.encode(self.provenienza, forKey: .provenienza)
-            try container.encodeIfPresent(self.allergeni, forKey: .allergeni)
+            try container.encode(self.allergeni, forKey: .allergeni)
             try container.encode(self.origine, forKey: .origine)
             
         case .subCollection:

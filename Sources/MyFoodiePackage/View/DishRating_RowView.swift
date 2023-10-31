@@ -64,7 +64,7 @@ public struct DishRating_RowView: View {
                             
                     )
  
-                Text(rating.titolo ?? "Nessun Titolo")
+                Text(rating.intestazione ?? "Nessun Titolo")
                    // .font(.system(.largeTitle, design: .serif, weight: .semibold))
                     .font(.system(size: frameWidth * 0.1,weight: .black,design: .serif))
                   //  .foregroundColor(.seaTurtle_4)

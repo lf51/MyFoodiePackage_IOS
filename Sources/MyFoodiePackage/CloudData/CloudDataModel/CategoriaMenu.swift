@@ -131,7 +131,7 @@ extension CategoriaMenu:Codable {
             
         case .mainCollection:
             
-            self.intestazione = try container.decode(String.self, forKey: .intestazione).capitalized
+            self.intestazione = try container.decode(String.self, forKey: .intestazione)
             self.image = try container.decode(String.self, forKey: .emoji)
         
         case .subCollection:

@@ -621,20 +621,6 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         case preparazioneBeverage //= "Drink"
         case composizione //composizione di piatti e/o ingredienti indicati in forma descrittiva. Es: Tris Caldo:Arancine,panelle,crocket // Nota 23.06.23
         
-      /* public func imageAssociated() -> String {
-            switch self {
-            case .prodottoFinito:
-                return "🧃"
-            case .preparazioneFood:
-                return "fork.knife.circle"
-            case .preparazioneBeverage:
-                return "wineglass"
-            case .composizione:
-                return "takeoutbag.and.cup.and.straw"
-                
-            }
-        } */ // deprecata 24.06.23
-        
         public func imageAssociated() -> (system:String,color:Color) {
             
             switch self {
@@ -701,17 +687,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
                 
             }
         }
-        
-       /* public static func convertiInCase(fromNumber: Int) -> DishModel.PercorsoProdotto {
-            
-            switch fromNumber {
-            case 0: return .prodottoFinito
-            case 1: return .preparazioneFood
-            case 2: return .preparazioneBeverage
-            default: return .preparazioneFood
-            }
-        } */
-        
+ 
         public func extendedDescription() -> String {
             
             switch self {

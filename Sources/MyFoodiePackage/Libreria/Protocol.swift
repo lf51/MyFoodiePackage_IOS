@@ -23,8 +23,6 @@ public protocol MyProStarterPack_L01:MyProStarterPack_L0 {
     
 }
 
-
-
 public protocol MyProStarterPack_L1:MyProStarterPack_L0,MyProVMPack_L0 {
     
     var id: String { get set } // sovrascrive il livello zero per non crearci problemi con le enum. Dobbiamo chiarire se quei pochi casi in cui sovrasciviamo gli id possono essere risolti diversamente, o altrimenti facciamo un po' di ordine. Proprietà da considerarsi QUI TEMPORANEA
@@ -39,6 +37,14 @@ public protocol MyProStarterPack_L1:MyProStarterPack_L0,MyProVMPack_L0 {
     
     /// Stessa funzione di viewModelContainer() Solo che abbiamo l'accesso dal type
     static func basicModelInfoTypeAccess() -> ReferenceWritableKeyPath<VM,[Self]>
+    
+    /// Metodo custom rispetto all'equatable per stabilire quando due modelli sono uguali
+    func isEqual(to rhs:Self) -> Bool
+    
+    associatedtype Sub
+    
+    func subCollection() -> Sub 
+    
 }
 
 public protocol MyProDescriptionPack_L0 {
