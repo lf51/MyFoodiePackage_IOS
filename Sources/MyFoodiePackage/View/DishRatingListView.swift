@@ -23,7 +23,7 @@ public struct DishRatingListView: View {
 
     @State private var minMaxRange: (Double,Double) = (0.0,10.0)
     
-    public init(dishItem:DishModel, backgroundColorView: Color, readOnlyViewModel:FoodieViewModel) {
+    public init(dishItem:ProductModel, backgroundColorView: Color, readOnlyViewModel:FoodieViewModel) {
         
       //  self.viewModel = readOnlyViewModel
         

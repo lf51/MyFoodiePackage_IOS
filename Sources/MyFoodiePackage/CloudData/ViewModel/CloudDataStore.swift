@@ -41,7 +41,7 @@ public struct CloudDataStore {
     
     public var allMyIngredientsImage:[IngredientModelImage] = [] // deprecata
     
-    public var allMyDish:[DishModel] // caricato
+    public var allMyDish:[ProductModel] // caricato
     public var allMyMenu:[MenuModel] // caricato
     //update 23.07.23
   //  public var allMyProperties:[PropertyModel] // deprecata
@@ -118,7 +118,7 @@ public struct CloudDataStore {
         
     }
     
-  /* public init(accountSetup: AccountSetup, inventarioScorte: Inventario, allMyIngredients: [IngredientModel], allMyDish: [DishModel], allMyMenu: [MenuModel], allMyProperties: [PropertyModel], allMyCategory: [CategoriaMenu], allMyReviews: [DishRatingModel]) {
+  /* public init(accountSetup: AccountSetup, inventarioScorte: Inventario, allMyIngredients: [IngredientModel], allMyDish: [ProductModel], allMyMenu: [MenuModel], allMyProperties: [PropertyModel], allMyCategory: [CategoriaMenu], allMyReviews: [DishRatingModel]) {
         self.setupAccount = accountSetup
         self.inventarioScorte = inventarioScorte
         self.allMyIngredients = allMyIngredients

@@ -161,6 +161,6 @@ public enum TipoDieta:Identifiable,MyProEnumPack_L0 /*: MyEnumProtocol,MyEnumPro
         }
     
         return (dieteOk,dieteOkInStringa)
-    } */ // 26.08 -> Spostata all'interno del dishModel
+    } */ // 26.08 -> Spostata all'interno del ProductModel
     
 }

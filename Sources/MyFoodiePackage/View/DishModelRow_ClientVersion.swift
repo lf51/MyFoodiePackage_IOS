@@ -9,12 +9,12 @@ import SwiftUI
 import MyPackView_L0
 import CoreLocation
 
-public struct DishModelRow_ClientVersion: View {
+public struct ProductModelRow_ClientVersion: View {
     
    // @EnvironmentObject var viewModel:FoodieViewModel
     @ObservedObject var viewModel:FoodieViewModel
     
-    let item: DishModel
+    let item: ProductModel
     // @Binding var carrelloOrdini:[String] // rif dei piatti
     let rowColor:Color
     let rowOpacity:CGFloat
@@ -34,7 +34,7 @@ public struct DishModelRow_ClientVersion: View {
     
     public init(
         viewModel:FoodieViewModel,
-        item: DishModel,
+        item: ProductModel,
         rowColor: Color,
         rowOpacity:CGFloat = 0.0,
         rowBoundReduction:CGFloat = 20,
@@ -1060,10 +1060,10 @@ public struct DishModelRow_ClientVersion: View {
 
 
 
-struct DishModelRow_ClientVersion_Previews: PreviewProvider {
+struct ProductModelRow_ClientVersion_Previews: PreviewProvider {
         
     @StateObject static var viewModel:FoodieViewModel = testAccount
-    @State static var preSelection:[DishModel] = []
+    @State static var preSelection:[ProductModel] = []
     static var espanso:Bool = true
     
     static var previews: some View {
@@ -1086,7 +1086,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                     
                     ForEach(viewModel.db.allMyDish) { dish in
                         
-                        DishModelRow_ClientVersion(
+                        ProductModelRow_ClientVersion(
                             viewModel: viewModel,
                             item: dish,
                             rowColor:.seaTurtle_4,
@@ -1099,7 +1099,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
                             }
 
                         
-                       /* DishModelRow_ClientVersion(viewModel: viewModel, item:dish,backgroundView: .seaTurtle_1) { price in
+                       /* ProductModelRow_ClientVersion(viewModel: viewModel, item:dish,backgroundView: .seaTurtle_1) { price in
                             
                           test(value: dish)
                         } */
@@ -1121,7 +1121,7 @@ struct DishModelRow_ClientVersion_Previews: PreviewProvider {
 
     }
     
-    static func test(value:DishModel)  {
+    static func test(value:ProductModel)  {
         
         if preSelection.contains(value) {
             let index = preSelection.firstIndex(of: value)
