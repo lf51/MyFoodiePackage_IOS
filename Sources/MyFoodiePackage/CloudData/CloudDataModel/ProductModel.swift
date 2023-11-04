@@ -8,7 +8,17 @@
 import Foundation
 import SwiftUI
 
-public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1 */{
+/*
+ 
+ // Tre Tipologie di Prodotti
+ 1. Classico -> Contiene ingredienti
+ 2. Composizione -> Descrizione ingredienti
+ 3. Di terzi -> Ha un solo ingrediente e non è modificabile
+ 
+ */
+
+
+public struct DishModel: MyProStarterPack_L01,Codable{
 
    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -63,7 +73,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     
     public init() {
         
-        self.percorsoProdotto = .preparazioneFood
+        self.percorsoProdotto = .preparazione
         self.id = UUID().uuidString
         self.intestazione = ""
         self.descrizione = ""
@@ -99,7 +109,7 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     
     public init(id:String = UUID().uuidString) {
         // Necessario quando creiamo l'ibrido, poichè l'id va creato fuori e dato uguale sia all'ingredienteDiSistema che al model
-        self.percorsoProdotto = .preparazioneFood
+        self.percorsoProdotto = .preparazione
         self.id = id
         self.intestazione = ""
         self.descrizione = ""
@@ -111,6 +121,25 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         self.categoriaMenu = CategoriaMenu.defaultValue.id
         self.mostraDieteCompatibili = false
         self.status = .bozza()
+        self.pricingPiatto = []
+        
+
+    }
+    
+    public init(from ingredient:IngredientModel) {
+        
+        self.percorsoProdotto = .finito
+        self.id = ingredient.id
+        self.intestazione = ingredient.intestazione
+        self.descrizione = ingredient.descrizione
+        self.rifReviews = []
+        self.ingredientiPrincipali = [ingredient.id]
+        self.ingredientiSecondari = []
+        self.elencoIngredientiOff = [:]
+        self.idIngredienteDaSostituire = nil
+        self.categoriaMenu = CategoriaMenu.defaultValue.id
+        self.mostraDieteCompatibili = false
+        self.status = ingredient.status
         self.pricingPiatto = []
         
 
@@ -383,96 +412,6 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         return (dieteOk,dieteOkInStringa)
     }
     
-    /*
-    /// Controlla l'origine degli ingredienti e restituisce un array con le diete compatibili
-    func returnDietAvaible(viewModel:FoodieViewModel) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
-        
-        let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
-        
-        // step 1 ->
-        var animalOrFish: [IngredientModel] = []
-        var milkIn: [IngredientModel] = []
-        var glutenIn: [IngredientModel] = []
-        
-        for ingredient in allModelIngredients {
-            
-            if ingredient.origine == .animale {
-                
-                if ingredient.allergeni.contains(.latte_e_derivati) { milkIn.append(ingredient) }
-                
-                else { animalOrFish.append(ingredient) }
-                        }
-
-            if ingredient.allergeni.contains(.glutine) { glutenIn.append(ingredient)}
-        }
-        
-        // step 2 -->
-        
-        var dieteOk:[TipoDieta] = []
-        
-        if glutenIn.isEmpty {dieteOk.append(.glutenFree)}
-        
-        if milkIn.isEmpty && animalOrFish.isEmpty {dieteOk.append(contentsOf: [.vegano,.vegariano,.vegetariano])}
-        else if milkIn.isEmpty { dieteOk.append(.vegariano)}
-        else if animalOrFish.isEmpty {dieteOk.append(.vegetariano)}
-        else {dieteOk.append(.standard) }
- 
-        var dieteOkInStringa:[String] = []
- 
-        for diet in dieteOk {
-            
-            let stringDiet = diet.simpleDescription()
-            dieteOkInStringa.append(stringDiet)
-       
-        }
-    
-        return (dieteOk,dieteOkInStringa)
-    } */ // 10.01.23 Backup per Upgrade e bug fix
-    
-    
-    // New
-    
-    
-    // MyProCloudPack_L1
-    
-   /* public init(frDocID:String,frDoc: [String:Any]) {
-        
-        let percorsoInt = frDoc[DataBaseField.percorsoProdotto] as? Int ?? 0
-        let statusInt = frDoc[DataBaseField.status] as? Int ?? 0
-        let priceMap = frDoc[DataBaseField.pricingPiatto] as? [[String:Any]] ?? []
-        
-        self.percorsoProdotto = DishModel.PercorsoProdotto.convertiInCase(fromNumber: percorsoInt)
-        self.id = frDocID
-        self.intestazione = frDoc[DataBaseField.intestazione] as? String ?? ""
-        self.descrizione = frDoc[DataBaseField.descrizione] as? String ?? ""
-        self.rifReviews = frDoc[DataBaseField.rifReviews] as? [String] ?? []
-        self.ingredientiPrincipali = frDoc[DataBaseField.ingredientiPrincipali] as? [String] ?? []
-        self.ingredientiSecondari = frDoc[DataBaseField.ingredientiSecondari] as? [String] ?? []
-        self.elencoIngredientiOff = frDoc[DataBaseField.elencoIngredientiOff] as? [String:String] ?? [:]
-        self.idIngredienteDaSostituire = nil
-        self.categoriaMenu = frDoc[DataBaseField.categoriaMenu] as? String ?? ""
-        self.mostraDieteCompatibili = frDoc[DataBaseField.mostraDieteCompatibili] as? Bool ?? false
-        self.status = StatusModel.convertiInCase(fromNumber: statusInt)
-        self.pricingPiatto = priceMap.map({DishFormat(frMapData: $0)})
- 
-    }
-    
-    public struct DataBaseField {
-        
-        public static let percorsoProdotto = "percorsoProdotto"
-        public static let intestazione = "intestazione"
-        public static let descrizione = "descrizione"
-        public static let rifReviews = "rifReview"
-        public static let ingredientiPrincipali = "ingredientiPrincipali"
-        public static let ingredientiSecondari = "ingredientiSecondari"
-        public static let elencoIngredientiOff = "elencoIngredientiOff"
-        public static let categoriaMenu = "categoriaMenu"
-        public static let mostraDieteCompatibili = "mostraDieteCompatibili"
-        public static let status = "status"
-        public static let pricingPiatto = "pricing"
-        
-    } */
-
     func creaID(fromValue: String) -> String {
         print("DishModel/creaID()")
       return fromValue.replacingOccurrences(of: " ", with: "").lowercased()
@@ -614,22 +553,25 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
     
     public enum PercorsoProdotto:String,MyProEnumPack_L0,Codable {
 
-        public static var allCases:[PercorsoProdotto] = [.preparazioneFood,.preparazioneBeverage,.composizione,.prodottoFinito]
+        public static var allCases:[PercorsoProdotto] = [/*.preparazioneFood,.preparazioneBeverage,*/.preparazione,.composizione,.finito]
         
-        case prodottoFinito //= "Prodotto Finito"
-        case preparazioneFood //= "Piatto" // case standard di default
-        case preparazioneBeverage //= "Drink"
+        case finito
+        case preparazione
+      //  case preparazioneFood //= "Piatto" // case standard di default
+      //  case preparazioneBeverage //= "Drink"
         case composizione //composizione di piatti e/o ingredienti indicati in forma descrittiva. Es: Tris Caldo:Arancine,panelle,crocket // Nota 23.06.23
         
         public func imageAssociated() -> (system:String,color:Color) {
             
             switch self {
-            case .prodottoFinito:
+            case .finito:
                 return ("takeoutbag.and.cup.and.straw",Color.gray)
-            case .preparazioneFood:
+            case .preparazione:
                 return ("fork.knife",Color.yellow)
-            case .preparazioneBeverage:
-                return ("wineglass",Color.orange)
+            //case .preparazioneFood:
+              //  return ("fork.knife",Color.yellow)
+           // case .preparazioneBeverage:
+             //   return ("wineglass",Color.orange)
             case .composizione:
                 return ("swatchpalette",Color.mint)
                 
@@ -639,14 +581,16 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         public func pickerDescription() -> String {
             
             switch self {
-            case .prodottoFinito:
-                return "di Terzi"
-            case .preparazioneFood:
+            case .finito:
+                return "Pronto"
+           /* case .preparazioneFood:
                 return "Food"
             case .preparazioneBeverage:
-                return "Beverage"
+                return "Beverage"*/
+            case .preparazione:
+                return "Preparazione"
             case .composizione:
-                return "Composto"
+                return "Composizione"
                 
             }
         }
@@ -655,12 +599,14 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
             
             switch self {
                 
-            case .prodottoFinito:
-                return "Prodotto di Terzi"
-            case .preparazioneFood:
+            case .finito:
+                return "Prodotto Pronto"
+            case .preparazione:
+                return "Preparazione"
+           /* case .preparazioneFood:
                 return "Piatto"
             case .preparazioneBeverage:
-                return "Drink"
+                return "Drink"*/
             case .composizione:
                 return "Composizione"
                 
@@ -676,14 +622,16 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
             
             switch self {
                 
-            case .prodottoFinito:
+            case .finito:
                 return 0
-            case .preparazioneFood:
+            case .preparazione:
+                return 1
+           /* case .preparazioneFood:
                 return 1
             case .preparazioneBeverage:
-                return 2
+                return 2*/
             case .composizione:
-                return 3
+                return 2
                 
             }
         }
@@ -691,17 +639,26 @@ public struct DishModel: MyProStarterPack_L01,Codable /*: MyProToolPack_L1,MyPro
         public func extendedDescription() -> String {
             
             switch self {
-            case .prodottoFinito:
+            case .finito:
                 return "Prodotto pronto acquistato da terzi. Es: CocaCola"
             case .composizione:
-                return "Composizione di piatti in porzioni ridotte, ingredienti variabili, ecc... Es: Tagliere di Salumi e Formaggi locali "
-            case .preparazioneBeverage:
+                return "Composizione con ingredienti variabili. Es: Tagliere di Salumi e Formaggi locali "
+            case .preparazione:
+                return "Combinazione e/o lavorazione in loco di uno o più ingredienti"
+           /* case .preparazioneBeverage:
                 return "Combinazione e/o lavorazione in loco di uno o più ingredienti in forma liquida."
             case .preparazioneFood:
-                return "Combinazione e/o lavorazione in loco di uno o più ingredienti in forma solida."
+                return "Combinazione e/o lavorazione in loco di uno o più ingredienti in forma solida."*/
                 
             }
         }
+        
+    }
+    
+    public enum ProductAdress:String,Codable {
+        
+        case food
+        case drink
         
     }
     
