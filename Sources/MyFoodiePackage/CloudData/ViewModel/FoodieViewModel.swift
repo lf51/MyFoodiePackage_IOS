@@ -306,7 +306,7 @@ open class FoodieViewModel:ObservableObject {
     /// Controlla se un menuDiSistema contiene un dato piatto
    public func checkMenuDiSistemaContainDish(idPiatto:String,menuDiSistema:TipologiaMenu.DiSistema) -> Bool {
         
-        if let menuDS = trovaMenuDiSistema(menuDiSistema: menuDiSistema) {
+        if let menuDS = trovaMenuDiSistema(tipo: menuDiSistema) {
             return menuDS.rifDishIn.contains(idPiatto)
         } else {
             return false
@@ -315,16 +315,17 @@ open class FoodieViewModel:ObservableObject {
     }
     
     /// Ritorna un menuDiSistema Attivo. Se non lo trova ritorna nil
-   public func trovaMenuDiSistema(menuDiSistema:TipologiaMenu.DiSistema) -> MenuModel? {
+    public func trovaMenuDiSistema(tipo menu:TipologiaMenu.DiSistema,seAttivo:Bool = true) -> MenuModel? {
         
-      // guard let data = self.cloudData else { return nil }
-       
-        let tipologia:TipologiaMenu = menuDiSistema.returnTipologiaMenu()
-        
+       let tipologia:TipologiaMenu = menu.returnTipologiaMenu()
+ 
        return self.db.allMyMenu.first(where:{
-               //  $0.tipologia.returnTypeCase() == tipologia &&
-                 $0.tipologia == tipologia && // Vedi Nota 09.11
-                 $0.isOnAirValue().today
+           
+           let condition = $0.tipologia == tipologia
+           
+           if seAttivo {
+             return condition && $0.isOnAirValue().today
+           } else { return condition }
             })
     }
     

@@ -17,7 +17,7 @@ import SwiftUI
  
  */
 
-public struct ProductModel: MyProStarterPack_L01,Codable{
+public struct ProductModel: MyProStarterPack_L01{
 
    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -78,11 +78,11 @@ public struct ProductModel: MyProStarterPack_L01,Codable{
         self.productType = .food
         self.id = UUID().uuidString
         self.intestazione = ""
-        self.descrizione = ""
+        self.descrizione = nil
         self.rifReviews = []
         self.ingredientiPrincipali = []
         self.ingredientiSecondari = []
-        self.elencoIngredientiOff = [:]
+        self.elencoIngredientiOff = ["key":"value"]
         self.idIngredienteDaSostituire = nil
         self.categoriaMenu = CategoriaMenu.defaultValue.id
         self.mostraDieteCompatibili = true
@@ -116,7 +116,7 @@ public struct ProductModel: MyProStarterPack_L01,Codable{
         self.productType = .food
         self.id = id
         self.intestazione = ""
-        self.descrizione = ""
+        self.descrizione = nil 
         self.rifReviews = []
         self.ingredientiPrincipali = []
         self.ingredientiSecondari = []
@@ -132,13 +132,13 @@ public struct ProductModel: MyProStarterPack_L01,Codable{
     
     public init(from ingredient:IngredientModel) {
         
-        self.percorsoProdotto = .finito
+        self.percorsoProdotto = .finito(ingredient.id)
         self.productType = .food
-        self.id = ingredient.id
+        self.id = ingredient.id // da valutare
         self.intestazione = ingredient.intestazione
         self.descrizione = ingredient.descrizione
         self.rifReviews = []
-        self.ingredientiPrincipali = [ingredient.id]
+        self.ingredientiPrincipali = []
         self.ingredientiSecondari = []
         self.elencoIngredientiOff = [:]
         self.idIngredienteDaSostituire = nil
@@ -162,15 +162,39 @@ public struct ProductModel: MyProStarterPack_L01,Codable{
         return true
         
     }
+    
+    private func ingredienteAttivoSottostante(vm:FoodieViewModel) -> [IngredientModel] {
+        
+        if let rif = self.percorsoProdotto.associatedValue() as? String {
+            // prodotto finito
+            if let model = vm.modelFromId(id: rif, modelPath: \.db.allMyIngredients) {
+                return [model] }
+            else { return [] }
+            
+        } else if let ing = self.percorsoProdotto.associatedValue() as? IngredientModel {
+            // composizione
+            return [ing]
+            
+        } else { return [] }
+    }
+    
     /// ritorna gli ingredienti Attivi sostituendo gli ingredienti inPausa con gli eventuali sostituti
     public func allIngredientsAttivi(viewModel:FoodieViewModel) -> [IngredientModel] {
         
-        // Innesto 06.10
-        guard !self.ingredientiPrincipali.contains(self.id) else {
+        // innesto 07_11_23
+        
+        guard self.percorsoProdotto.returnTypeCase() == .preparazione else {
+
+            let sottostante = ingredienteAttivoSottostante(vm: viewModel)
+            return sottostante
+        }
+        
+      
+       /* guard !self.ingredientiPrincipali.contains(self.id) else {
            // Trattasi di ibrido
             if let model = viewModel.modelFromId(id: self.id, modelPath: \.db.allMyIngredients) { return [model] }
             else { return [] }
-        }
+        } */
         
         let allMinusBozzeEArchiviati = allMinusArchiviati(viewModel: viewModel)
 
@@ -266,9 +290,14 @@ public struct ProductModel: MyProStarterPack_L01,Codable{
                 $0 == .molluschi ||
                 $0 == .crostacei
             }) { return .pesce }
+            
+            else if arrAll.contains(where: {
+                $0 == .latte_e_derivati
+            }) { return .latticini}
+                        
             else { continue }
         }
-    
+
         return .carne
         
     }
@@ -366,29 +395,12 @@ public struct ProductModel: MyProStarterPack_L01,Codable{
             } else { return false }
         })
         
-        /* for ingredient in allModelIngredients {
-         
-         if ingredient.origine == .animale {
-         
-         if ingredient.allergeni.contains(.latte_e_derivati) { milkIn.append(ingredient) }
-         
-         else { animalOrFish.append(ingredient) }
-         }
-         
-         if ingredient.allergeni.contains(.glutine) { glutenIn.append(ingredient)}
-         } */
-        
         // step 2 -->
         
         var dieteOk:[TipoDieta] = []
         
         if glutenIn.isEmpty {dieteOk.append(.glutenFree)}
-        
-        /*  if milkIn.isEmpty && animalOrFish.isEmpty {dieteOk.append(contentsOf: [.vegano,.vegariano,.vegetariano])}
-         else if milkIn.isEmpty { dieteOk.append(.vegariano)}
-         else if animalOrFish.isEmpty {dieteOk.append(.vegetariano)}
-         else {dieteOk.append(.standard) } */ // 25.06 bug dieta vegetariana
-        
+ 
         // Soluzione bug 25.06
         
         let animalCount = animalOrFish.count
@@ -407,13 +419,6 @@ public struct ProductModel: MyProStarterPack_L01,Codable{
         
         let dieteOkInStringa:[String] = dieteOk.map({$0.simpleDescription()})
  
-      /*  for diet in dieteOk {
-            
-            let stringDiet = diet.simpleDescription()
-            dieteOkInStringa.append(stringDiet)
-       
-        } */
-    
         return (dieteOk,dieteOkInStringa)
     }
     
@@ -424,16 +429,20 @@ public struct ProductModel: MyProStarterPack_L01,Codable{
     
 
     /// conta gli ingredienti secondari e principali
-    public func countIngredients() -> (count:Int,canBeExpanded:Bool) { // Da sistemare (04.10) // gli ingredienti non posso essere == 0
-        let count = (self.ingredientiPrincipali + self.ingredientiSecondari).count
-       /* let cantBe:Bool = {
-            count == 0 ||
-            self.ingredientiPrincipali.contains(self.id)
-        }() */
-        // update 11.07.23
-        let canBe:Bool = !self.ingredientiPrincipali.contains(self.id)
+    public func countIngredients() -> (count:Int,canBeExpanded:Bool) {
         
-        return (count,canBe)
+        let count = (self.ingredientiPrincipali + self.ingredientiSecondari).count
+        
+        switch self.percorsoProdotto.returnTypeCase() {
+            
+        case .preparazione:
+            return (count,true)
+        case .finito(_):
+            return (1,false)
+        case .composizione(_):
+            return(0,false)
+
+        }
     }
   
     /// controlla la presenza di un ingrediente soltanto fra i principali e i secondari
@@ -518,9 +527,9 @@ public struct ProductModel: MyProStarterPack_L01,Codable{
     
     public enum BasePreparazione:MyProEnumPack_L0 {
 
-        public static var allCase:[BasePreparazione] = [.vegetale,.carne,.pesce]
+        public static var allCase:[BasePreparazione] = [.vegetale,.carne,.pesce,.latticini]
         
-        case vegetale,carne,pesce
+        case vegetale,carne,pesce,latticini
         
         public func simpleDescription() -> String {
             
@@ -531,6 +540,8 @@ public struct ProductModel: MyProStarterPack_L01,Codable{
                 return "Carne"
             case .pesce:
                 return "Pesce"
+            case .latticini:
+                return "Latticini"
             }
         }
         
@@ -551,126 +562,186 @@ public struct ProductModel: MyProStarterPack_L01,Codable{
                 return "🐂"
             case .pesce:
                 return "🐟"
+            case .latticini:
+                return "🥛"
             }
 
         }
     }
     
-    public enum PercorsoProdotto:String,MyProEnumPack_L0,Codable {
-
-        public static var allCases:[PercorsoProdotto] = [/*.preparazioneFood,.preparazioneBeverage,*/.preparazione,.composizione,.finito]
-        
-        case finito
-        case preparazione
-      //  case preparazioneFood //= "Piatto" // case standard di default
-      //  case preparazioneBeverage //= "Drink"
-        case composizione //composizione di piatti e/o ingredienti indicati in forma descrittiva. Es: Tris Caldo:Arancine,panelle,crocket // Nota 23.06.23
-        
-        public func imageAssociated() -> (system:String,color:Color) {
-            
-            switch self {
-            case .finito:
-                return ("takeoutbag.and.cup.and.straw",Color.gray)
-            case .preparazione:
-                return ("fork.knife",Color.yellow)
-            //case .preparazioneFood:
-              //  return ("fork.knife",Color.yellow)
-           // case .preparazioneBeverage:
-             //   return ("wineglass",Color.orange)
-            case .composizione:
-                return ("swatchpalette",Color.mint)
-                
-            }
-        }
-        
-        public func pickerDescription() -> String {
-            
-            switch self {
-            case .finito:
-                return "Pronto"
-           /* case .preparazioneFood:
-                return "Food"
-            case .preparazioneBeverage:
-                return "Beverage"*/
-            case .preparazione:
-                return "Preparazione"
-            case .composizione:
-                return "Composizione"
-                
-            }
-        }
-        
-        public func simpleDescription() -> String {
-            
-            switch self {
-                
-            case .finito:
-                return "Prodotto Pronto"
-            case .preparazione:
-                return "Preparazione"
-           /* case .preparazioneFood:
-                return "Piatto"
-            case .preparazioneBeverage:
-                return "Drink"*/
-            case .composizione:
-                return "Composizione"
-                
-            }
-            
-        }
-        
-        public func returnTypeCase() -> ProductModel.PercorsoProdotto {
-            self
-        }
-        
-        public func orderAndStorageValue() -> Int {
-            
-            switch self {
-                
-            case .finito:
-                return 0
-            case .preparazione:
-                return 1
-           /* case .preparazioneFood:
-                return 1
-            case .preparazioneBeverage:
-                return 2*/
-            case .composizione:
-                return 2
-                
-            }
-        }
- 
-        public func extendedDescription() -> String {
-            
-            switch self {
-            case .finito:
-                return "Prodotto pronto acquistato da terzi. Es: CocaCola"
-            case .composizione:
-                return "Composizione con ingredienti variabili. Es: Tagliere di Salumi e Formaggi locali "
-            case .preparazione:
-                return "Combinazione e/o lavorazione in loco di uno o più ingredienti"
-           /* case .preparazioneBeverage:
-                return "Combinazione e/o lavorazione in loco di uno o più ingredienti in forma liquida."
-            case .preparazioneFood:
-                return "Combinazione e/o lavorazione in loco di uno o più ingredienti in forma solida."*/
-                
-            }
-        }
-        
-    }
-    
-    public enum ProductType:String,Codable {
-        
-        case food
-        case beverage
-        
-    }
+  
     
 }
 
 
 
+extension ProductModel:Codable {
+    
+    
+    
+}
+
+
+public enum PercorsoProdotto:MyProEnumPack_L0,Codable {
+
+    public static var allCases:[PercorsoProdotto] = [/*.preparazioneFood,.preparazioneBeverage,*/.preparazione,.composizione(),.finito()]
+    
+    case preparazione
+  //  case preparazioneFood //= "Piatto" // case standard di default
+  //  case preparazioneBeverage //= "Drink"
+    case composizione(IngredientModel? = nil) //composizione di piatti e/o ingredienti indicati in forma descrittiva. Es: Tris Caldo:Arancine,panelle,crocket // Nota 23.06.23
+    case finito(String? = nil)
+    
+    public func imageAssociated(to productType:ProductType? = nil) -> (system:String,color:Color) {
+        
+        switch self {
+            
+        case .finito:
+            return ("takeoutbag.and.cup.and.straw",Color.gray)
+        case .preparazione:
+           // return ("fork.knife",Color.yellow)
+           // return ("circle.hexagongrid",Color.yellow)
+            if let productType { return productType.imageAssociated() }
+            else { return ("fork.knife",Color.yellow) }
+            
+        case .composizione:
+            return ("swatchpalette",Color.mint)
+            
+        }
+    }
+    
+    public func pickerDescription() -> String {
+        
+        switch self {
+        case .finito:
+            return "Pronto"
+       /* case .preparazioneFood:
+            return "Food"
+        case .preparazioneBeverage:
+            return "Beverage"*/
+        case .preparazione:
+            return "Preparazione"
+        case .composizione:
+            return "Composizione"
+            
+        }
+    }
+    
+    public func simpleDescription() -> String {
+        
+        switch self {
+            
+        case .finito:
+            return "Prodotto Pronto"
+        case .preparazione:
+            return "Preparazione"
+       /* case .preparazioneFood:
+            return "Piatto"
+        case .preparazioneBeverage:
+            return "Drink"*/
+        case .composizione:
+            return "Composizione"
+            
+        }
+        
+    }
+    
+    public func boxDescription() -> String {
+        
+        switch self {
+            
+        case .composizione:
+            return "Descrizione (!)"
+        default:
+            return "Descrizione (Optional)"
+            
+        }
+        
+    }
+    
+    public func returnTypeCase() -> PercorsoProdotto {
+        
+        switch self {
+        case .preparazione:
+            return .preparazione
+        case .composizione(_):
+            return .composizione()
+        case .finito(_):
+            return .finito()
+        }
+    }
+    
+    public func associatedValue() -> Any? {
+        
+        switch self {
+            
+        case .preparazione:
+            return nil
+        case .composizione(let ing):
+            return ing
+        case .finito(let rif):
+            return rif
+        }
+    }
+    
+    public func orderAndStorageValue() -> Int {
+        
+        switch self {
+            
+        case .finito:
+            return 0
+        case .preparazione:
+            return 1
+       /* case .preparazioneFood:
+            return 1
+        case .preparazioneBeverage:
+            return 2*/
+        case .composizione:
+            return 2
+            
+        }
+    }
+
+    public func extendedDescription() -> String {
+        
+        switch self {
+        case .finito:
+            return "Prodotto pronto acquistato da terzi. Es: CocaCola"
+        case .composizione:
+            return "Composizione descrittiva, per ingredienti variabili e/o generici. Es: Tagliere di Salumi e Formaggi locali "
+        case .preparazione:
+            return "Combinazione e/o lavorazione in loco di uno o più ingredienti"
+       /* case .preparazioneBeverage:
+            return "Combinazione e/o lavorazione in loco di uno o più ingredienti in forma liquida."
+        case .preparazioneFood:
+            return "Combinazione e/o lavorazione in loco di uno o più ingredienti in forma solida."*/
+            
+        }
+    }
+    
+}
+
+
+public enum ProductType:String,Codable,CaseIterable {
+    
+    static public var allCases: [ProductType] = [.noValue,.food,.beverage]
+    
+    case food
+    case beverage
+    case noValue = "n/d"
+    
+   public func imageAssociated() -> (system:String,color:Color) {
+        
+        switch self {
+        case .food:
+            return ("fork.knife",Color.yellow)
+        case .beverage:
+            return ("wineglass",Color.orange)
+        case .noValue:
+            return ("x.circle",Color.red)
+        }
+    }
+}
 
 /*public struct ProductModel: MyProStarterPack_L01,Codable{
 

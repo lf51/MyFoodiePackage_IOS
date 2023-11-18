@@ -12,6 +12,7 @@ public enum MyCodingCase {
     
     case mainCollection
     case subCollection
+    case full
 }
 
 
@@ -27,6 +28,7 @@ public struct CategoriaMenu:
         lhs.id == rhs.id &&
         lhs.intestazione == rhs.intestazione &&
         lhs.image == rhs.image &&
+        lhs.productType == rhs.productType &&
         lhs.descrizione == rhs.descrizione &&
         lhs.listIndex == rhs.listIndex
     } // forse inutile
@@ -38,15 +40,17 @@ public struct CategoriaMenu:
     
     public var intestazione: String
     public var image: String // non è optional ma ha un valore di default
+    public var productType:ProductType
     public var descrizione: String? // sarà optional
     public var listIndex:Int?
  
-    public init(id: String, intestazione: String, image: String, descrizione: String?) {
+        public init(id: String, intestazione: String, image: String, descrizione: String?,productType:ProductType = .noValue) {
         // Probabilmente Inutile - Verificare
         self.id = id
         self.intestazione = intestazione
         self.image = image
         self.descrizione = descrizione
+        self.productType = productType
         
     }
     
@@ -54,7 +58,8 @@ public struct CategoriaMenu:
         
         self.id = UUID().uuidString
         self.intestazione = ""
-        self.image = "🍽"
+        self.image = "#"
+        self.productType = .noValue
        // self.descrizione = nil
     }
     
@@ -100,6 +105,16 @@ public struct CategoriaMenu:
         return 0
     }
     
+    public func manageDisable() -> Bool {
+        
+        guard self.intestazione != "",
+              self.image != "#",
+              self.productType != .noValue else { return true }
+        
+            return false
+            
+        }
+        
     // method added 13.09
     
 }
@@ -114,6 +129,7 @@ extension CategoriaMenu:Codable {
         // vanno nel cloud
         case intestazione
         case emoji
+        case type
         // a discrezione dell'utente
         case descrizione
         case menuIndex = "menu_index" // la posizione in menu
@@ -129,15 +145,20 @@ extension CategoriaMenu:Codable {
         
         switch decodingCase {
             
+        case .full:
+            fallthrough
+            
         case .mainCollection:
             
             self.intestazione = try container.decode(String.self, forKey: .intestazione)
             self.image = try container.decode(String.self, forKey: .emoji)
+            self.productType = try container.decode(ProductType.self, forKey: .type)
         
         case .subCollection:
             
             self.intestazione = ""
             self.image = ""
+            self.productType = .noValue
             
             self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)?.capitalizeFirst()
             self.listIndex = try container.decodeIfPresent(Int.self, forKey: .menuIndex)
@@ -158,9 +179,13 @@ extension CategoriaMenu:Codable {
         
         switch codingCase {
             
+        case .full:
+            fallthrough
+            
         case .mainCollection:
             try container.encode(self.intestazione.lowercased(), forKey: .intestazione)
             try container.encode(self.image, forKey: .emoji)
+            try container.encode(self.productType, forKey: .type)
             
         case .subCollection:
             try container.encodeIfPresent(self.descrizione?.lowercased(), forKey: .descrizione)

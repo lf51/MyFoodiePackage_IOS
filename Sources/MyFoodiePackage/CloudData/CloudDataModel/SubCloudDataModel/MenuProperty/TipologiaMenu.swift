@@ -186,6 +186,20 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
         }
     }
     
+    public func returnSubTypeCase() -> DiSistema? {
+        
+        switch self {
+        
+        case .allaCarta(let subType):
+            return subType
+            
+        default:
+            return nil
+            
+        }
+        
+    }
+    
     public func imageAssociated() -> String {
         
         switch self {
@@ -270,7 +284,7 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
         
         case delGiorno,delloChef
         
-        public  func returnTipologiaMenu() -> TipologiaMenu {
+        public func returnTipologiaMenu() -> TipologiaMenu {
             
             switch self {
                 case .delGiorno:

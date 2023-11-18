@@ -261,6 +261,18 @@ extension IngredientModel:Codable {
         
         switch decodingCase {
             
+        case .full:
+            
+            self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)
+            self.intestazione = try container.decode(String.self, forKey: .intestazione)
+            self.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
+            self.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
+            self.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
+            self.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
+            self.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)
+            
+            self.status = try container.decode(StatusModel.self, forKey: .status)
+            
         case .mainCollection:
            
             self.intestazione = try container.decode(String.self, forKey: .intestazione)
@@ -297,6 +309,17 @@ extension IngredientModel:Codable {
         try container.encode(self.id, forKey: .id)
         
         switch codingCase {
+            
+        case .full:
+            
+            try container.encode(self.intestazione, forKey: .intestazione)
+            try container.encode(self.conservazione, forKey: .conservazione)
+            try container.encode(self.produzione, forKey: .produzione)
+            try container.encode(self.provenienza, forKey: .provenienza)
+            try container.encode(self.allergeni, forKey: .allergeni)
+            try container.encode(self.origine, forKey: .origine)
+            try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
+            try container.encode(self.status, forKey: .status)
             
         case .mainCollection:
             
