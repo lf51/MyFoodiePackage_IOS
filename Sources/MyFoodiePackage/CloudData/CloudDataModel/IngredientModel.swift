@@ -24,7 +24,7 @@ public struct IngredientModelImage:MyProStarterPack_L0,Codable {
     
 } // deprecato
 
-public struct IngredientModel:MyProStarterPack_L01/*MyProToolPack_L1,MyProVisualPack_L1,MyProDescriptionPack_L0,MyProStatusPack_L1,MyProCloudPack_L1*/ /*MyModelStatusConformity */ {
+public struct IngredientModel:MyProStarterPack_L01 {
  
     public static func == (lhs: IngredientModel, rhs: IngredientModel) -> Bool {
        return
@@ -40,9 +40,8 @@ public struct IngredientModel:MyProStarterPack_L01/*MyProToolPack_L1,MyProVisual
     //  lhs.inventario == rhs.inventario
    
     }
-    
-   // var id: String { creaID(fromValue: self.intestazione) } // Deprecata 18.08
-    public var id: String = UUID().uuidString //
+
+    public var id: String = UUID().uuidString
 
     public var intestazione: String = "" //
     public var descrizione: String? = "" //
@@ -57,41 +56,7 @@ public struct IngredientModel:MyProStarterPack_L01/*MyProToolPack_L1,MyProVisual
     public var status: StatusModel = .bozza() //
    // var inventario:Inventario = Inventario()
 
-    // Method
-
-
-    
- 
-    
-  
-    
-   /* private var sharedKey:[CodingKeys] = [.allergeni,.conservazione,.conservazione,.intestazione,.origine,.produzione,.provenienza]
-    private var privateKey:[CodingKeys] = [.id,.descrizione,.status]
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
-        try container.encode(descrizione, forKey: .descrizione)
-        try container.encode(status, forKey: .status)
-        
-        
-        
-    } */
-
-  /* public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(String.self, forKey: .id)
-        self.intestazione = try container.decode(String.self, forKey: .intestazione)
-        self.descrizione = try container.decode(String.self, forKey: .descrizione)
-        self.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
-        self.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
-        self.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
-        self.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
-        self.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)
-        self.status = try container.decode(StatusModel.self, forKey: .status)
-    }*/
-    
-    public init(intestazione:String,descrizione:String,conservazione:ConservazioneIngrediente,produzione:ProduzioneIngrediente,provenienza:ProvenienzaIngrediente,allergeni:[AllergeniIngrediente],origine:OrigineIngrediente,status:StatusModel) {
+   /* public init(intestazione:String,descrizione:String,conservazione:ConservazioneIngrediente,produzione:ProduzioneIngrediente,provenienza:ProvenienzaIngrediente,allergeni:[AllergeniIngrediente],origine:OrigineIngrediente,status:StatusModel) {
         
         self.intestazione = intestazione
         self.descrizione = descrizione
@@ -103,7 +68,7 @@ public struct IngredientModel:MyProStarterPack_L01/*MyProToolPack_L1,MyProVisual
         self.status = status
         
         // usato nei test. da abolire
-    }
+    }*/
     
     public init() {
         
@@ -111,47 +76,11 @@ public struct IngredientModel:MyProStarterPack_L01/*MyProToolPack_L1,MyProVisual
         
     }
     
-    public init(id:String) {
+   /* public init(id:String) {
         self.id = id
      
-    }
-    
-  /*  public init(frDocID:String,frDoc: [String:Any]) {
-        // init da firebase Data
-        
-        let conservazioneInt = frDoc[DataBaseField.conservazione] as? Int ?? 0
-        let produzioneInt = frDoc[DataBaseField.produzione] as? Int ?? 0
-        let provenienzaInt = frDoc[DataBaseField.provenienza] as? Int ?? 0
-        let origineInt = frDoc[DataBaseField.origine] as? Int ?? 0
-        let statusInt = frDoc[DataBaseField.status] as? Int ?? 0
-        let allergeniInt = frDoc[DataBaseField.allergeni] as? [Int] ?? []
-        
-        self.id = frDocID
-        self.intestazione = frDoc[DataBaseField.intestazione] as? String ?? ""
-        self.descrizione = frDoc[DataBaseField.descrizione] as? String ?? ""
-        self.conservazione = ConservazioneIngrediente.convertiInCase(fromNumber: conservazioneInt)
-        self.produzione = ProduzioneIngrediente.convertiInCase(fromNumber: produzioneInt)
-        self.provenienza = ProvenienzaIngrediente.convertiInCase(fromNumber: provenienzaInt)
-        self.origine = OrigineIngrediente.convertiInCase(fromNumber: origineInt)
-        self.status = StatusModel.convertiInCase(fromNumber: statusInt)
-        self.allergeni = allergeniInt.map({AllergeniIngrediente.convertiInCase(fromNumber: $0)})
-  
-    }
-    
-    
-    public struct DataBaseField {
-        
-        public static let intestazione = "intestazione"
-        public static let descrizione = "descrizione"
-        public static let conservazione = "conservazione"
-        public static let produzione = "produzione"
-        public static let provenienza = "provenienza"
-        public static let allergeni = "allergeni"
-        public static let origine = "origine"
-        public static let status = "status"
-        
-        
-    } */
+    }*/
+
 
     public func conversioneAllergeniInt() -> [Int] {
         

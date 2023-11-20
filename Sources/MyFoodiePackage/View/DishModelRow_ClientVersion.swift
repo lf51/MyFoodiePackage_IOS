@@ -44,7 +44,8 @@ public struct ProductModelRow_ClientVersion: View {
         reviewButton:@escaping () -> Void) {
         
         self.isItemIbrido = {
-            item.ingredientiPrincipali.contains(item.id)
+           // item.ingredientiPrincipali.contains(item.id)
+            item.percorsoProdotto != .preparazione
         }()
             
         self.viewModel = viewModel
@@ -943,9 +944,10 @@ public struct ProductModelRow_ClientVersion: View {
     /// - Returns: Ingrediente in Sintesi
     private func sintetizzaIngredienteTitolare(ingredient:IngredientModel) -> IngredientModelInSintesi {
         
-        let allTemporaryOff = self.item.elencoIngredientiOff
+        let allTemporaryOff = self.item.elencoIngredientiOff ?? [:]
+        let ingredientiPrincipali = self.item.ingredientiPrincipali ?? []
         
-        let isPrincipal = self.item.ingredientiPrincipali.contains(ingredient.id)
+        let isPrincipal = ingredientiPrincipali.contains(ingredient.id)
       //  let hasAllergene = !ingredient.allergeni.isEmpty
         let hasAllergene:Bool = {
             if let allergeneIn = ingredient.allergeni {

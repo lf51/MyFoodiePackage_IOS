@@ -11,9 +11,9 @@ import SwiftUI
 /*
  
  // Tre Tipologie di Prodotti
- 1. Classico -> Contiene ingredienti
- 2. Composizione -> Descrizione ingredienti
- 3. Di terzi -> Ha un solo ingrediente e non è modificabile
+ 1. Classico -> Contiene rif ingredienti
+ 2. Composizione -> Ha con se un ingrediente as Model sottostante
+ 3. Di terzi -> Ha con se un rif ingrediente sottostante
  
  */
 
@@ -29,7 +29,7 @@ public struct ProductModel: MyProStarterPack_L01{
         lhs.intestazione == rhs.intestazione &&
         lhs.descrizione == rhs.descrizione &&
         lhs.status == rhs.status &&
-        lhs.rifReviews == rhs.rifReviews &&
+       // lhs.rifReviews == rhs.rifReviews &&
         lhs.ingredientiPrincipali == rhs.ingredientiPrincipali &&
         lhs.ingredientiSecondari == rhs.ingredientiSecondari &&
         lhs.elencoIngredientiOff == rhs.elencoIngredientiOff &&
@@ -37,26 +37,24 @@ public struct ProductModel: MyProStarterPack_L01{
         lhs.categoriaMenu == rhs.categoriaMenu &&
         lhs.mostraDieteCompatibili == rhs.mostraDieteCompatibili &&
         lhs.pricingPiatto == rhs.pricingPiatto &&
-        lhs.percorsoProdotto == rhs.percorsoProdotto &&
-        lhs.productType == rhs.productType
+        lhs.percorsoProdotto == rhs.percorsoProdotto
 
     }
 
     public var id: String
     public var percorsoProdotto:PercorsoProdotto
-    public var productType:ProductType
     
     public var intestazione: String
     
     public var descrizione: String?
-    public var rifReviews: [String] // Nota 13.09 // deprecata in futuro. Gestire da lato review con riferimento al piatto.
+  //  public var rifReviews: [String] // Nota 13.09 // deprecata in futuro. Gestire da lato review con riferimento al piatto.
     
     /// array con i Rif degli ingredienti Principali
-    public var ingredientiPrincipali: [String]
+    public var ingredientiPrincipali: [String]?
     /// array con i Rif degli ingredienti Secondari
-    public var ingredientiSecondari: [String]
+    public var ingredientiSecondari: [String]?
    
-    public var elencoIngredientiOff: [String:String] // id Sostituito: idSOSTITUTO
+    public var elencoIngredientiOff: [String:String]? // id Sostituito: idSOSTITUTO
     public var idIngredienteDaSostituire: String? // Nota 30.08
 
     /// Rif della CategoriaMenu
@@ -66,23 +64,16 @@ public struct ProductModel: MyProStarterPack_L01{
     public var status: StatusModel
     public var pricingPiatto:[DishFormat]
 
-    /*
-     // 25.06.23 Serirebbe public init(percorso:PercorsoProdotto){ }
-     // Ma non lo abbiamo implementato perchè ci da una serie di errori sparsi che non comprendiamo. Abbiamo anche provato a implementarlo nella extensione. Non è essenziale, è solo per fare maggiore ordine
-     
-     */
-    
     public init() {
         
-        self.percorsoProdotto = .preparazione
-        self.productType = .food
         self.id = UUID().uuidString
+        self.percorsoProdotto = .preparazione
         self.intestazione = ""
         self.descrizione = nil
-        self.rifReviews = []
-        self.ingredientiPrincipali = []
-        self.ingredientiSecondari = []
-        self.elencoIngredientiOff = ["key":"value"]
+       // self.rifReviews = []//nil
+        self.ingredientiPrincipali = nil
+        self.ingredientiSecondari = nil
+        self.elencoIngredientiOff = nil
         self.idIngredienteDaSostituire = nil
         self.categoriaMenu = CategoriaMenu.defaultValue.id
         self.mostraDieteCompatibili = true
@@ -90,54 +81,14 @@ public struct ProductModel: MyProStarterPack_L01{
         self.pricingPiatto = DishFormat.customInit()
         
     }
-
-    public init(percorsoProdotto: PercorsoProdotto,tipo:ProductType, id: String, intestazione: String, descrizione: String, rifReviews: [String], ingredientiPrincipali: [String], ingredientiSecondari: [String], elencoIngredientiOff: [String : String], idIngredienteDaSostituire: String? = nil, categoriaMenu: String, mostraDieteCompatibili: Bool, status: StatusModel, pricingPiatto: [DishFormat], categoriaMenuDEPRECATA: CategoriaMenu, dieteCompatibili: [TipoDieta], aBaseDi: OrigineIngrediente) {
-        
-        self.percorsoProdotto = percorsoProdotto
-        self.productType = tipo
-        self.id = UUID().uuidString
-        self.intestazione = intestazione
-        self.descrizione = descrizione
-        self.rifReviews = rifReviews
-        self.ingredientiPrincipali = ingredientiPrincipali
-        self.ingredientiSecondari = ingredientiSecondari
-        self.elencoIngredientiOff = elencoIngredientiOff
-        self.idIngredienteDaSostituire = idIngredienteDaSostituire
-        self.categoriaMenu = categoriaMenu
-        self.mostraDieteCompatibili = mostraDieteCompatibili
-        self.status = status
-        self.pricingPiatto = pricingPiatto
-
-    }
-    
-    public init(id:String = UUID().uuidString) {
-        // Necessario quando creiamo l'ibrido, poichè l'id va creato fuori e dato uguale sia all'ingredienteDiSistema che al model
-        self.percorsoProdotto = .preparazione
-        self.productType = .food
-        self.id = id
-        self.intestazione = ""
-        self.descrizione = nil 
-        self.rifReviews = []
-        self.ingredientiPrincipali = []
-        self.ingredientiSecondari = []
-        self.elencoIngredientiOff = [:]
-        self.idIngredienteDaSostituire = nil
-        self.categoriaMenu = CategoriaMenu.defaultValue.id
-        self.mostraDieteCompatibili = false
-        self.status = .bozza()
-        self.pricingPiatto = []
-        
-
-    }
     
     public init(from ingredient:IngredientModel) {
         
         self.percorsoProdotto = .finito(ingredient.id)
-        self.productType = .food
         self.id = ingredient.id // da valutare
         self.intestazione = ingredient.intestazione
         self.descrizione = ingredient.descrizione
-        self.rifReviews = []
+       // self.rifReviews = []
         self.ingredientiPrincipali = []
         self.ingredientiSecondari = []
         self.elencoIngredientiOff = [:]
@@ -204,7 +155,8 @@ public struct ProductModel: MyProStarterPack_L01{
         
         guard !allInPausa.isEmpty else { return allMinusBozzeEArchiviati }
         
-        guard !self.elencoIngredientiOff.isEmpty else {
+        guard let elencoIngredientiOff,
+              !elencoIngredientiOff.isEmpty else {
             return allMinusBozzeEArchiviati.filter({
                 $0.status.checkStatusTransition(check: .disponibile)
             })
@@ -216,7 +168,7 @@ public struct ProductModel: MyProStarterPack_L01{
             
             let position = allActiveIDs.firstIndex{$0 == ingredient.id}
             
-            if let sostituto = self.elencoIngredientiOff[ingredient.id] {
+            if let sostituto = elencoIngredientiOff[ingredient.id] {
                 
                 let(isActive,_,_) = viewModel.infoFromId(id: sostituto, modelPath: \.db.allMyIngredients)
                 
@@ -235,7 +187,13 @@ public struct ProductModel: MyProStarterPack_L01{
     
     public func allMinusArchiviati(viewModel:FoodieViewModel) -> [IngredientModel] {
         
-        let allIngredientsID = self.ingredientiPrincipali + self.ingredientiSecondari
+        let ingredientiPrincipali = self.ingredientiPrincipali ?? []
+        let ingredientiSecondari = self.ingredientiSecondari ?? []
+        
+        let allIngredientsID = ingredientiPrincipali + ingredientiSecondari
+        
+        guard !allIngredientsID.isEmpty else { return [] }
+        
         let allTheIngredients = viewModel.modelCollectionFromCollectionID(collectionId: allIngredientsID, modelPath: \.db.allMyIngredients)
         let allMinusBozzeEArchiviati = allTheIngredients.filter({
             !$0.status.checkStatusTransition(check: .archiviato)
@@ -323,9 +281,14 @@ public struct ProductModel: MyProStarterPack_L01{
     /// Ritorna la media in forma di stringa delle recensioni di un Piatto, e il numero delle stesse come Int, e un array con i modelli delle recensioni
    public func ratingInfo(readOnlyViewModel:FoodieViewModel) -> (media:Double,count:Int,allModelReview:[DishRatingModel]) {
         
-        // Nota 13.09
+        // Nota 13.09 // Nota 20_11_23
 
-       let allLocalReviews:[DishRatingModel] = readOnlyViewModel.modelCollectionFromCollectionID(collectionId: self.rifReviews, modelPath: \.db.allMyReviews)
+      /* let allLocalReviews:[DishRatingModel] = readOnlyViewModel.modelCollectionFromCollectionID(collectionId: self.rifReviews, modelPath: \.db.allMyReviews)*/
+       guard self.percorsoProdotto.returnTypeCase() != .finito() else {
+           return (0.0,0,[])
+       }
+       
+       let allLocalReviews:[DishRatingModel] = readOnlyViewModel.db.allMyReviews.filter({$0.rifPiatto == self.id})
         
         guard !allLocalReviews.isEmpty else {
             
@@ -431,7 +394,7 @@ public struct ProductModel: MyProStarterPack_L01{
     /// conta gli ingredienti secondari e principali
     public func countIngredients() -> (count:Int,canBeExpanded:Bool) {
         
-        let count = (self.ingredientiPrincipali + self.ingredientiSecondari).count
+        let count = ((self.ingredientiPrincipali ?? []) + (self.ingredientiSecondari ?? [])).count
         
         switch self.percorsoProdotto.returnTypeCase() {
             
@@ -448,16 +411,16 @@ public struct ProductModel: MyProStarterPack_L01{
     /// controlla la presenza di un ingrediente soltanto fra i principali e i secondari
     public func checkIngredientsInPlain(idIngrediente:String) -> Bool {
         
-        let all = self.ingredientiPrincipali + self.ingredientiSecondari
+        let all = (self.ingredientiPrincipali ?? []) + (self.ingredientiSecondari ?? [])
         let condition = all.contains(where: {$0 == idIngrediente})
         return condition
     }
     
     /// Ritorna tutti i rif degli ingredienti contenuti nel piatto, senza badare allo status, ritorna i principali, i secondari, e i sostituti
     public func allIngredientsRif() -> [String] {
-        
-        let allIDSostituti = self.elencoIngredientiOff.values
-        let allTheIngredients = self.ingredientiPrincipali + self.ingredientiSecondari + allIDSostituti
+        let elencoIngredientiOff = self.elencoIngredientiOff ?? [:]
+        let allIDSostituti = elencoIngredientiOff.values
+        let allTheIngredients = (self.ingredientiPrincipali ?? []) + (self.ingredientiSecondari ?? []) + allIDSostituti
         
         return allTheIngredients
     } // 16.03.23 Probabile fonte di bug qualora un ingrediente sostituito torni disponibile il suo sostituto non ci interessa nel monitor di servizio
@@ -474,13 +437,19 @@ public struct ProductModel: MyProStarterPack_L01{
     
     /// cerca corrispondenza delle chiavi sostituite negli array ingredienti Principali e Secondari, e in caso di assenza cancella la key portandola su nil
    mutating public func autoCleanElencoIngredientiOff() {
-        
-        let allKey = self.elencoIngredientiOff.keys
-        
+       
+       guard let elencoIngredientiOff = self.elencoIngredientiOff else { return }
+       
+       let allKey = elencoIngredientiOff.keys
+       guard !allKey.isEmpty else { return }
+       
+       let ingredientiPrincipali = self.ingredientiPrincipali ?? []
+       let ingredientiSecondari = self.ingredientiSecondari ?? []
+       
         for key in allKey {
             
-            if self.ingredientiPrincipali.contains(key) || self.ingredientiSecondari.contains(key) { continue }
-            else { self.elencoIngredientiOff[key] = nil }
+            if ingredientiPrincipali.contains(key) || ingredientiSecondari.contains(key) { continue }
+            else { self.elencoIngredientiOff?[key] = nil }
         }
         
     }
@@ -488,19 +457,24 @@ public struct ProductModel: MyProStarterPack_L01{
     /// controlla se un ingrediente ha un sostituto, ovvero se esiste la chiave a suo nome nell'elencoIngredientiOff
     public func checkIngredientHasSubstitute(idIngrediente:String) -> Bool {
         
-        let allSostituiti = self.elencoIngredientiOff.keys
+        guard let elencoIngredientiOff else { return false}
+        
+        let allSostituiti = elencoIngredientiOff.keys
         let condition = allSostituiti.contains(where: {$0 == idIngrediente})
         return condition
     }
     
     /// ritorna il path dell'ingrediente, quindi o l'array di ingredienti principali, o quello dei secondari, o se assente in entrambi ritorna nil
-    public func individuaPathIngrediente(idIngrediente:String) -> (path:WritableKeyPath<Self,[String]>?,index:Int?) {
+    public func individuaPathIngrediente(idIngrediente:String) -> (path:WritableKeyPath<Self,[String]?>?,index:Int?) {
         
-        if let index = self.ingredientiPrincipali.firstIndex(of: idIngrediente) {
+        let ingredientiPrincipali = self.ingredientiPrincipali ?? []
+        let ingredientiSecondari = self.ingredientiSecondari ?? []
+        
+        if let index = ingredientiPrincipali.firstIndex(of: idIngrediente) {
             
             return (\.ingredientiPrincipali,index)
             
-        } else if let index = self.ingredientiSecondari.firstIndex(of: idIngrediente) {
+        } else if let index = ingredientiSecondari.firstIndex(of: idIngrediente) {
             
             return(\.ingredientiSecondari,index)
             
