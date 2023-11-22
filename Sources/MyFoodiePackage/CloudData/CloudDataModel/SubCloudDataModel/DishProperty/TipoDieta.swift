@@ -14,13 +14,13 @@ public enum TipoDieta:Identifiable,MyProEnumPack_L0 /*: MyEnumProtocol,MyEnumPro
   //  var descrizione: String { get {self.extendedDescription() ?? "noDescription"} set { } }
    // var status: StatusModel = .bozza // Non serve a niente. Da Sistemare
     
-    public static var allCases: [TipoDieta] = [/*.standard,*/.vegetariano,.vegariano,.vegano,.glutenFree]
-    public static var defaultValue: TipoDieta = TipoDieta.standard
+    public static var allCases: [TipoDieta] = [.vegano,.vegetariano,.zeroLatticini,.glutenFree]
+   // public static var defaultValue: TipoDieta = TipoDieta.standard
 
-    case standard // contiene di tutto
+   // case standard // contiene di tutto
     
     case vegetariano // può contenere latte&derivati - Non può contenere carne o pesce
-    case vegariano // non contiene latte animale e prodotti derivati
+    case zeroLatticini // non contiene latte animale e prodotti derivati
     case vegano // può contenere solo vegetali
     case glutenFree // lo usiamo per avere un valore di default Nullo
     
@@ -30,9 +30,8 @@ public enum TipoDieta:Identifiable,MyProEnumPack_L0 /*: MyEnumProtocol,MyEnumPro
         
         switch self {
             
-        case .standard: return "Standard"
         case .vegetariano: return "Vegetariana"
-        case .vegariano: return "Vegariana"
+        case .zeroLatticini: return "No Latticini"
         case .vegano: return "Vegana"
         case .glutenFree: return "Senza Glutine"
         
@@ -47,10 +46,9 @@ public enum TipoDieta:Identifiable,MyProEnumPack_L0 /*: MyEnumProtocol,MyEnumPro
     public func extendedDescription() -> String {
         
         switch self {
-            
-        case .standard: return "Contenente ingredienti di origine animale e suoi derivati"
+        
         case .vegetariano: return "Priva di ingredienti di origine animale (ad eccezione del latte e suoi derivati) e pesce."
-        case .vegariano: return "Priva di latte animale e ingredienti derivati."
+        case .zeroLatticini: return "Priva di latte animale e ingredienti derivati."
         case .vegano: return "Contenente solo ingredienti di origine vegetale."
         case .glutenFree: return "Priva di Glutine."
         
@@ -79,7 +77,7 @@ public enum TipoDieta:Identifiable,MyProEnumPack_L0 /*: MyEnumProtocol,MyEnumPro
     }
     
     public func returnTypeCase() -> TipoDieta {
-        print("dentro DishTipologia ReturnType")
+        
         return self
     }
     
@@ -87,11 +85,9 @@ public enum TipoDieta:Identifiable,MyProEnumPack_L0 /*: MyEnumProtocol,MyEnumPro
         
         switch self {
             
-        case .standard:
-            return 5
         case .vegetariano:
             return 1
-        case .vegariano:
+        case .zeroLatticini:
             return 2
         case .vegano:
             return 3
@@ -104,11 +100,9 @@ public enum TipoDieta:Identifiable,MyProEnumPack_L0 /*: MyEnumProtocol,MyEnumPro
         
         switch self {
             
-        case .standard:
-            return Color.black
         case .vegetariano:
             return Color.yellow
-        case .vegariano:
+        case .zeroLatticini:
             return Color.teal
         case .vegano:
             return Color.green
@@ -116,51 +110,4 @@ public enum TipoDieta:Identifiable,MyProEnumPack_L0 /*: MyEnumProtocol,MyEnumPro
             return Color.orange
         }
     }
-    
-    /*
-    /// Controlla l'origine degli ingredienti e restituisce un array con le diete compatibili
-    static func returnDietAvaible(ingredients: [IngredientModel]...) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
-
-        // step 1 ->
-        
-        var animalOrFish: [IngredientModel] = []
-        var milkIn: [IngredientModel] = []
-        var glutenIn: [IngredientModel] = []
-        
-        for list in ingredients {
-            
-            for ingredient in list {
-                
-                if ingredient.origine == .animale {
-                    if ingredient.allergeni.contains(.latte_e_derivati) { milkIn.append(ingredient) }
-                    else { animalOrFish.append(ingredient) }
-                            }
-
-                if ingredient.allergeni.contains(.glutine) { glutenIn.append(ingredient)}
-            }
-        }
-
-        // step 2 -->
-        
-        var dieteOk:[TipoDieta] = []
-        
-        if glutenIn.isEmpty {dieteOk.append(.glutenFree)}
-        
-        if milkIn.isEmpty && animalOrFish.isEmpty {dieteOk.append(contentsOf: [.vegano,.vegariano,.vegetariano])}
-        else if milkIn.isEmpty { dieteOk.append(.vegariano)}
-        else if animalOrFish.isEmpty {dieteOk.append(.vegetariano)}
-        else {dieteOk.append(.standard) }
- 
-        var dieteOkInStringa:[String] = []
- 
-        for diet in dieteOk {
-            
-            let stringDiet = diet.simpleDescription()
-            dieteOkInStringa.append(stringDiet)
-       
-        }
-    
-        return (dieteOk,dieteOkInStringa)
-    } */ // 26.08 -> Spostata all'interno del ProductModel
-    
 }

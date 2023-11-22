@@ -58,8 +58,6 @@ public struct PropertyCurrentData:Codable { // deprecata
     }
     
     public init(from decoder: Decoder) throws {
-        
-        print("[DECODE]_propertyCurrentData")
 
         let infoContainer = try decoder.singleValueContainer()
         self.info = try infoContainer.decode(PropertyModel.self)
@@ -143,14 +141,12 @@ public struct UserCloudData:Codable {
         let isCodeForBusiness = encoder.userInfo[codeForBusinessCollection] as? Bool ?? true
         
         if isCodeForBusiness {
-            print("[ENCODE]_userCloudData_businessSection")
             // salvate solo nello user Business
             try container.encodeIfPresent(self.isPremium, forKey: .isPremium)
             try container.encodeIfPresent(self.dataRegistrazione, forKey: .dataRegistrazione)
             try container.encodeIfPresent(self.propertiesRef, forKey: .propertiesRef)
             
         } else {
-            print("[ENCODE]_userCloudData_organigrammaSection")
             // salvate solo nell'organigramma
           //  try container.encodeIfPresent(self.propertyRole, forKey: .propertyRole)
             var side = encoder.container(keyedBy: SubRoleKey.self)
@@ -180,9 +176,7 @@ public struct UserCloudData:Codable {
         switch decodingCase {
             
         case .userCollection:
-            print("[DECODE]_userCloudData_userCollection")
-            
-            
+        
             self.isPremium = try container.decodeIfPresent(Bool.self, forKey: .isPremium)
             self.dataRegistrazione = try container.decodeIfPresent(Date.self, forKey: .dataRegistrazione)
             self.propertiesRef = try container.decodeIfPresent([String].self, forKey: .propertiesRef)
@@ -190,13 +184,11 @@ public struct UserCloudData:Codable {
             self.propertyRole = nil
             
         case .propertyLocalImage(let userUID):
-            
-            print("[DECODE]_userCloudData_forPropertyLocalImage")
 
             guard savedUID == userUID else {
                 // controllo autorizzazione
                 let context = DecodingError.Context(codingPath: [Self.CodingKeys.id], debugDescription: "User Non Autorizzato")
-                print("[DECODE_ERROR]_userCloudData_fromOrganigramma: \(context.debugDescription)")
+
                 throw DecodingError.valueNotFound(String.self, context)
               
             }
@@ -205,7 +197,6 @@ public struct UserCloudData:Codable {
             
         case .organigramma:
             // da rifare
-            print("[DECODE]_userCloudData_forOrganigramma")
           
             let side = try decoder.container(keyedBy: SubRoleKey.self)
             

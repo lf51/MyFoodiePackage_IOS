@@ -21,8 +21,7 @@ public enum ConservazioneIngrediente:String,MyProEnumPack_L2,Codable /*: MyEnumP
     case noValue
  
     public func simpleDescription() -> String {
-      /*  print("Dentro Conservazione Ingrediente .simpleDescription() di \(self.hashValue)") */
-        
+  
         switch self {
 
         case .surgelato: return "Surgelato"

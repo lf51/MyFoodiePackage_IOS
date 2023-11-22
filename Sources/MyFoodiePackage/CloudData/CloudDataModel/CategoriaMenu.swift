@@ -12,7 +12,7 @@ public enum MyCodingCase {
     
     case mainCollection
     case subCollection
-    case full
+    case inbound
 }
 
 
@@ -80,7 +80,6 @@ public struct CategoriaMenu:
     }
     
     public func extendedDescription() -> String { // Deprecata
-        print("Dentro ExtendedDescription in CategoriaMenu")
         guard let descrizione,
               descrizione != "" else {
             return "No description yet"
@@ -136,7 +135,7 @@ extension CategoriaMenu:Codable {
     }
     
     public init(from decoder: Decoder) throws {
-        print("[DECODE]_CategoriaMenu")
+ 
         let decodingCase = decoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -145,7 +144,7 @@ extension CategoriaMenu:Codable {
         
         switch decodingCase {
             
-        case .full:
+        case .inbound:
             fallthrough
             
         case .mainCollection:
@@ -170,7 +169,6 @@ extension CategoriaMenu:Codable {
     }
     
     public func encode(to encoder: Encoder) throws {
-        print("[ENCODE]_CategoriaMenu")
         
         let codingCase = encoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
         
@@ -179,7 +177,7 @@ extension CategoriaMenu:Codable {
         
         switch codingCase {
             
-        case .full:
+        case .inbound:
             fallthrough
             
         case .mainCollection:

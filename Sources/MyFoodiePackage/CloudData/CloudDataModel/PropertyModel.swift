@@ -225,7 +225,6 @@ public struct PropertyModel:MyProStarterPack_L0,Codable/*MyProStarterPack_L1,MyP
     }
     
     public init(from decoder: Decoder) throws {
-        print("[DECODE]_PropertyModel")
         //throw URLError(.badURL)
         
         let main = try decoder.container(keyedBy: MainCodingKeys.self)

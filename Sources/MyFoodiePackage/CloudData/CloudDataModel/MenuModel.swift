@@ -53,7 +53,7 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
         self.intestazione = ""
         self.descrizione = ""
         self.tipologia = .defaultValue
-        self.status = .bozza()
+        self.status = .bozza(.inPausa)
         self.rifDishIn = []
         self.isAvaibleWhen = .defaultValue
         self.dataInizio = currentDate

@@ -29,7 +29,6 @@ public struct ProductModel: MyProStarterPack_L01{
         lhs.intestazione == rhs.intestazione &&
         lhs.descrizione == rhs.descrizione &&
         lhs.status == rhs.status &&
-       // lhs.rifReviews == rhs.rifReviews &&
         lhs.ingredientiPrincipali == rhs.ingredientiPrincipali &&
         lhs.ingredientiSecondari == rhs.ingredientiSecondari &&
         lhs.elencoIngredientiOff == rhs.elencoIngredientiOff &&
@@ -77,7 +76,7 @@ public struct ProductModel: MyProStarterPack_L01{
         self.idIngredienteDaSostituire = nil
         self.categoriaMenu = CategoriaMenu.defaultValue.id
         self.mostraDieteCompatibili = true
-        self.status = .bozza()
+        self.status = .noStatus
         self.pricingPiatto = DishFormat.customInit()
         
     }
@@ -331,12 +330,70 @@ public struct ProductModel: MyProStarterPack_L01{
     }
     
     /// Controlla l'origine degli ingredienti e restituisce un array con le diete compatibili. Il byPass di default su false, se true byPassa la scelta dell'utente di mostrare o meno le diete e calcola le compatibilità
-    public func returnDietAvaible(viewModel:FoodieViewModel,byPassShowCompatibility:Bool = false) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
+    public func returnDietAvaible(
+        viewModel:FoodieViewModel,
+        byPassShowCompatibility:Bool = false,
+        throwSottostante:IngredientModel? = nil) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
         
         // Step 0 -> controlliamo che l'utente abbia scelto o meno di mostrare le diete. In caso negativo mandiamo la dieta standard
-        guard self.mostraDieteCompatibili || byPassShowCompatibility else { return ([TipoDieta.standard],[TipoDieta.standard.simpleDescription()])}
+        guard self.mostraDieteCompatibili || byPassShowCompatibility else { return ([],[])}
         
-        let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
+       // let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
+           // let allModelIngredients:[IngredientModel]
+        
+            if let throwSottostante {
+                return returnDiet(throw: throwSottostante)
+            } else {
+               let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
+               return returnDiet(throw: allModelIngredients)
+            }
+    
+    }
+    
+    private func returnDiet(throw singleIngredient:IngredientModel) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
+        
+        // step 1 ->
+        let animalOrFish:Bool = singleIngredient.origine.returnTypeCase() == .animale
+        
+        let milkIn:Bool = {
+            
+            if let allergeniIn = singleIngredient.allergeni {
+                return allergeniIn.contains(.latte_e_derivati)
+            } else { return false }
+        }()
+
+        let glutenIn:Bool = { 
+            if let allergeniIn = singleIngredient.allergeni {
+                return allergeniIn.contains(.glutine)
+            } else { return false }
+            
+        }()
+        // step 2 -->
+        
+        var dieteOk:[TipoDieta] = []
+        
+        if !glutenIn {dieteOk.append(.glutenFree)}
+
+        if !animalOrFish && !milkIn {
+            dieteOk.append(contentsOf: [.vegano,.zeroLatticini,.vegetariano])
+        }
+        else if animalOrFish && !milkIn {
+            dieteOk.append(contentsOf: [.zeroLatticini])
+        }
+        else {
+            // Nota 21_11_23
+            if self.percorsoProdotto.returnTypeCase() == .finito() {
+                dieteOk.append(.vegetariano)
+            }
+            
+        }
+
+        let dieteOkInStringa:[String] = dieteOk.map({$0.simpleDescription()})
+ 
+        return (dieteOk,dieteOkInStringa)
+    }
+    
+    private func returnDiet(throw allModelIngredients:[IngredientModel]) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
         
         // step 1 ->
         let animalOrFish: [IngredientModel] = allModelIngredients.filter({$0.origine.returnTypeCase() == .animale})
@@ -364,21 +421,14 @@ public struct ProductModel: MyProStarterPack_L01{
         
         if glutenIn.isEmpty {dieteOk.append(.glutenFree)}
  
-        // Soluzione bug 25.06
-        
         let animalCount = animalOrFish.count
         let milkCount = milkIn.count
         
         if (animalCount + milkCount) == 0 {
-            dieteOk.append(contentsOf: [.vegano,.vegariano,.vegetariano])
+            dieteOk.append(contentsOf: [.vegano,.zeroLatticini,.vegetariano])
         }
-        else if milkCount == 0 { dieteOk.append(.vegariano) }
+        else if milkCount == 0 { dieteOk.append(.zeroLatticini) }
         else if (animalCount - milkCount) == 0 { dieteOk.append(.vegetariano) }
-       // else { dieteOk.append(.standard) }
-        
-        else if dieteOk.isEmpty { dieteOk.append(.standard) }
-        
-        // fine soluzione bug
         
         let dieteOkInStringa:[String] = dieteOk.map({$0.simpleDescription()})
  
@@ -386,7 +436,7 @@ public struct ProductModel: MyProStarterPack_L01{
     }
     
     func creaID(fromValue: String) -> String {
-        print("ProductModel/creaID()")
+      
       return fromValue.replacingOccurrences(of: " ", with: "").lowercased()
     } // non mi piace
     
@@ -485,7 +535,9 @@ public struct ProductModel: MyProStarterPack_L01{
     /// ritorna true se tutte le proprietà optional sono state compilate, e dunque il modello è completo.
     public func optionalComplete() -> Bool {
             
-        self.descrizione != "" &&
+        guard let descrizione else { return false }
+        
+        return descrizione != "" &&
         self.mostraDieteCompatibili// &&
         //!self.ingredientiPrincipali.isEmpty
        
@@ -551,14 +603,65 @@ public struct ProductModel: MyProStarterPack_L01{
 
 extension ProductModel:Codable {
     
+    public enum CodingKeys:String,CodingKey {
+        
+        case id
+        case percorsoProdotto = "tipologia"
+        case intestazione
+        case descrizione
+        case ingredientiPrincipali = "ingredienti_principali"
+        case ingredientiSecondari = "ingredienti_secondari"
+        case elencoIngredientiOff = "ingredienti_off"
+       // case idIngredienteDaSostituire = nil
+        case categoriaMenu = "categoria_menu"
+        case mostraDieteCompatibili = "show_diet"
+        case status
+        case pricingPiatto = "pricing"
+        
+    }
     
+    public init(from decoder: Decoder) throws {
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.id = try container.decode(String.self, forKey: .id)
+        self.percorsoProdotto = try container.decode(PercorsoProdotto.self, forKey: .percorsoProdotto)
+        self.intestazione = try container.decode(String.self, forKey: .intestazione)
+        self.descrizione = try container.decodeIfPresent(String.self, forKey:.descrizione)
+        self.ingredientiPrincipali = try container.decodeIfPresent([String].self, forKey: .ingredientiPrincipali)
+        self.ingredientiSecondari = try container.decodeIfPresent([String].self, forKey: .ingredientiSecondari)
+        self.elencoIngredientiOff = try container.decodeIfPresent([String:String].self, forKey: .elencoIngredientiOff)
+        self.categoriaMenu = try container.decode(String.self, forKey: .categoriaMenu)
+        self.mostraDieteCompatibili = try container.decode(Bool.self, forKey: .mostraDieteCompatibili)
+        self.status = try container.decode(StatusModel.self, forKey: .status)
+        self.pricingPiatto = try container.decode([DishFormat].self, forKey: .pricingPiatto)
+        
+        
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(self.id, forKey: .id)
+        try container.encode(self.percorsoProdotto, forKey: .percorsoProdotto)
+        try container.encode(self.intestazione, forKey: .intestazione)
+        try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
+        try container.encodeIfPresent(self.ingredientiPrincipali, forKey: .ingredientiPrincipali)
+        try container.encodeIfPresent(self.ingredientiSecondari, forKey: .ingredientiSecondari)
+        try container.encodeIfPresent(self.elencoIngredientiOff, forKey: .elencoIngredientiOff)
+        try container.encode(self.categoriaMenu, forKey: .categoriaMenu)
+        try container.encode(self.mostraDieteCompatibili, forKey: .mostraDieteCompatibili)
+        try container.encode(self.status, forKey: .status)
+        try container.encode(self.pricingPiatto, forKey: .pricingPiatto)
+        
+    }
     
 }
 
-
 public enum PercorsoProdotto:MyProEnumPack_L0,Codable {
 
-    public static var allCases:[PercorsoProdotto] = [/*.preparazioneFood,.preparazioneBeverage,*/.preparazione,.composizione(),.finito()]
+    public static var allCases:[PercorsoProdotto] = [.preparazione,.composizione(),.finito()]
     
     case preparazione
   //  case preparazioneFood //= "Piatto" // case standard di default

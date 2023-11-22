@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public enum StatusTransition:String,MyProEnumPack_L0,Equatable,Codable {
+public enum StatusTransition:String,MyProEnumPack_L0,Equatable {
     
     public static var allCases: [StatusTransition] = [.disponibile,.inPausa,.archiviato]
  //   static var defaultValue: StatusTransition = .archiviato
@@ -58,15 +58,17 @@ public enum StatusTransition:String,MyProEnumPack_L0,Equatable,Codable {
     }
 }
 
-public enum StatusModel:Equatable,Codable { // vedi Nota Consegna 17.07
+public enum StatusModel:Equatable { // vedi Nota Consegna 17.07
     
-   // case nuovo // deprecato 07.09
-    case bozza(StatusTransition? = nil)
+    case noStatus
+    case bozza(StatusTransition)
     case completo(StatusTransition)
     
     public func imageAssociated() -> String {
         
         switch self {
+        case .noStatus:
+            return "x.circle"
         case .bozza:
            return "hammer.circle.fill"//"doc.badge.gearshape" //  // moon.fill
         case .completo:
@@ -77,8 +79,10 @@ public enum StatusModel:Equatable,Codable { // vedi Nota Consegna 17.07
     public func transitionStateColor() -> Color {
         
         switch self {
+        case .noStatus:
+            return Color.gray
         case .bozza(let statusTransition):
-            return statusTransition?.colorAssociated() ?? Color.gray
+            return statusTransition.colorAssociated()
         case .completo(let statusTransition):
             return statusTransition.colorAssociated()
         }
@@ -88,8 +92,10 @@ public enum StatusModel:Equatable,Codable { // vedi Nota Consegna 17.07
     public func simpleDescription() -> String {
         
         switch self {
+        case .noStatus:
+            return "Non Operativo"
         case .bozza(let statusTransition):
-            return statusTransition?.simpleDescription() ?? "Nuovo"
+            return statusTransition.simpleDescription()
         case .completo(let statusTransition):
             return statusTransition.simpleDescription()
         }
@@ -98,6 +104,8 @@ public enum StatusModel:Equatable,Codable { // vedi Nota Consegna 17.07
     public func checkStatusTransition(check:StatusTransition) -> Bool {
         
         switch self {
+        case .noStatus:
+            return false
         case .bozza(let statusTransition):
             return statusTransition == check
         case .completo(let statusTransition):
@@ -109,6 +117,8 @@ public enum StatusModel:Equatable,Codable { // vedi Nota Consegna 17.07
     public func changeStatusTransition(changeIn: StatusTransition) -> Self {
         
         switch self {
+        case .noStatus:
+            return .noStatus
         case .bozza(_):
             return .bozza(changeIn)
         case .completo(_):
@@ -130,8 +140,10 @@ public enum StatusModel:Equatable,Codable { // vedi Nota Consegna 17.07
     public func orderAndStorageValue() -> Int {
         
         switch self {
+        case .noStatus:
+            return 0
         case .bozza(let statusTransition):
-            let number = statusTransition == nil ? 0 : (1 + statusTransition!.orderAndStorageValue())
+            let number = 1 + statusTransition.orderAndStorageValue()
             return number
         case .completo(let statusTransition):
             let number = 4 + statusTransition.orderAndStorageValue()
@@ -139,12 +151,14 @@ public enum StatusModel:Equatable,Codable { // vedi Nota Consegna 17.07
         }
     }
     
-   /* public static func convertiInCase(fromNumber: Int) -> StatusModel {
+}
+
+extension StatusModel:Codable {
+    
+    public static func decodeStatus(from number: Int?) -> StatusModel {
         
-        switch fromNumber {
-            
-        case 0:
-            return .bozza()
+        switch number {
+  
         case 1:
             return .bozza(.disponibile)
         case 2:
@@ -157,20 +171,33 @@ public enum StatusModel:Equatable,Codable { // vedi Nota Consegna 17.07
             return .completo(.inPausa)
         case 6:
             return .completo(.archiviato)
+            
         default:
-            return .bozza()
-        }
-    } */
-    
-  /*  func estrapolaStatusTransition() -> StatusTransition? {
-        
-        switch self {
-        case .bozza(let statusTransition):
-            return statusTransition
-        case .completo(let statusTransition):
-            return statusTransition
-        }
-    } */
-    
+            return .noStatus
 
+        }
+    }
+    public func encodeStatusAsString() -> String {
+        let value = self.orderAndStorageValue()
+        return String(value)
+    }
+
+    public init(from decoder: Decoder) throws {
+          
+          let container = try decoder.singleValueContainer()
+          
+          let value = try container.decode(String.self)
+          let number = Int(value)
+          self = Self.decodeStatus(from: number)
+      }
+      
+      public func encode(to encoder: Encoder) throws {
+          
+          var container = encoder.singleValueContainer()
+          
+          let value = self.encodeStatusAsString()
+          try container.encode(value)
+          
+      }
+    
 }

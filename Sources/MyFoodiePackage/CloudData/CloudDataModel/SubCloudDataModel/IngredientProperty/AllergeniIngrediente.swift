@@ -82,8 +82,7 @@ public enum AllergeniIngrediente:String, MyProStarterPack_L0,Codable/*MyProStart
     }
     
     public func extendedDescription() -> String {
-        print("Dentro DishAllergeni. DescrizioneEstesa non sviluppata")
-        return ""
+        return "[DA SVILUPPARE]"
     }
     
     public func createId() -> String {

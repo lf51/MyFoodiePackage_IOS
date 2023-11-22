@@ -169,8 +169,11 @@ public struct ProductModelRow_ClientVersion: View {
         // Utilizziamo un preCalcolo perchè rimaneva un piccolo spazietto quando non c'erano valori da mostrare. Così invece è risolto.
         let dietAvaible = self.item.returnDietAvaible(viewModel: self.viewModel).inDishTipologia
         
-        if dietAvaible.count == 1 &&
+       /* if dietAvaible.count == 1 &&
            dietAvaible.contains(.standard) { return nil }
+        else { return dietAvaible }*/
+        
+        if dietAvaible.isEmpty { return nil }
         else { return dietAvaible }
         
     }
@@ -215,7 +218,7 @@ public struct ProductModelRow_ClientVersion: View {
             
         case .vegetariano:
             return (Text(Image(systemName: "pawprint.fill")),.white,true)
-        case .vegariano:
+        case .zeroLatticini:
             return (Text("🥛"),.black,true)
         case .glutenFree:
             return (Text(Image(systemName: "laurel.leading")),.black,true)

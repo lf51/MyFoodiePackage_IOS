@@ -28,6 +28,7 @@ public struct IngredientModel:MyProStarterPack_L01 {
  
     public static func == (lhs: IngredientModel, rhs: IngredientModel) -> Bool {
        return
+        
       lhs.id == rhs.id &&
       lhs.intestazione == rhs.intestazione &&
       lhs.descrizione == rhs.descrizione &&
@@ -41,46 +42,36 @@ public struct IngredientModel:MyProStarterPack_L01 {
    
     }
 
-    public var id: String = UUID().uuidString
+    public var id: String
 
-    public var intestazione: String = "" //
-    public var descrizione: String? = "" //
+    public var intestazione: String
+    public var descrizione: String?
     
-    public var conservazione: ConservazioneIngrediente = .defaultValue //
-    public var produzione: ProduzioneIngrediente = .defaultValue //
-    public var provenienza: ProvenienzaIngrediente = .defaultValue //
+    public var conservazione: ConservazioneIngrediente
+    public var produzione: ProduzioneIngrediente
+    public var provenienza: ProvenienzaIngrediente
     
-    public var allergeni: [AllergeniIngrediente]? //
-    public var origine: OrigineIngrediente = .defaultValue //
+    public var allergeni: [AllergeniIngrediente]?
+    public var origine: OrigineIngrediente
     
-    public var status: StatusModel = .bozza() //
+    public var status: StatusModel
    // var inventario:Inventario = Inventario()
 
-   /* public init(intestazione:String,descrizione:String,conservazione:ConservazioneIngrediente,produzione:ProduzioneIngrediente,provenienza:ProvenienzaIngrediente,allergeni:[AllergeniIngrediente],origine:OrigineIngrediente,status:StatusModel) {
-        
-        self.intestazione = intestazione
-        self.descrizione = descrizione
-        self.conservazione = conservazione
-        self.produzione = produzione
-        self.provenienza = provenienza
-        self.allergeni = allergeni
-        self.origine = origine
-        self.status = status
-        
-        // usato nei test. da abolire
-    }*/
-    
     public init() {
-        
-        // creare un init di default
-        
+      
+        self.id = UUID().uuidString
+        self.intestazione = ""
+        self.descrizione = nil
+        self.conservazione = .defaultValue
+        self.produzione = .defaultValue
+        self.provenienza = .defaultValue
+        self.origine = .defaultValue
+        self.allergeni = nil
+        self.status = .noStatus
+      
     }
-    
-   /* public init(id:String) {
-        self.id = id
-     
-    }*/
 
+    // method
 
     public func conversioneAllergeniInt() -> [Int] {
         
@@ -155,9 +146,10 @@ public struct IngredientModel:MyProStarterPack_L01 {
     /// ritorna true se tutte le proprietà optional sono state compilate, e dunque il modello è completo.
     public func optionalComplete() -> Bool {
         
-        self.descrizione != ""// &&
-      //  self.produzione != .defaultValue &&
-      //  self.provenienza != .defaultValue
+        guard let descrizione else { return false }
+        
+        return descrizione != ""
+
     }
 }
 
@@ -181,7 +173,7 @@ extension IngredientModel:Codable {
     }
     
     public init(from decoder: Decoder) throws {
-        print("[DECODE]_IngredientModel")
+        
         let decodingCase = decoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -190,17 +182,17 @@ extension IngredientModel:Codable {
         
         switch decodingCase {
             
-        case .full:
-            
-            self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)
-            self.intestazione = try container.decode(String.self, forKey: .intestazione)
+        case .inbound:
+
             self.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
             self.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
             self.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
             self.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
             self.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)
             
-            self.status = try container.decode(StatusModel.self, forKey: .status)
+            self.intestazione = ""
+            self.descrizione = nil
+            self.status = .noStatus
             
         case .mainCollection:
            
@@ -211,7 +203,7 @@ extension IngredientModel:Codable {
             self.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
             self.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)
             
-            self.status = .bozza(.inPausa)
+            self.status = .noStatus
             
         case .subCollection:
             
@@ -230,8 +222,7 @@ extension IngredientModel:Codable {
     }
     
     public func encode(to encoder: Encoder) throws {
-        print("[ENCODE]_IngredientModel")
-        
+
         let codingCase = encoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
         
         var container = encoder.container(keyedBy: CodingKeys.self)
@@ -239,16 +230,16 @@ extension IngredientModel:Codable {
         
         switch codingCase {
             
-        case .full:
+        case .inbound:
             
-            try container.encode(self.intestazione, forKey: .intestazione)
+           // try container.encode(self.intestazione, forKey: .intestazione)
             try container.encode(self.conservazione, forKey: .conservazione)
             try container.encode(self.produzione, forKey: .produzione)
             try container.encode(self.provenienza, forKey: .provenienza)
             try container.encode(self.allergeni, forKey: .allergeni)
             try container.encode(self.origine, forKey: .origine)
-            try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
-            try container.encode(self.status, forKey: .status)
+          //  try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
+           // try container.encode(self.status, forKey: .status)
             
         case .mainCollection:
             
@@ -261,7 +252,7 @@ extension IngredientModel:Codable {
             
         case .subCollection:
             
-            try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
+            try container.encode(self.descrizione, forKey: .descrizione)
             try container.encode(self.status, forKey: .status)
             
         }
