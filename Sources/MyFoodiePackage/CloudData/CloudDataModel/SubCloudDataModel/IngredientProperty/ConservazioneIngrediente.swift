@@ -39,13 +39,13 @@ public enum ConservazioneIngrediente:String,MyProEnumPack_L2,Codable /*: MyEnumP
         switch self {
             
         case .congelato:
-            return "potrebbe essere Congelato"
+            return "Potrebbe essere Congelato"
         case .surgelato:
-            return "potrebbe essere Surgelato"
+            return "Potrebbe essere Surgelato"
         case .fresco:
-            return "prodotto fresco"
+            return "Prodotto fresco"
         case .altro:
-            return "metodo di conservazione generico"
+            return "Metodo di conservazione generico"
         case .noValue:
             return "Indicare metodo di conservazione"
 

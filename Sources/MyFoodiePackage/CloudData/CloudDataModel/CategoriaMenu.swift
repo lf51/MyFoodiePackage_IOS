@@ -155,9 +155,9 @@ extension CategoriaMenu:Codable {
         
         case .subCollection:
             
-            self.intestazione = ""
-            self.image = ""
-            self.productType = .noValue
+            self.intestazione = try container.decode(String.self, forKey: .intestazione)
+            self.image = try container.decode(String.self, forKey: .emoji)
+            self.productType = try container.decode(ProductType.self, forKey: .type)
             
             self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)?.capitalizeFirst()
             self.listIndex = try container.decodeIfPresent(Int.self, forKey: .menuIndex)
@@ -186,6 +186,9 @@ extension CategoriaMenu:Codable {
             try container.encode(self.productType, forKey: .type)
             
         case .subCollection:
+            try container.encode(self.intestazione.lowercased(), forKey: .intestazione)
+            try container.encode(self.image, forKey: .emoji)
+            try container.encode(self.productType, forKey: .type)
             try container.encodeIfPresent(self.descrizione?.lowercased(), forKey: .descrizione)
             try container.encodeIfPresent(self.listIndex, forKey: .menuIndex)
         }

@@ -45,7 +45,7 @@ public struct ProductModelRow_ClientVersion: View {
         
         self.isItemIbrido = {
            // item.ingredientiPrincipali.contains(item.id)
-            item.percorsoProdotto != .preparazione
+            item.adress != .preparazione
         }()
             
         self.viewModel = viewModel
@@ -373,7 +373,7 @@ public struct ProductModelRow_ClientVersion: View {
         let allSintesys:[IngredientModelInSintesi] = allFilteredIngredients.map({self.sintetizzaIngredienteTitolare(ingredient: $0)})
         let allSintesysSecondary:[IngredientModelInSintesi] = allSintesys.filter({!$0.isPrincipal})
         
-        let nomePercorso = self.item.percorsoProdotto.simpleDescription()
+        let nomePercorso = self.item.adress.simpleDescription()
         // 2. Controlliamo se la descrizione del piatto li contiene tutti
         
         let mapByName:[String] = allSintesysSecondary.map({$0.intestazione})
@@ -440,7 +440,7 @@ public struct ProductModelRow_ClientVersion: View {
         if !isItemIbrido { vbReviewLine() }
         else {
             
-            Text(self.item.percorsoProdotto.simpleDescription().lowercased())
+            Text(self.item.adress.simpleDescription().lowercased())
                 .italic()
                 .fontWeight(.light)
                 .font(.subheadline)

@@ -9,6 +9,415 @@ import Foundation
 import SwiftUI
 //import Firebase
 
+public struct BollaAcquisto:Equatable{
+    
+    public var nota:String?
+    public var data:String?
+    
+    /// Init con data corrente
+   public init() {
+        self.data = csTimeFormatter().data.string(from: Date())
+    }
+    
+    /// init con data nil
+    public init(nota: String) {
+         self.nota = nota
+     }
+}
+
+extension BollaAcquisto:Codable {
+    
+    public init(from decoder: Decoder) throws {
+        
+        let container = try decoder.singleValueContainer()
+        
+        let value = try container.decode(String.self)
+        (self.data,self.nota) = decodeSingleValue(value)
+        
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        
+        var container = encoder.singleValueContainer()
+        let value = encodeSingleValue()
+        
+        try container.encode(value)
+        
+    }
+    
+    private func encodeSingleValue() -> String {
+        
+        let nota = self.nota ?? ""
+        let data = self.data ?? ""
+        
+        guard !nota.isEmpty ||
+              !data.isEmpty else { return "" }
+        
+        let value = "\(data)_:\(nota)"
+        
+        return value
+        
+    }
+    
+    private func decodeSingleValue(_ value:String) -> (data:String?,nota:String?) {
+        
+        guard !value.isEmpty else {
+            return (nil,nil)
+        }
+        
+        let strings = value.split(separator: "_:")
+        let count = strings.count
+        
+        guard count == 1 else {
+            
+            let data = String(strings.first ?? "")
+            let nota = String(strings.last ?? "")
+            
+            return (data,nota)
+            
+        }
+            
+            if value.hasSuffix("_:") {
+                
+                let data = String(strings.first ?? "")
+                return(data,nil)
+                
+            } else {
+                
+                let nota = String(strings.first ?? "")
+                return (nil,nota)
+            }
+
+    }
+    
+}
+
+public struct InventarioScorte:Equatable {
+        
+    public lazy var currentDate:String = {
+        csTimeFormatter().data.string(from: Date())
+    }()
+    
+    public var statusScorte:StatoScorte
+    public var dataUltimaBolla:String?
+    
+    /// Conserviamo temporaneamente il valore dell'ultima bolla durante la compilazione, prima della validazione
+    public var bollaCorrente:BollaAcquisto?
+    
+    public var transitionState:TransizioneScorte? {
+        get { getTransition() }
+        set { setTransition(value: newValue) }
+    }
+   
+    public init() {
+        self.statusScorte = .inStock
+    }
+        
+    // Method
+    public func getTransition() -> TransizioneScorte? {
+        
+        switch statusScorte {
+        case .inEsaurimento,.esaurito,.outOfStock:
+            
+            if let bollaCorrente,
+               let _ = bollaCorrente.data {
+                return .inArrivo
+            } else { return  .pending}
+
+        case .inStock:
+            return nil
+            
+        }
+    }
+    
+   mutating public func setTransition(value:TransizioneScorte?) {
+            
+       guard let value else { return }
+       
+        switch value {
+            
+        case .pending:
+            self.reverseInArrivo()
+        case .inArrivo:
+            self.setTemporaryLast()
+        case .validate:
+            self.statusScorte = .inStock
+        }
+
+        }
+        
+    mutating public func setTemporaryLast() {
+        
+        if var bollaCorrente {
+            
+            bollaCorrente.data = self.currentDate
+            self.bollaCorrente = bollaCorrente
+            
+        } else {
+            
+            let newBolla = BollaAcquisto()
+            self.bollaCorrente = newBolla
+            
+        }
+        
+    }
+    
+    mutating public func reverseInArrivo() {
+        
+        guard var bollaCorrente else { return }
+        
+        bollaCorrente.data = nil
+        self.bollaCorrente = bollaCorrente
+        
+    }
+    
+    mutating public func dePending(reverse status:Bool) {
+        
+        if !status {
+            self.transitionState = .inArrivo
+        } else {
+            self.transitionState = .pending
+        }
+        
+    }
+    
+    mutating public func updateNotaBolla(note:String) {
+        
+        if var bollaCorrente {
+            
+            bollaCorrente.nota = note
+            self.bollaCorrente = bollaCorrente
+            
+        } else {
+            let newBolla = BollaAcquisto(nota: note)
+            self.bollaCorrente = newBolla
+            
+        }
+    }
+
+    
+}
+
+extension InventarioScorte:Codable {
+    
+    public enum CodingKeys:String,CodingKey {
+        
+        case status = "stato_scorte"
+        case ultimoAcquisto = "ultimo_acquisto"
+        case bollaCorrente = "bolla_corrente"
+
+    }
+    
+    public init(from decoder: Decoder) throws {
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.statusScorte = try container.decode(StatoScorte.self, forKey: .status)
+        self.dataUltimaBolla = try container.decodeIfPresent(String.self, forKey: .ultimoAcquisto)
+        self.bollaCorrente = try container.decodeIfPresent(BollaAcquisto.self, forKey: .bollaCorrente)
+        
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(self.statusScorte, forKey: .status)
+        try container.encode(self.dataUltimaBolla, forKey: .ultimoAcquisto)
+        try container.encode(self.bollaCorrente, forKey: .bollaCorrente)
+        
+    }
+    
+    
+}
+
+public enum TransizioneScorte {
+    
+    case pending
+    case inArrivo
+    case validate
+    
+    public func imageAssociata() -> String {
+        
+        switch self {
+            
+        case .pending:
+            return "cart.badge.plus.fill"
+        case .inArrivo:
+            return "creditcard"
+        case .validate:
+            return "storefront"
+        }
+    }
+    
+    public func coloreAssociato() -> Color {
+        
+        switch self {
+
+        case .pending:
+            return .yellow.opacity(0.7)
+       case .inArrivo:
+            return .seaTurtle_4.opacity(0.7)
+        case .validate:
+            return .gray
+        }
+        
+    }
+}
+
+public enum StatoScorte:String,MyProEnumPack_L0 {
+    
+    public static var allCases:[StatoScorte] = [.inStock,.inEsaurimento,.esaurito]
+    
+    case inEsaurimento = "in esaurimento"
+    case esaurito = "esaurite"
+    case inStock = "in stock"
+  //  case inArrivo = "in arrivo" // deprecato
+    case outOfStock = "out of stock"
+    
+    public func orderAndStorageValue() -> Int {
+        
+        switch self {
+            
+        case .inStock:
+            return 0
+        case .inEsaurimento:
+            return 1
+        case .esaurito:
+            return 2
+       /* case .inArrivo:
+            return 1*/
+        case .outOfStock:
+            return 3
+        }
+
+    }
+    
+    public func simpleDescription() -> String {
+     
+        switch self {
+            
+        case .inStock:
+            return "in Stock"
+        case .inEsaurimento:
+            return "ai Minimi"
+        case .esaurito:
+            return "Terminate"
+       /* case .inArrivo:
+            return "in Arrivo"*/
+        case .outOfStock:
+            return "out of stock"
+        }
+    }
+    
+    public func returnTypeCase() -> StatoScorte {
+        self
+    }
+    
+    public func imageAssociata() -> String {
+        
+        switch self {
+            
+        case .inStock:
+            return "house"
+        case .inEsaurimento:
+            return "clock.badge.exclamationmark"
+        case .esaurito:
+            return "alarm.waves.left.and.right"
+       /* case .inArrivo:
+            return "creditcard"*/
+        case .outOfStock:
+            return "x.circle"
+        }
+    }
+    
+    public func coloreAssociato() -> Color {
+        
+        switch self {
+            
+        case .inStock:
+            return .seaTurtle_3
+        case .inEsaurimento:
+            return .yellow.opacity(0.7)
+        case .esaurito:
+            return .red.opacity(0.6)
+      /*  case .inArrivo:
+            return .seaTurtle_4.opacity(0.7)*/
+        case .outOfStock:
+            return .gray
+        }
+        
+    }
+    
+    public func coloreAssociatoNotOpacity() -> Color {
+        
+        switch self {
+            
+        case .inStock:
+            return .seaTurtle_3
+        case .inEsaurimento:
+            return .yellow
+        case .esaurito:
+            return .red
+      /*case .inArrivo:
+            return .seaTurtle_4*/
+        case .outOfStock:
+            return .gray
+        }
+    }
+}
+
+extension StatoScorte:Codable {
+    
+    public init(from decoder: Decoder) throws {
+        
+        let container = try decoder.singleValueContainer()
+        
+        let value = try container.decode(String.self)
+        let number = Int(value)
+        
+        self = Self.decodeStatus(from: number)
+        
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        
+        var container = encoder.singleValueContainer()
+        
+        let value = self.encodeAsString()
+        
+        try container.encode(value)
+        
+    }
+    
+    private func encodeAsString() -> String {
+        
+        let value = self.orderAndStorageValue()
+        return String(value)
+    }
+    
+    private static func decodeStatus(from integer:Int?) -> StatoScorte {
+        
+        switch integer {
+            
+        case 0:
+            return .inStock
+        case 1:
+            return .inEsaurimento
+        case 2:
+            return .esaurito
+        default:
+            return .outOfStock
+        
+        }
+        
+    }
+    
+}
+
+
+
+
+///DEPRECATO-01-12-23
 public struct Inventario:Equatable,Codable {
 
     // Nota 02.10 // Nota 21.11
@@ -361,4 +770,4 @@ public struct Inventario:Equatable,Codable {
             }
         }
     }
-}
+} // deprecata in futuro

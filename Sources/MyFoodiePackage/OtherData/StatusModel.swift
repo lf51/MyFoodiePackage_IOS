@@ -93,7 +93,7 @@ public enum StatusModel:Equatable { // vedi Nota Consegna 17.07
         
         switch self {
         case .noStatus:
-            return "Non Operativo"
+            return "Nuovo"
         case .bozza(let statusTransition):
             return statusTransition.simpleDescription()
         case .completo(let statusTransition):

@@ -15,7 +15,7 @@ public struct PropertyCurrentData:Codable { // deprecata
     
    // public var userRole:UserRoleModel // non direct save su firebase
     public var info:PropertyModel?
-    public var inventario:Inventario
+    public var inventario:Inventario // deprecata_29_11_23
     public var setup:AccountSetup
    // public var db:CloudDataStore // no direct Save - decodificato come subCollection
 

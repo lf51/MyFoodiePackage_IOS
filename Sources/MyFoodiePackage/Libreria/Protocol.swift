@@ -41,10 +41,18 @@ public protocol MyProStarterPack_L1:MyProStarterPack_L0,MyProVMPack_L0 {
     /// Metodo custom rispetto all'equatable per stabilire quando due modelli sono uguali
     func isEqual(to rhs:Self) -> Bool
     
+  //  associatedtype Sub
+    
+   // func subCollection() -> Sub
+    
+}
+
+public protocol MyProSubCollectionPack:MyProStarterPack_L1 {
+    
     associatedtype Sub
     
-    func subCollection() -> Sub 
-    
+    func subCollection() -> Sub
+    func sortCondition(compare rhs:Self) -> Bool
 }
 
 public protocol MyProDescriptionPack_L0 {
@@ -84,7 +92,7 @@ public protocol MyProStatusPack_L0 {
 }
 
 /// ST = Status Transition / DPV = DestinationPathView
-public protocol MyProStatusPack_L1: MyProStatusPack_L0,MyProStarterPack_L1,MyProVMPack_L0 {
+public protocol MyProStatusPack_L1: MyProStatusPack_L0,MyProSubCollectionPack,MyProVMPack_L0 {
     
    // associatedtype ST:Equatable,MyProEnumPack_L0
     associatedtype DPV:Hashable

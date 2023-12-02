@@ -35,7 +35,7 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
     public var voto: DishRatingModel.RateModel
     public let dataRilascio: Date
     
-    public init(idPiatto:String,percorsoProdotto:PercorsoProdotto = .preparazione) {
+    public init(idPiatto:String,percorsoProdotto:ProductAdress = .preparazione) {
         
         self.id = UUID().uuidString
         self.rifPiatto = idPiatto
@@ -185,7 +185,7 @@ public struct DishRatingModel: MyProStarterPack_L0,Codable {
             }
         }
         
-        public init(percorsoProdotto:PercorsoProdotto) {
+        public init(percorsoProdotto:ProductAdress) {
             
             switch percorsoProdotto {
 

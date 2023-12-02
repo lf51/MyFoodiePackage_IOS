@@ -36,22 +36,24 @@ public struct ProductModel: MyProStarterPack_L01{
         lhs.categoriaMenu == rhs.categoriaMenu &&
         lhs.mostraDieteCompatibili == rhs.mostraDieteCompatibili &&
         lhs.pricingPiatto == rhs.pricingPiatto &&
-        lhs.percorsoProdotto == rhs.percorsoProdotto
+        lhs.ingredienteSottostante == rhs.ingredienteSottostante &&
+        lhs.rifIngredienteSottostante == rhs.rifIngredienteSottostante &&
+        lhs.adress == rhs.adress
+       // lhs.percorsoProdotto == rhs.percorsoProdotto
 
     }
 
     public var id: String
-    public var percorsoProdotto:PercorsoProdotto
+   // public var percorsoProdotto:PercorsoProdotto
     
     public var intestazione: String
-    
     public var descrizione: String?
-  //  public var rifReviews: [String] // Nota 13.09 // deprecata in futuro. Gestire da lato review con riferimento al piatto.
-    
-    /// array con i Rif degli ingredienti Principali
+  
     public var ingredientiPrincipali: [String]?
-    /// array con i Rif degli ingredienti Secondari
     public var ingredientiSecondari: [String]?
+    
+    public var ingredienteSottostante:IngredientModel?
+    public var rifIngredienteSottostante:String?
    
     public var elencoIngredientiOff: [String:String]? // id Sostituito: idSOSTITUTO
     public var idIngredienteDaSostituire: String? // Nota 30.08
@@ -62,18 +64,18 @@ public struct ProductModel: MyProStarterPack_L01{
 
     public var status: StatusModel
     public var pricingPiatto:[DishFormat]
-
+    
     public init() {
         
         self.id = UUID().uuidString
-        self.percorsoProdotto = .preparazione
+        
+       // self.percorsoProdotto = .preparazione // deprecata
         self.intestazione = ""
-        self.descrizione = nil
-       // self.rifReviews = []//nil
-        self.ingredientiPrincipali = nil
-        self.ingredientiSecondari = nil
-        self.elencoIngredientiOff = nil
-        self.idIngredienteDaSostituire = nil
+      //  self.descrizione = nil
+      //  self.ingredientiPrincipali = nil
+      //  self.ingredientiSecondari = nil
+      //  self.elencoIngredientiOff = nil
+      //  self.idIngredienteDaSostituire = nil
         self.categoriaMenu = CategoriaMenu.defaultValue.id
         self.mostraDieteCompatibili = true
         self.status = .noStatus
@@ -83,7 +85,7 @@ public struct ProductModel: MyProStarterPack_L01{
     
     public init(from ingredient:IngredientModel) {
         
-        self.percorsoProdotto = .finito(ingredient.id)
+       // self.percorsoProdotto = .finito(ingredient.id)
         self.id = ingredient.id // da valutare
         self.intestazione = ingredient.intestazione
         self.descrizione = ingredient.descrizione
@@ -113,7 +115,7 @@ public struct ProductModel: MyProStarterPack_L01{
         
     }
     
-    private func ingredienteAttivoSottostante(vm:FoodieViewModel) -> [IngredientModel] {
+   /* private func ingredienteAttivoSottostante(vm:FoodieViewModel) -> [IngredientModel] {
         
         if let rif = self.percorsoProdotto.associatedValue() as? String {
             // prodotto finito
@@ -126,17 +128,17 @@ public struct ProductModel: MyProStarterPack_L01{
             return [ing]
             
         } else { return [] }
-    }
+    }*/
     
     /// ritorna gli ingredienti Attivi sostituendo gli ingredienti inPausa con gli eventuali sostituti
     public func allIngredientsAttivi(viewModel:FoodieViewModel) -> [IngredientModel] {
         
         // innesto 07_11_23
+        let sottostante = self.getSottostante(viewModel: viewModel).sottostante
         
-        guard self.percorsoProdotto.returnTypeCase() == .preparazione else {
-
-            let sottostante = ingredienteAttivoSottostante(vm: viewModel)
-            return sottostante
+        guard sottostante == nil else {
+            
+            return [sottostante!]
         }
         
       
@@ -283,7 +285,7 @@ public struct ProductModel: MyProStarterPack_L01{
         // Nota 13.09 // Nota 20_11_23
 
       /* let allLocalReviews:[DishRatingModel] = readOnlyViewModel.modelCollectionFromCollectionID(collectionId: self.rifReviews, modelPath: \.db.allMyReviews)*/
-       guard self.percorsoProdotto.returnTypeCase() != .finito() else {
+       guard self.adress != .finito else {
            return (0.0,0,[])
        }
        
@@ -332,21 +334,24 @@ public struct ProductModel: MyProStarterPack_L01{
     /// Controlla l'origine degli ingredienti e restituisce un array con le diete compatibili. Il byPass di default su false, se true byPassa la scelta dell'utente di mostrare o meno le diete e calcola le compatibilità
     public func returnDietAvaible(
         viewModel:FoodieViewModel,
-        byPassShowCompatibility:Bool = false,
-        throwSottostante:IngredientModel? = nil) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
+        byPassShowCompatibility:Bool = false) -> (inDishTipologia:[TipoDieta],inStringa:[String]) {
         
         // Step 0 -> controlliamo che l'utente abbia scelto o meno di mostrare le diete. In caso negativo mandiamo la dieta standard
         guard self.mostraDieteCompatibili || byPassShowCompatibility else { return ([],[])}
-        
-       // let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
-           // let allModelIngredients:[IngredientModel]
-        
-            if let throwSottostante {
+
+            if let throwSottostante = self.getSottostante(viewModel: viewModel).sottostante {
+                return returnDiet(throw: throwSottostante)
+            }
+            else {
+                let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
+                return returnDiet(throw: allModelIngredients)
+            }
+           /* if let throwSottostante = self.ingredienteSottostante {
                 return returnDiet(throw: throwSottostante)
             } else {
                let allModelIngredients = self.allIngredientsAttivi(viewModel: viewModel)
                return returnDiet(throw: allModelIngredients)
-            }
+            } */
     
     }
     
@@ -382,7 +387,7 @@ public struct ProductModel: MyProStarterPack_L01{
         }
         else {
             // Nota 21_11_23
-            if self.percorsoProdotto.returnTypeCase() == .finito() {
+            if self.adress == .finito {
                 dieteOk.append(.vegetariano)
             }
             
@@ -446,13 +451,13 @@ public struct ProductModel: MyProStarterPack_L01{
         
         let count = ((self.ingredientiPrincipali ?? []) + (self.ingredientiSecondari ?? [])).count
         
-        switch self.percorsoProdotto.returnTypeCase() {
+        switch self.adress {
             
         case .preparazione:
             return (count,true)
-        case .finito(_):
+        case .finito:
             return (1,false)
-        case .composizione(_):
+        case .composizione:
             return(0,false)
 
         }
@@ -538,9 +543,7 @@ public struct ProductModel: MyProStarterPack_L01{
         guard let descrizione else { return false }
         
         return descrizione != "" &&
-        self.mostraDieteCompatibili// &&
-        //!self.ingredientiPrincipali.isEmpty
-       
+        self.mostraDieteCompatibili
     }
     
     public func estrapolaPrezzoMandatoryMaggiore() -> Double {
@@ -595,22 +598,132 @@ public struct ProductModel: MyProStarterPack_L01{
         }
     }
     
-  
-    
 }
 
+extension ProductModel {
+    
+    public var adress:ProductAdress {
+        
+        get { self.getProductAdress() }
+        set { self.setProductAdress(newValue) }
+    }
+    
+    private func getProductAdress() -> ProductAdress {
+        
+        if rifIngredienteSottostante != nil { return .finito }
+        else if ingredienteSottostante != nil { return .composizione }
+        else { return .preparazione }
+        
+    }
+    
+    mutating private func setProductAdress(_ adress:ProductAdress) {
+        
+        switch adress {
+            
+        case .preparazione:
+            self.ingredienteSottostante = nil
+            self.rifIngredienteSottostante = nil
+        case .composizione:
+            self.ingredienteSottostante = IngredientModel()
+            self.rifIngredienteSottostante = nil
+            self.ingredientiPrincipali = nil
+            self.ingredientiSecondari = nil
+        case .finito:
+            let sottostante = IngredientModel()
+            self.ingredienteSottostante = sottostante
+            self.rifIngredienteSottostante = sottostante.id
+            self.ingredientiPrincipali = nil
+            self.ingredientiSecondari = nil
+        }
+        
+    }
 
+    public func isDescriptionOk() -> Bool {
+        
+        guard self.adress == .composizione else { return true }
+        
+        guard let descrizione else { return false }
+        
+        return !descrizione.isEmpty
+  
+    }
+    
+   mutating public func updateNameAndDescription() {
+        
+        if self.adress == .finito {
+            self.ingredienteSottostante?.intestazione = self.intestazione
+            self.ingredienteSottostante?.descrizione = self.descrizione
+        }
+    }
+    
+    /// Controlla se i campi relativi all'ingrediente siano completi in base all'adress
+    public func checkCompilazioneIngredienti() -> Bool {
+        
+        let adress = self.adress
+        
+        switch adress {
+            
+        case .preparazione:
+            let ingredienti = self.ingredientiPrincipali ?? []
+            return !ingredienti.isEmpty
+        default:
+            let origineOk = self.ingredienteSottostante?.origine != .defaultValue
+            let conservazioneOk = self.ingredienteSottostante?.conservazione != .defaultValue
+            return origineOk && conservazioneOk
+            
+        }
+    }
+    
+   mutating public func updateModelID() {
+
+       let adress = self.adress
+       
+       guard adress != .finito else { return }
+       
+       if adress == .composizione {
+           
+           self.ingredienteSottostante?.id = UUID().uuidString
+       }
+    
+       self.id = UUID().uuidString
+
+    }
+    
+    public func getSottostante(viewModel:FoodieViewModel) -> (sottostante:IngredientModel?,notEditable:Bool) {
+        
+        switch self.adress {
+            
+        case .preparazione:
+            return (nil,false)
+        case .composizione:
+            return (ingredienteSottostante,false)
+        case .finito:
+            
+            if let ingredienteSottostante { return (ingredienteSottostante,false) }
+            
+            else if let rifIngredienteSottostante {
+               let sottostante = viewModel.modelFromId(id: rifIngredienteSottostante, modelPath: \.db.allMyIngredients)
+                return (sottostante,true)
+                
+            } else { return (nil,false) }
+        }
+        
+    }
+ 
+}
 
 extension ProductModel:Codable {
     
     public enum CodingKeys:String,CodingKey {
         
         case id
-        case percorsoProdotto = "tipologia"
+      //  case percorsoProdotto = "tipologia"
         case intestazione
         case descrizione
         case ingredientiPrincipali = "ingredienti_principali"
         case ingredientiSecondari = "ingredienti_secondari"
+        case ingredienteSottostante = "ingrediente_sottostante"
+        case rifSottostante = "rif_sottostante"
         case elencoIngredientiOff = "ingredienti_off"
        // case idIngredienteDaSostituire = nil
         case categoriaMenu = "categoria_menu"
@@ -625,18 +738,20 @@ extension ProductModel:Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         self.id = try container.decode(String.self, forKey: .id)
-        self.percorsoProdotto = try container.decode(PercorsoProdotto.self, forKey: .percorsoProdotto)
+      //  self.percorsoProdotto = try container.decode(PercorsoProdotto.self, forKey: .percorsoProdotto)
         self.intestazione = try container.decode(String.self, forKey: .intestazione)
         self.descrizione = try container.decodeIfPresent(String.self, forKey:.descrizione)
         self.ingredientiPrincipali = try container.decodeIfPresent([String].self, forKey: .ingredientiPrincipali)
         self.ingredientiSecondari = try container.decodeIfPresent([String].self, forKey: .ingredientiSecondari)
+        self.ingredienteSottostante = try container.decodeIfPresent(IngredientModel.self, forKey: .ingredienteSottostante)
+        self.rifIngredienteSottostante = try container.decodeIfPresent(String.self, forKey: .rifSottostante)
         self.elencoIngredientiOff = try container.decodeIfPresent([String:String].self, forKey: .elencoIngredientiOff)
         self.categoriaMenu = try container.decode(String.self, forKey: .categoriaMenu)
         self.mostraDieteCompatibili = try container.decode(Bool.self, forKey: .mostraDieteCompatibili)
         self.status = try container.decode(StatusModel.self, forKey: .status)
         self.pricingPiatto = try container.decode([DishFormat].self, forKey: .pricingPiatto)
         
-        
+      //  self.percorsoProdotto = .preparazione // deprecare
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -644,11 +759,13 @@ extension ProductModel:Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
         try container.encode(self.id, forKey: .id)
-        try container.encode(self.percorsoProdotto, forKey: .percorsoProdotto)
+       // try container.encode(self.percorsoProdotto, forKey: .percorsoProdotto)
         try container.encode(self.intestazione, forKey: .intestazione)
         try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
         try container.encodeIfPresent(self.ingredientiPrincipali, forKey: .ingredientiPrincipali)
         try container.encodeIfPresent(self.ingredientiSecondari, forKey: .ingredientiSecondari)
+        try container.encodeIfPresent(self.ingredienteSottostante, forKey: .ingredienteSottostante)
+        try container.encodeIfPresent(self.rifIngredienteSottostante, forKey: .rifSottostante)
         try container.encodeIfPresent(self.elencoIngredientiOff, forKey: .elencoIngredientiOff)
         try container.encode(self.categoriaMenu, forKey: .categoriaMenu)
         try container.encode(self.mostraDieteCompatibili, forKey: .mostraDieteCompatibili)
@@ -659,7 +776,7 @@ extension ProductModel:Codable {
     
 }
 
-public enum PercorsoProdotto:MyProEnumPack_L0,Codable {
+/*public enum PercorsoProdotto:MyProEnumPack_L0,Codable {
 
     public static var allCases:[PercorsoProdotto] = [.preparazione,.composizione(),.finito()]
     
@@ -796,8 +913,126 @@ public enum PercorsoProdotto:MyProEnumPack_L0,Codable {
         }
     }
     
-}
+}*/ // deprecata 22_11_23
 
+public enum ProductAdress {
+
+    public static var allCases:[ProductAdress] = [.preparazione,.composizione,.finito]
+    
+    case preparazione // sintetizzabile
+    case composizione
+    case finito
+    
+    public func imageAssociated(to productType:ProductType? = nil) -> (system:String,color:Color) {
+        
+        switch self {
+            
+        case .finito:
+            return ("takeoutbag.and.cup.and.straw",Color.gray)
+        case .preparazione:
+            if let productType { return productType.imageAssociated() }
+            else { return ("fork.knife",Color.yellow) }
+            
+        case .composizione:
+            return ("swatchpalette",Color.mint)
+            
+        }
+    }
+    
+    public func pickerDescription() -> String {
+        
+        switch self {
+        case .finito:
+            return "Pronto"
+        case .preparazione:
+            return "Preparazione"
+        case .composizione:
+            return "Composizione"
+            
+        }
+    }
+    
+    public func simpleDescription() -> String {
+        
+        switch self {
+            
+        case .finito:
+            return "Prodotto Pronto"
+        case .preparazione:
+            return "Preparazione"
+        case .composizione:
+            return "Composizione"
+            
+        }
+    }
+    
+    public func boxDescription() -> String {
+        
+        switch self {
+            
+        case .composizione:
+            return "Descrizione (!)"
+        default:
+            return "Descrizione (Optional)"
+            
+        }
+        
+    }
+    
+    public func returnTypeCase() -> ProductAdress { return self }
+    
+    public func genereCase() -> String {
+        
+        switch self {
+        
+        case .finito:
+            return "Nuovo"
+        default:
+            return "Nuova"
+        }
+    }
+  /*  public func associatedValue() -> Any? {
+        
+        switch self {
+            
+        case .preparazione:
+            return nil
+        case .composizione(let ing):
+            return ing
+        case .finito(let rif):
+            return rif
+        }
+    }*/
+    
+    public func orderAndStorageValue() -> Int {
+        
+        switch self {
+            
+        case .finito:
+            return 0
+        case .preparazione:
+            return 1
+        case .composizione:
+            return 2
+            
+        }
+    }
+
+    public func extendedDescription() -> String {
+        
+        switch self {
+            
+        case .finito:
+            return "Prodotto pronto acquistato da terzi. Es: CocaCola"
+        case .composizione:
+            return "Composizione descrittiva, per ingredienti variabili e/o generici. Es: Tagliere di Salumi e Formaggi locali "
+        case .preparazione:
+            return "Combinazione e/o lavorazione in loco di uno o più ingredienti"
+            
+        }
+    }
+    
+}
 
 public enum ProductType:String,Codable,CaseIterable {
     
