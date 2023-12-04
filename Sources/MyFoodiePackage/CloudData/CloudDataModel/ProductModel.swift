@@ -17,7 +17,7 @@ import SwiftUI
  
  */
 
-public struct ProductModel: MyProStarterPack_L01{
+public struct ProductModel:MyProStarterPack_L0, MyProStarterPack_L01{
 
    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -171,7 +171,9 @@ public struct ProductModel: MyProStarterPack_L01{
             
             if let sostituto = elencoIngredientiOff[ingredient.id] {
                 
-                let(isActive,_,_) = viewModel.infoFromId(id: sostituto, modelPath: \.db.allMyIngredients)
+               /* let(isActive,_,_) = viewModel.infoFromId(id: sostituto, modelPath: \.db.allMyIngredients)*/
+                let modelSostituo = viewModel.modelFromId(id: sostituto, modelPath: \.db.allMyIngredients)
+                let isActive = modelSostituo?.status.checkStatusTransition(check: .disponibile) ?? false 
                 
                 if isActive {
                     allActiveIDs[position!] = sostituto
@@ -196,6 +198,7 @@ public struct ProductModel: MyProStarterPack_L01{
         guard !allIngredientsID.isEmpty else { return [] }
         
         let allTheIngredients = viewModel.modelCollectionFromCollectionID(collectionId: allIngredientsID, modelPath: \.db.allMyIngredients)
+        
         let allMinusBozzeEArchiviati = allTheIngredients.filter({
             !$0.status.checkStatusTransition(check: .archiviato)
         })

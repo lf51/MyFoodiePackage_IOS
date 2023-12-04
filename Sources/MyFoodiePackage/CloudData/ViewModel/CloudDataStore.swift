@@ -83,6 +83,8 @@ public struct CloudDataStore {
         case allMyCategories = "user_categories"
         case allMyReviews = "dish_reviews"
         
+        case archivioBolleAcquisto = "archivio_bolle"
+        
     }
     
 

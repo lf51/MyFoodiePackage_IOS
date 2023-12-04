@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 //import Firebase
 
-public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToolPack_L1,MyProDescriptionPack_L0,MyProVisualPack_L1,MyProCloudPack_L1*//*MyModelStatusConformity */ {
+public struct MenuModel:MyProStarterPack_L0,MyProStarterPack_L01,Codable/*MyProStatusPack_L1,MyProToolPack_L1,MyProDescriptionPack_L0,MyProVisualPack_L1,MyProCloudPack_L1*//*MyModelStatusConformity */ {
      
     public static func == (lhs: MenuModel, rhs: MenuModel) -> Bool {
         
@@ -616,7 +616,6 @@ public struct MenuModel:MyProStarterPack_L0,Codable/*MyProStatusPack_L1,MyProToo
 
         
 } // end Model
-
 
 
 

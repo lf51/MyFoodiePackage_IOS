@@ -1062,10 +1062,7 @@ public struct ProductModelRow_ClientVersion: View {
     
 }
 
-
-
-
-struct ProductModelRow_ClientVersion_Previews: PreviewProvider {
+/*struct ProductModelRow_ClientVersion_Previews: PreviewProvider {
         
     @StateObject static var viewModel:FoodieViewModel = testAccount
     @State static var preSelection:[ProductModel] = []
@@ -1138,16 +1135,16 @@ struct ProductModelRow_ClientVersion_Previews: PreviewProvider {
        // return preSelection.contains(value)
     }
     
-}
+}*/
 
-let testCurrentProperty = PropertyCurrentData(
+/*let testCurrentProperty = PropertyCurrentData(
  //  userRole: UserRoleModel(),
    info: PropertyModel(intestazione: "", cityName: "", coordinates: CLLocationCoordinate2D(latitude: 37.510977, longitude: 13.041434), webSite: "", phoneNumber: "", streetAdress: "", numeroCivico: "", admin: UserCloudData(id: "test", email: "test@", userName: "@test", isPremium: false)),
    inventario: Inventario(),
    setup: AccountSetup()/*,
-   db: CloudDataStore()*/)
+   db: CloudDataStore()*/)*/
 
-var testAccount: FoodieViewModel = {
+/*var testAccount: FoodieViewModel = {
 
     var vm = FoodieViewModel(currentProperty: testCurrentProperty)//FoodieViewModel(userAuth: nil)
   /*  vm.allMyMenu = [menuSample_Test,menuSample2_Test,menuSample3_Test,menuDelGiorno_Test,menuDelloChef_Test]
@@ -1169,7 +1166,7 @@ var testAccount: FoodieViewModel = {
     vm.remoteStorage.modelRif_modified = [menuSample2_Test.id,dishItem3_Test.id] */
     
      return vm
- }()
+ }()*/
 
 
 /// Sfondo della Row del Piatto nella versione Client. Derivata dalla CSZStack Framed, prevede di andare a tutto schermo ( in larghezza ) sui telefoni mentre sugli ipad si ferma a 650

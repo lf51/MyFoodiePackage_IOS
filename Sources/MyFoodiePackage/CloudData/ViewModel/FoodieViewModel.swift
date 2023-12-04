@@ -15,19 +15,19 @@ public struct PropertyCurrentData:Codable { // deprecata
     
    // public var userRole:UserRoleModel // non direct save su firebase
     public var info:PropertyModel?
-    public var inventario:Inventario // deprecata_29_11_23
+   // public var inventario:Inventario // deprecata_29_11_23
     public var setup:AccountSetup
    // public var db:CloudDataStore // no direct Save - decodificato come subCollection
 
     public init(
        // userRole: UserRoleModel,
         info: PropertyModel,
-        inventario: Inventario,
+       // inventario: Inventario,
         setup: AccountSetup/*,
         db: CloudDataStore*/) {
        // self.userRole = userRole
         self.info = info
-        self.inventario = inventario
+       // self.inventario = inventario
         self.setup = setup
       //  self.db = db
     }
@@ -38,21 +38,21 @@ public struct PropertyCurrentData:Codable { // deprecata
             // init prima registrazione proprietà
        // self.userRole = userRole
         self.info = propertyModel
-        self.inventario = Inventario()
+       // self.inventario = Inventario()
         self.setup = AccountSetup()
        // self.db = CloudDataStore()
     }
     
     public init() {
         self.info = nil
-        self.inventario = Inventario()
+      //  self.inventario = Inventario()
         self.setup = AccountSetup()
     }
     
     public enum CodingKeys:String,CodingKey {
         
        // case info = "property_info"
-        case inventario = "property_inventario"
+       // case inventario = "property_inventario"
         case setup = "property_setup"
         
     }
@@ -63,7 +63,7 @@ public struct PropertyCurrentData:Codable { // deprecata
         self.info = try infoContainer.decode(PropertyModel.self)
 
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.inventario = try container.decodeIfPresent(Inventario.self, forKey: .inventario) ?? Inventario()
+      /*  self.inventario = try container.decodeIfPresent(Inventario.self, forKey: .inventario) ?? Inventario()*/
        
         self.setup = try container.decodeIfPresent(AccountSetup.self, forKey: .setup) ?? AccountSetup()
 
@@ -262,7 +262,7 @@ open class FoodieViewModel:ObservableObject {
         return containerM.first(where: {$0.id == id})
     }
 
-   public func infoFromId<M:MyProStarterPack_L01>(id:String,modelPath:KeyPath<FoodieViewModel,[M]>) -> (isActive:Bool,nome:String,hasAllergeni:Bool) {
+   public func infoFromId<M:MyProStarterPack_L0&MyProStarterPack_L01&MyProStatusPack_L0>(id:String,modelPath:KeyPath<FoodieViewModel,[M]>) -> (isActive:Bool,nome:String,hasAllergeni:Bool) {
         
         guard let model = modelFromId(id: id, modelPath: modelPath) else { return (false,"",false) }
         

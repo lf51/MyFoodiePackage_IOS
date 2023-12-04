@@ -17,7 +17,8 @@ public enum MyCodingCase {
 
 
 public struct CategoriaMenu:
-    MyProStarterPack_L0
+    MyProStarterPack_L0,
+    MyProStarterPack_L01
    /*MyProStarterPack_L1,
     MyProEnumPack_L2,
     MyProDescriptionPack_L0,

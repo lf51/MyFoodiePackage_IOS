@@ -7,31 +7,28 @@
 
 import Foundation
 import SwiftUI
-//import Firebase
 
-// 14.09 Spazio protocolli MyPro - Nuova generazione
-public protocol MyProStarterPack_L0:Identifiable,Equatable,Hashable { // Primo passo per la riorganizzazione dei protocolli. Step by step e per funzioni. L'incipit sarà MyPro seguito dal Pack. ModelPack EnumPack StatusPack per raggruppare le varie funzioni e utilizzi
+// L'incipit sarà MyPro seguito dal Pack. ModelPack EnumPack StatusPack per raggruppare le varie funzioni e utilizzi
+public protocol MyProVMPack_L0 { associatedtype VM:FoodieViewModel }
+
+public protocol MyProStarterPack_L0:Identifiable,Equatable,Hashable {
     
-    var id: String { get }
-   
+    var id:String { get }
 }
 
-public protocol MyProStarterPack_L01:MyProStarterPack_L0 {
+public protocol MyProStarterPack_L01/*:MyProStarterPack_L0*/ {
     
     var intestazione: String { get set }
-    var status:StatusModel { get set }
+  //  var status:StatusModel { get set }
     
 }
 
-public protocol MyProStarterPack_L1:MyProStarterPack_L0,MyProVMPack_L0 {
+public protocol MyProStarterPack_L1:/*MyProStarterPack_L0,*/MyProVMPack_L0 {
     
-    var id: String { get set } // sovrascrive il livello zero per non crearci problemi con le enum. Dobbiamo chiarire se quei pochi casi in cui sovrasciviamo gli id possono essere risolti diversamente, o altrimenti facciamo un po' di ordine. Proprietà da considerarsi QUI TEMPORANEA
+   // var id: String { get set } // sovrascrive il livello zero per non crearci problemi con le enum. Dobbiamo chiarire se quei pochi casi in cui sovrasciviamo gli id possono essere risolti diversamente, o altrimenti facciamo un po' di ordine. Proprietà da considerarsi QUI TEMPORANEA
     
-    var intestazione: String { get set } // esistono view che richiedono solo questo valore
-    
-  //  func returnModelTypeName() -> String // deprecata in futuro. inglobata nella viewModelContainerInstance // deprecata 15.09
-    
-  
+  //  var intestazione: String { get set } // esistono view che richiedono solo questo valore
+
     func basicModelInfoInstanceAccess() -> (vmPathContainer: ReferenceWritableKeyPath<VM,[Self]>, nomeContainer: String, nomeOggetto:String, imageAssociated:String)
    
     
@@ -39,18 +36,22 @@ public protocol MyProStarterPack_L1:MyProStarterPack_L0,MyProVMPack_L0 {
     static func basicModelInfoTypeAccess() -> ReferenceWritableKeyPath<VM,[Self]>
     
     /// Metodo custom rispetto all'equatable per stabilire quando due modelli sono uguali
-    func isEqual(to rhs:Self) -> Bool
-    
-  //  associatedtype Sub
-    
-   // func subCollection() -> Sub
+    func isEqual(to rhs:Self) -> Bool // deprecata in futuro
+
     
 }
 
-public protocol MyProSubCollectionPack:MyProStarterPack_L1 {
+public protocol MyProStatusPack_L0 {
+    
+    var status: StatusModel { get set }
+    func modelStatusDescription() -> String
+
+}
+
+public protocol MyProSubCollectionPack/*:MyProStarterPack_L1*/ {
     
     associatedtype Sub
-    
+
     func subCollection() -> Sub
     func sortCondition(compare rhs:Self) -> Bool
 }
@@ -59,36 +60,6 @@ public protocol MyProDescriptionPack_L0 {
 
     var descrizione: String? { get set }
     
-}
-
-/*public protocol MyProSearchPack_Sub_0 {
-       
-   associatedtype SortCondition
-}
-/// FPM = FilterPropertyModel / SC = SortCondition
-public protocol MyProSearchPack_L0:MyProVMPack_L0 {
-    
-    associatedtype FPM: MyProSearchPack_Sub_0
-    
-    /// StringResearch per le liste
-    func modelStringResearch(string: String,readOnlyVM:VM?) -> Bool
-    func modelPropertyCompare(filterProperty:FPM,readOnlyVM:VM) -> Bool
-    
-    static func sortModelInstance(lhs:Self,rhs:Self,condition:FPM.SortCondition?,readOnlyVM:VM) -> Bool
-} */
-
-
-
-
-
-/// SM = StatusModel
-public protocol MyProStatusPack_L0 {
-    
-   // associatedtype SM:Equatable,MyProCloudPack_L0
-    
-    var status: StatusModel { get set }
-    func modelStatusDescription() -> String
-
 }
 
 /// ST = Status Transition / DPV = DestinationPathView
@@ -162,66 +133,8 @@ public protocol MyProManagingPack_L0:MyProVMPack_L0 {
    
 }
 
-// fine spazio MyPro
-
-public protocol MyProToolPack_L0:MyProStatusPack_L1,MyProVisualPack_L0 { }
-
-public protocol MyProToolPack_L1:MyProToolPack_L0,MyProManagingPack_L0 { }
-
-
-/*
-/// Gestione upload e download da/per firebase per enum
-public protocol MyProCloudPack_L0 {
-    /// protocollo per le proprietà, in particolare per le enum, per essere convertite in un valore più facilmente stockabile
-    // 14.12 Probabilmente sarà deprecato dall'implementazione di Codable. Tuttavia i metodi definiti potrebbero essere stati utilizzati per altri usi. Verificare ed eventualmente spostarli in altri protocolli
-          func orderAndStorageValue() -> Int
-   static func convertiInCase(fromNumber:Int) -> Self
-} */
-
-/// download dei modelli dal firebase
-/*public protocol MyProCloudDownloadPack_L1 {
-   
-    // Questa è la nostra versione custom del protocollo Decodable. Deprecata 14.12.22. Sostituita appunto da Decodable
-    
-    associatedtype DataBaseField
-    init(frDocID:String,frDoc:[String:Any])
-    
-}*/
-///upload modelli su firebase
-/*public protocol MyProCloudUploadPack_L1 {
-    
-    // Questa è la nostra versione custom del protocollo Encodable. Deprecata 14.12.22. Sostituita appunto da Encodable
-    var id: String { get }
-    func documentDataForFirebaseSavingAction(positionIndex:Int?) -> [String:Any] // Nota 24.11
-   
-}*/
-
-/*public protocol MyProCloudPack_L1:MyProCloudDownloadPack_L1,MyProCloudUploadPack_L1 {
-    // Lo abbiamo splittato in due protocolli, uno per l'upload e uno per il download. Lo abbiamo messo così per gestire la transizione. Se non sarà necessario riaverlo unificato, li usiamo splittati e questo lo eliminiamo
-    
-    // Questa è la nostra versione custom del protocollo Codable (Encodavle + Decodable). Deprecata 14.12.22. Sostituita appunto da Codable
-} */
-
- public protocol MyProVMPack_L0 {
-    
-     associatedtype VM:FoodieViewModel
-   
-    
-}
-
 public protocol MyProProgressBar {
     
     var countProgress:Double { get }
     
 }
-
-/// Stabilisce un tipo associato dove sarà racchiusa la logica di compilazione del database. Il tipo sarà definito a valle nelle applicazioni client e Business
-public protocol MyProDataCompiler {
-    
-    associatedtype DBCompiler
-    
-    var dbCompiler:DBCompiler { get set }
-}
-
-
-

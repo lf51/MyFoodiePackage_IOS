@@ -62,7 +62,7 @@ public enum IngredientType {
     case limited // sottostante di una composizione
 }
 
-public struct IngredientModel:MyProStarterPack_L01 {
+public struct IngredientModel:MyProStarterPack_L01,MyProStarterPack_L0 {
  
     public static func == (lhs: IngredientModel, rhs: IngredientModel) -> Bool {
        return
@@ -378,13 +378,13 @@ extension IngredientModel {
         return transitionState != .validate
     }
     
-    mutating public func dePendingAction(reverse status:Bool = false) {
+    mutating public func changeTransizioneScorte(to status:TransizioneScorte) {
         
         guard var inventario else { 
             // throw error
             return }
         
-        inventario.dePending(reverse: status)
+        inventario.updateTransizioneScorte(to: status)
         self.inventario = inventario
     }
         
@@ -428,5 +428,5 @@ extension IngredientModel {
        self.inventario = inventario
        
     }
-    
+        
 }
