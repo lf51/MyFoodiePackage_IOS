@@ -11,4 +11,4 @@ public protocol MyProSubCollectionFullPack:MyProSubCollectionPack,MyProStarterPa
 
 public protocol MyProToolPack_L0:MyProStarterPack_L0,MyProStarterPack_L01,MyProStatusPack_L1,MyProVisualPack_L0 { }
 
-public protocol MyProToolPack_L1:MyProToolPack_L0,MyProManagingPack_L0 { }
+public protocol MyProVisualPack_L1: MyProVisualPack_L0,MyProStarterPack_L1 {}

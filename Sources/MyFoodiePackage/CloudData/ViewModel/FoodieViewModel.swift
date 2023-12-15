@@ -262,11 +262,11 @@ open class FoodieViewModel:ObservableObject {
         return containerM.first(where: {$0.id == id})
     }
 
-   public func infoFromId<M:MyProStarterPack_L0&MyProStarterPack_L01&MyProStatusPack_L0>(id:String,modelPath:KeyPath<FoodieViewModel,[M]>) -> (isActive:Bool,nome:String,hasAllergeni:Bool) {
+   public func infoFromId<M:MyProStarterPack_L0&MyProStarterPack_L01&MyProStatusPack_L01>(id:String,modelPath:KeyPath<FoodieViewModel,[M]>) -> (isActive:Bool,nome:String,hasAllergeni:Bool) {
         
         guard let model = modelFromId(id: id, modelPath: modelPath) else { return (false,"",false) }
         
-        let isActive = model.status.checkStatusTransition(check: .disponibile)
+        let isActive = model.statusTransition == .disponibile
         let name = model.intestazione
         var allergeniIn:Bool = false
         

@@ -26,7 +26,7 @@ public enum ProduzioneIngrediente:String,MyProEnumPack_L2,Codable /*: MyEnumProt
             
         case .convenzionale: return "Metodo Convenzionale"
         case .biologico: return "Metodo Biologico"
-        case .noValue: return "noValue"
+        case .noValue: return "Metodo di Produzione non specificato"
         
         }
         

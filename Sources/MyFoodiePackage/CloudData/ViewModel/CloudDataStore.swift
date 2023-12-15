@@ -39,7 +39,7 @@ public struct CloudDataStore {
     
     public var allMyIngredients:[IngredientModel] // caricato
     
-    public var allMyIngredientsImage:[IngredientModelImage] = [] // deprecata
+  /*  public var allMyIngredientsImage:[IngredientModelImage] = [] */// deprecata
     
     public var allMyDish:[ProductModel] // caricato
     public var allMyMenu:[MenuModel] // caricato
@@ -109,7 +109,7 @@ public struct CloudDataStore {
        // self.setupAccount = AccountSetup()
        // self.inventarioScorte = Inventario()
        
-        self.allMyIngredientsImage = []
+        //self.allMyIngredientsImage = []
         self.allMyIngredients = [] // vanno inseriti gli ing,dish,menu,property fake
         self.allMyDish = []
         self.allMyMenu = []

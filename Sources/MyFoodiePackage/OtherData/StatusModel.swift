@@ -11,11 +11,10 @@ import SwiftUI
 public enum StatusTransition:String,MyProEnumPack_L0,Equatable {
     
     public static var allCases: [StatusTransition] = [.disponibile,.inPausa,.archiviato]
- //   static var defaultValue: StatusTransition = .archiviato
-    
-    case disponibile // Rimette in moto da una Pausa
-    case inPausa // Stop temporaneo --> Solo per gli ingredienti, quando temporaneamente in pausa vorrei dare la possibilità all'utente di sostituirli.
-    case archiviato  // Stop incondizionato
+
+    case disponibile
+    case inPausa
+    case archiviato
 
     public func simpleDescription() -> String {
         
@@ -56,19 +55,37 @@ public enum StatusTransition:String,MyProEnumPack_L0,Equatable {
             return Color.red
         }
     }
+    
+   public static func decodeStatus(from number: Int) -> StatusTransition {
+        
+        switch number {
+  
+        case 0:
+            return .disponibile
+        case 1:
+            return .inPausa
+        default:
+            return .archiviato
+
+        }
+    }
+    public func encodeStatusAsString() -> String {
+        let value = self.orderAndStorageValue()
+        return String(value)
+    }
 }
 
 public enum StatusModel:Equatable { // vedi Nota Consegna 17.07
     
-    case noStatus
-    case bozza(StatusTransition)
-    case completo(StatusTransition)
+   // case noStatus
+    case bozza//(StatusTransition)
+    case completo//(StatusTransition)
     
     public func imageAssociated() -> String {
         
         switch self {
-        case .noStatus:
-            return "x.circle"
+        /*case .noStatus:
+            return "x.circle"*/
         case .bozza:
            return "hammer.circle.fill"//"doc.badge.gearshape" //  // moon.fill
         case .completo:
@@ -78,18 +95,19 @@ public enum StatusModel:Equatable { // vedi Nota Consegna 17.07
     
     public func transitionStateColor() -> Color {
         
-        switch self {
+        Color.brown
+       /* switch self {
         case .noStatus:
             return Color.gray
         case .bozza(let statusTransition):
             return statusTransition.colorAssociated()
         case .completo(let statusTransition):
             return statusTransition.colorAssociated()
-        }
+        }*/
         
-    }
+    } // deprecata in futuro
     
-    public func simpleDescription() -> String {
+   /* public func simpleDescription() -> String {
         
         switch self {
         case .noStatus:
@@ -99,9 +117,21 @@ public enum StatusModel:Equatable { // vedi Nota Consegna 17.07
         case .completo(let statusTransition):
             return statusTransition.simpleDescription()
         }
+    }*/// Deprecata
+    
+    public func simpleDescription() -> String {
+        
+        switch self {
+      /* case .noStatus:
+            return "Nuovo(???)"*/
+        case .bozza:
+            return "bozza"
+        case .completo:
+            return "completo"
+        }
     }
     
-    public func checkStatusTransition(check:StatusTransition) -> Bool {
+   /* public func checkStatusTransition(check:StatusTransition) -> Bool {
         
         switch self {
         case .noStatus:
@@ -112,9 +142,9 @@ public enum StatusModel:Equatable { // vedi Nota Consegna 17.07
             return statusTransition == check
         }
         
-    }
+    }*/ // deprecata
     
-    public func changeStatusTransition(changeIn: StatusTransition) -> Self {
+   /* public func changeStatusTransition(changeIn: StatusTransition) -> Self {
         
         switch self {
         case .noStatus:
@@ -125,19 +155,19 @@ public enum StatusModel:Equatable { // vedi Nota Consegna 17.07
             return .completo(changeIn)
         }
         
-    }
+    }*/// deprecata
     
     public func checkStatusBozza() -> Bool {
         
         switch self {
-        case .bozza(_):
+        case .bozza:
             return true
         default: return false
         }
         
-    }
+    } // deprecata in futuro
     
-    public func orderAndStorageValue() -> Int {
+   /* public func orderAndStorageValue() -> Int {
         
         switch self {
         case .noStatus:
@@ -149,11 +179,21 @@ public enum StatusModel:Equatable { // vedi Nota Consegna 17.07
             let number = 4 + statusTransition.orderAndStorageValue()
             return number
         }
-    }
-    
+    }*/// deprecata in futuro
+    public func orderAndStorageValue() -> Int {
+         
+         switch self {
+         /*case .noStatus:
+             return 0*/
+         case .bozza:
+             return 1
+         case .completo:
+             return 2
+         }
+     }
 }
 
-extension StatusModel:Codable {
+/*extension StatusModel:Codable {
     
     public static func decodeStatus(from number: Int?) -> StatusModel {
         
@@ -200,4 +240,4 @@ extension StatusModel:Codable {
           
       }
     
-}
+}*/// deprecata

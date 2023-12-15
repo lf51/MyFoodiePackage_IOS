@@ -17,11 +17,10 @@ public struct InventarioScorte:Equatable {
     
     public var statusScorte:StatoScorte
     public var dataUltimaBolla:String?
-    
     /// Conserviamo temporaneamente il valore dell'ultima bolla durante la compilazione, prima della validazione
     public var bollaCorrente:BollaAcquisto?
     
-    public var transitionState:TransizioneScorte? {
+    public var transitionState:TransizioneScorte {
         get { getTransition() }
         set { setTransition(value: newValue) }
     }
@@ -31,18 +30,19 @@ public struct InventarioScorte:Equatable {
     }
         
     // Method
-    public func getTransition() -> TransizioneScorte? {
+    public func getTransition() -> TransizioneScorte {
         
         switch statusScorte {
-        case .inEsaurimento,.esaurito,.outOfStock:
+            
+        case .inEsaurimento,.esaurito:
             
             if let bollaCorrente,
                let _ = bollaCorrente.data {
                 return .inArrivo
-            } else { return  .pending}
+            } else { return .pending}
 
-        case .inStock:
-            return nil
+        case .inStock,.outOfStock:
+            return .validate
             
         }
     }

@@ -862,7 +862,7 @@ public struct ProductModelRow_ClientVersion: View {
            ing.isTemporaryOff {
             
             if let modelSostituto = self.viewModel.modelFromId(id: idSostituto, modelPath: \.db.allMyIngredients),
-               modelSostituto.status.checkStatusTransition(check: .disponibile){
+               modelSostituto.statusTransition == .disponibile {
                 
               //  let hasAllergene = !modelSostituto.allergeni.isEmpty
                 let hasAllergene:Bool = {
@@ -963,7 +963,7 @@ public struct ProductModelRow_ClientVersion: View {
         var isOff: Bool = false
         
         if self.item.idIngredienteDaSostituire == ingredient.id {isOff = true}
-        else { isOff = ingredient.status.checkStatusTransition(check: .inPausa) }
+        else { isOff = ingredient.statusTransition == .inPausa}
 
         var idSostituto: String? = nil
 
