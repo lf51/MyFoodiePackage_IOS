@@ -125,7 +125,7 @@ public enum StatusModel:Equatable { // vedi Nota Consegna 17.07
       /* case .noStatus:
             return "Nuovo(???)"*/
         case .bozza:
-            return "bozza"
+            return "incompleto" /*bozza*/
         case .completo:
             return "completo"
         }
@@ -157,7 +157,7 @@ public enum StatusModel:Equatable { // vedi Nota Consegna 17.07
         
     }*/// deprecata
     
-    public func checkStatusBozza() -> Bool {
+   /* public func checkStatusBozza() -> Bool {
         
         switch self {
         case .bozza:
@@ -165,7 +165,7 @@ public enum StatusModel:Equatable { // vedi Nota Consegna 17.07
         default: return false
         }
         
-    } // deprecata in futuro
+    }*/ // deprecata in futuro
     
    /* public func orderAndStorageValue() -> Int {
         

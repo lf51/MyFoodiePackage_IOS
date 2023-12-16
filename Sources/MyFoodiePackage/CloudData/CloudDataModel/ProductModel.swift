@@ -85,27 +85,27 @@ public struct ProductModel:
        // self.status = .noStatus
         self.pricingPiatto = DishFormat.customInit()
         
-        self.statusCache = 0 // da implementare
+        self.statusCache = 0
         
     }
     
     public init(from ingredient:IngredientModel) {
-        
+        self.id = UUID().uuidString
        // self.percorsoProdotto = .finito(ingredient.id)
-        self.id = ingredient.id // da valutare
+        //self.id = ingredient.id // da valutare
         self.intestazione = ingredient.intestazione
-        self.descrizione = ingredient.descrizione
+      //  self.descrizione = ingredient.descrizione
        // self.rifReviews = []
-        self.ingredientiPrincipali = []
-        self.ingredientiSecondari = []
-        self.elencoIngredientiOff = [:]
-        self.idIngredienteDaSostituire = nil
+      //  self.ingredientiPrincipali = []
+       // self.ingredientiSecondari = []
+       // self.elencoIngredientiOff = [:]
+      //  self.idIngredienteDaSostituire = nil
         self.categoriaMenu = CategoriaMenu.defaultValue.id
-        self.mostraDieteCompatibili = false
+        self.mostraDieteCompatibili = true
        // self.status = ingredient.status
-        self.pricingPiatto = []
-        
-        self.statusCache = 0 // da implementare
+        self.pricingPiatto = DishFormat.customInit()
+        self.rifIngredienteSottostante = ingredient.id
+        self.statusCache = 0
     }
     
     func creaID(fromValue: String) -> String {

@@ -39,7 +39,7 @@ public struct IngredientModelInSintesi:Hashable { // ricapire a che serve
     }
 } // deprecato in futuro
 
-public enum IngredientType:String,Codable {
+/*public enum IngredientType:String,Codable {
     
     case standard
     case diSintesi = "di_sintesi" // sintesi di una preparazione
@@ -89,7 +89,7 @@ public enum IngredientType:String,Codable {
         //    return Color.clear
         }
     }
-}
+}*/
 
 public struct IngredientModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDescriptionPack_L0 {
  
@@ -105,8 +105,8 @@ public struct IngredientModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDesc
       lhs.allergeni == rhs.allergeni &&
       lhs.origine == rhs.origine &&
       lhs.status == rhs.status &&
-      lhs.inventario == rhs.inventario &&
-      lhs.type == rhs.type
+      lhs.inventario == rhs.inventario// &&
+     // lhs.type == rhs.type
     }
 
     public var id: String
@@ -123,10 +123,10 @@ public struct IngredientModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDesc
     
    // public var status: StatusModel
     public var inventario:InventarioScorte?
-    public var type:IngredientType
-
-    public init(_ type:IngredientType = .standard) {
-      
+  //  public var type:IngredientType
+  //  public var asProduct:ProductModel?
+   
+    public init() {
         self.id = UUID().uuidString
         self.intestazione = ""
         self.descrizione = nil
@@ -135,16 +135,16 @@ public struct IngredientModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDesc
         self.provenienza = .defaultValue
         self.origine = .defaultValue
         self.allergeni = nil
-        self.type = type
-        
-        switch type {
+       // self.type = type
+        self.inventario = InventarioScorte()
+       /* switch type {
             
         case .standard,.asProduct:
             self.inventario = InventarioScorte()
         case .diSintesi:
             self.inventario = nil
      
-        }
+        }*/
         
     }
 
@@ -169,7 +169,7 @@ extension IngredientModel:Codable {
         case provenienza
         case allergeni
         case origine
-        case type = "tipologia"
+       // case type = "tipologia"
         case inventario
     }
     
@@ -195,7 +195,7 @@ extension IngredientModel:Codable {
             
            // self.status = .noStatus
             self.inventario = nil
-            self.type = .standard
+           // self.type = .standard
             
         case .mainCollection:
            
@@ -208,7 +208,7 @@ extension IngredientModel:Codable {
             
            // self.status = .noStatus
             self.inventario = InventarioScorte()
-            self.type = .standard
+           // self.type = .standard
             
         case .subCollection:
             
@@ -222,7 +222,7 @@ extension IngredientModel:Codable {
             self.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)
           //  self.status = try container.decode(StatusModel.self, forKey: .status)
             self.inventario = try container.decodeIfPresent(InventarioScorte.self, forKey: .inventario)
-            self.type = try container.decode(IngredientType.self, forKey: .type)
+           // self.type = try container.decode(IngredientType.self, forKey: .type)
             
         }
  
@@ -269,7 +269,7 @@ extension IngredientModel:Codable {
             try container.encode(self.origine, forKey: .origine)
            // try container.encode(self.status, forKey: .status)//
             try container.encodeIfPresent(self.inventario, forKey: .inventario)
-            try container.encode(self.type, forKey: .type)
+           // try container.encode(self.type, forKey: .type)
             
         }
         
@@ -492,9 +492,9 @@ extension IngredientModel:MyProStatusPack_L01 {
 
     }
     
-    public func fullStatusDescription() -> String {
+   /* public func fullStatusDescription() -> String {
         
         "\(self.status.simpleDescription()) \(self.statusTransition.simpleDescription())"
-    }
+    }*/
     
 }
