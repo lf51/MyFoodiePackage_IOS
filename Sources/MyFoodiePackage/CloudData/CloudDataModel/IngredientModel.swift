@@ -91,6 +91,64 @@ public struct IngredientModelInSintesi:Hashable { // ricapire a che serve
     }
 }*/
 
+public struct IngredientSubModel:Equatable {
+    
+    public var conservazione: ConservazioneIngrediente = .defaultValue
+    public var produzione: ProduzioneIngrediente = .defaultValue
+    public var provenienza: ProvenienzaIngrediente = .defaultValue
+    
+    public var allergeni: [AllergeniIngrediente]?
+    public var origine: OrigineIngrediente = .defaultValue
+}
+
+extension IngredientSubModel:Codable {
+    
+    public enum CodingKeys:String,CodingKey {
+        
+        case conservazione
+        case produzione
+        case provenienza
+        case allergeni
+        case origine
+        
+    }
+    
+    public init(from decoder: Decoder) throws {
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
+        self.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
+        self.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
+        self.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
+        self.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)
+
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(self.conservazione, forKey: .conservazione)
+        try container.encode(self.produzione, forKey: .produzione)
+        try container.encode(self.provenienza, forKey: .provenienza)
+        try container.encodeIfPresent(self.allergeni, forKey: .allergeni)
+        try container.encode(self.origine, forKey: .origine)
+        
+    }
+    
+    
+}
+
+extension IngredientSubModel {
+    /// genera un ingrediente che ha i soli valori del sub. Utile per trasformare il sottostante delle composizioni in un ingrediente
+    public func generaEmptyIngredient() -> IngredientModel {
+        
+        return IngredientModel(from: self)
+        
+    }
+}
+
 public struct IngredientModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDescriptionPack_L0 {
  
     public static func == (lhs: IngredientModel, rhs: IngredientModel) -> Bool {
@@ -99,11 +157,12 @@ public struct IngredientModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDesc
       lhs.id == rhs.id &&
       lhs.intestazione == rhs.intestazione &&
       lhs.descrizione == rhs.descrizione &&
-      lhs.conservazione == rhs.conservazione &&
+      lhs.values == rhs.values &&
+     /* lhs.conservazione == rhs.conservazione &&
       lhs.produzione == rhs.produzione &&
       lhs.provenienza == rhs.provenienza &&
       lhs.allergeni == rhs.allergeni &&
-      lhs.origine == rhs.origine &&
+      lhs.origine == rhs.origine &&*/
       lhs.status == rhs.status &&
       lhs.inventario == rhs.inventario// &&
      // lhs.type == rhs.type
@@ -114,15 +173,16 @@ public struct IngredientModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDesc
     public var intestazione: String
     public var descrizione: String?
     
-    public var conservazione: ConservazioneIngrediente
+    public var values:IngredientSubModel
+  /*  public var conservazione: ConservazioneIngrediente
     public var produzione: ProduzioneIngrediente
     public var provenienza: ProvenienzaIngrediente
-    
     public var allergeni: [AllergeniIngrediente]?
-    public var origine: OrigineIngrediente
+    public var origine: OrigineIngrediente */
     
    // public var status: StatusModel
     public var inventario:InventarioScorte?
+    public var asProduct:ProductModel?
   //  public var type:IngredientType
   //  public var asProduct:ProductModel?
    
@@ -130,11 +190,12 @@ public struct IngredientModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDesc
         self.id = UUID().uuidString
         self.intestazione = ""
         self.descrizione = nil
-        self.conservazione = .defaultValue
-        self.produzione = .defaultValue
-        self.provenienza = .defaultValue
-        self.origine = .defaultValue
-        self.allergeni = nil
+        self.values = IngredientSubModel()
+       // self.conservazione = .defaultValue
+       // self.produzione = .defaultValue
+       // self.provenienza = .defaultValue
+       // self.origine = .defaultValue
+       // self.allergeni = nil
        // self.type = type
         self.inventario = InventarioScorte()
        /* switch type {
@@ -147,6 +208,30 @@ public struct IngredientModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDesc
         }*/
         
     }
+    
+    public init(from sub:IngredientSubModel) {
+        self.id = UUID().uuidString // non servirebbe ma non si sa mai
+        self.intestazione = ""
+        self.values = sub
+    }
+    
+    /// Crea l'ingrediente asProduct da un prodotto.
+    public init(from product:ProductModel) throws {
+        
+       guard let rifIngredienteSottostante = product.rifIngredienteSottostante,
+             let sottostante = product.ingredienteSottostante else {
+           throw CS_FoodieError.initIngredientError
+       }
+        
+        self.id = rifIngredienteSottostante
+        self.intestazione = product.intestazione
+        self.descrizione = product.descrizione
+        self.values = sottostante
+        
+        self.inventario = InventarioScorte() // quando si modifica un prodotto finito va sovrascritta con il valore in firebase
+        self.asProduct = product
+         
+    }
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -154,7 +239,25 @@ public struct IngredientModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDesc
 
 }
 
-extension IngredientModel:Codable {
+extension IngredientModel {
+    
+    /// Compila il ProductModel quando l'ingrediente contiene un asProduct. Non lo genera da zero.
+    public func compileAsProduct() -> ProductModel? {
+        
+        guard var asProduct else { return nil }
+        
+        asProduct.intestazione = self.intestazione
+        asProduct.descrizione = self.descrizione
+        asProduct.ingredienteSottostante = self.values
+        asProduct.rifIngredienteSottostante = self.id
+        asProduct.statusCache = self.statusTransition.orderAndStorageValue()
+        
+        return asProduct
+    }
+    
+}
+
+extension IngredientModel:Decodable {
     
     public static let codingInfo:CodingUserInfoKey = CodingUserInfoKey(rawValue: "ingredientModel")!
     
@@ -164,13 +267,16 @@ extension IngredientModel:Codable {
   
         case intestazione
         case descrizione
-        case conservazione
-        case produzione
-        case provenienza
-        case allergeni
-        case origine
+        
+        case conservazione // deprecabile
+        case produzione // deprecabile
+        case provenienza // deprecabile
+        case allergeni // deprecabile
+        case origine // deprecabile
        // case type = "tipologia"
         case inventario
+        case asProduct = "as_product"
+        case properties
     }
     
     public init(from decoder: Decoder) throws {
@@ -178,74 +284,91 @@ extension IngredientModel:Codable {
         let decodingCase = decoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        let valuesContainer = try decoder.singleValueContainer()
+        self.values = try valuesContainer.decode(IngredientSubModel.self)
         
-        self.id = try container.decode(String.self, forKey: .id)
-        
+        //self.id = try container.decode(String.self, forKey: .id)
+       // self.values = IngredientSubModel()
         switch decodingCase {
             
         case .inbound:
 
-            self.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
-            self.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
-            self.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
-            self.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
-            self.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)
-            self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)
+           /* self.values.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
+            self.values.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
+            self.values.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
+            self.values.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
+            self.values.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)*/
+           // self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)
             self.intestazione = ""
-            
+            self.descrizione = nil
            // self.status = .noStatus
             self.inventario = nil
+            self.id = ""
            // self.type = .standard
+            self.asProduct = nil
             
         case .mainCollection:
            
+            self.id = try container.decode(String.self, forKey: .id)
             self.intestazione = try container.decode(String.self, forKey: .intestazione)
-            self.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
-            self.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
-            self.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
-            self.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
-            self.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)
+          /*  self.values.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
+            self.values.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
+            self.values.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
+            self.values.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
+            self.values.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)*/
             
            // self.status = .noStatus
             self.inventario = InventarioScorte()
+            self.asProduct = nil
            // self.type = .standard
             
         case .subCollection:
             
+            self.id = try container.decode(String.self, forKey: .id)
+            
             self.intestazione = try container.decode(String.self, forKey: .intestazione)
             self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)
             
-            self.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
-            self.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
-            self.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
-            self.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
-            self.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)
+           /* self.values.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
+            self.values.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
+            self.values.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
+            self.values.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
+            self.values.origine = try container.decode(OrigineIngrediente.self, forKey: .origine*/
           //  self.status = try container.decode(StatusModel.self, forKey: .status)
             self.inventario = try container.decodeIfPresent(InventarioScorte.self, forKey: .inventario)
+            self.asProduct = try container.decodeIfPresent(ProductModel.self, forKey: .asProduct)
            // self.type = try container.decode(IngredientType.self, forKey: .type)
             
         }
  
     }
     
+}
+
+extension IngredientModel:Encodable {
+    
     public func encode(to encoder: Encoder) throws {
 
         let codingCase = encoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
         
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(self.id, forKey: .id)
+        var valuesContainer = encoder.singleValueContainer()
+       // try valuesContainer.encode(self.values)
+       // var container = encoder.container(keyedBy: CodingKeys.self)
+      //  try valuesContainer.encode(self.values)
+      //  try container.encode(self.id, forKey: .id)
         
         switch codingCase {
             
-        case .inbound:
-            
+         case .inbound:
+          
+           try valuesContainer.encode(self.values)
            // try container.encode(self.intestazione, forKey: .intestazione)
-            try container.encode(self.conservazione, forKey: .conservazione)
-            try container.encode(self.produzione, forKey: .produzione)
-            try container.encode(self.provenienza, forKey: .provenienza)
-            try container.encodeIfPresent(self.allergeni, forKey: .allergeni)
-            try container.encode(self.origine, forKey: .origine)
-            try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
+           /* try container.encode(self.values.conservazione, forKey: .conservazione)
+            try container.encode(self.values.produzione, forKey: .produzione)
+            try container.encode(self.values.provenienza, forKey: .provenienza)
+            try container.encodeIfPresent(self.values.allergeni, forKey: .allergeni)
+            try container.encode(self.values.origine, forKey: .origine)*/
+           // try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
            // try container.encode(self.status, forKey: .status)
             
         case .mainCollection:
@@ -260,23 +383,28 @@ extension IngredientModel:Codable {
             
         case .subCollection:
             
+            try valuesContainer.encode(self.values)
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            
+            try container.encode(self.id, forKey: .id)
             try container.encode(self.intestazione, forKey: .intestazione)
             try container.encode(self.descrizione, forKey: .descrizione)
-            try container.encode(self.conservazione, forKey: .conservazione)
-            try container.encode(self.produzione, forKey: .produzione)
-            try container.encode(self.provenienza, forKey: .provenienza)
-            try container.encode(self.allergeni, forKey: .allergeni)
-            try container.encode(self.origine, forKey: .origine)
+    
+           /* try container.encode(self.values.conservazione, forKey: .conservazione)
+            try container.encode(self.values.produzione, forKey: .produzione)
+            try container.encode(self.values.provenienza, forKey: .provenienza)
+            try container.encode(self.values.allergeni, forKey: .allergeni)
+            try container.encode(self.values.origine, forKey: .origine)*/
            // try container.encode(self.status, forKey: .status)//
             try container.encodeIfPresent(self.inventario, forKey: .inventario)
            // try container.encode(self.type, forKey: .type)
+            try container.encodeIfPresent(self.asProduct, forKey: .asProduct)
+            
             
         }
         
         
     }
-    
-    
 }
 
 extension IngredientModel {
@@ -287,7 +415,7 @@ extension IngredientModel {
     
     public func conversioneAllergeniInt() -> [Int] {
         
-        guard let allergeneIn = self.allergeni else { return []}
+        guard let allergeneIn = self.values.allergeni else { return []}
         
         let numAllergeni = allergeneIn.map({$0.orderAndStorageValue()})
         return numAllergeni
@@ -299,10 +427,10 @@ extension IngredientModel {
         
         var allergeneDiServizio:AllergeniIngrediente = .defaultValue
         //
-        let allergeneIn = self.allergeni ?? []
+        let allergeneIn = self.values.allergeni ?? []
         // 09.02.23 Modifica per farlo funzionare con l'optional che richiede di essere migliorata
         
-        if self.origine == .animale {
+        if self.values.origine == .animale {
             
             if allergeneIn.contains(where: {
                 
@@ -322,7 +450,7 @@ extension IngredientModel {
                 
             }) { allergeneDiServizio = .uova_e_derivati }
             
-            else { return (self.origine.imageAssociated(),.large) }
+            else { return (self.values.origine.imageAssociated(),.large) }
             
         } else {
             
@@ -340,7 +468,7 @@ extension IngredientModel {
                 
             }) { allergeneDiServizio = .arachidi_e_derivati }
             
-            else { return (self.origine.imageAssociated(),.large)}
+            else { return (self.values.origine.imageAssociated(),.large)}
     
         }
  
@@ -389,17 +517,18 @@ extension IngredientModel {
             // throw error
             return }
         
-        inventario.updateTransizioneScorte(to: status)
+       // inventario.validateAcquisto()
+        inventario.validateAction()
         self.inventario = inventario
     }
         
-    mutating public func addNotaToBolla(nota:String) {
+   /* mutating public func addNotaToBolla(nota:String) {
         guard let inventario else { return }
         
         var updateInventario = inventario
         updateInventario.updateNotaBolla(note: nota)
         self.inventario = updateInventario
-    }
+    }*/ // deprecata
     
     public func notaBollaCorrente() -> String {
         
@@ -413,15 +542,16 @@ extension IngredientModel {
         
     }
     
-    public func lastAcquisto() -> String {
+    public func lastAcquisto() -> String? {
         
-        guard let inventario else { return "No_Inventario" }
+        guard let inventario else { return nil }
         
         guard let last = inventario.dataUltimaBolla else {
-            return "No recorded Data"
+            return nil 
         }
-        
-        return last
+        let stringDate = csTimeFormatter().data.string(from: last)
+        let stringTime = csTimeFormatter().ora.string(from: last)
+        return "\(stringDate) (h:\(stringTime))"
     
     }
     

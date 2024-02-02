@@ -31,7 +31,7 @@ public enum ProvenienzaIngrediente:String,MyProEnumPack_L2,Codable /*: MyEnumPro
         case .italia: return "Made in Italy"
         case .europa: return "UE"
         case .restoDelMondo: return "Extra UE"
-        case .noValue: return "None"
+        case .noValue: return "n/d"
             
             }
         }

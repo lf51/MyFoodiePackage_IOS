@@ -165,7 +165,7 @@ public enum AllergeniIngrediente:String, MyProStarterPack_L0,Codable/*MyProStart
             
             for ingredient in list {
                 
-                let allergeneIngre:[AllergeniIngrediente] = ingredient.allergeni ?? []
+                let allergeneIngre:[AllergeniIngrediente] = ingredient.values.allergeni ?? []
                 
                 allergeniPiatto.append(contentsOf: allergeneIngre)
             }

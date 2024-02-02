@@ -32,6 +32,18 @@ public enum ProduzioneIngrediente:String,MyProEnumPack_L2,Codable /*: MyEnumProt
         
     }
     
+    public func moreDescription() -> String {
+        
+        switch self {
+            
+        case .convenzionale: return "Metodo di produzione convenzionale"
+        case .biologico: return "Metodo di produzione biologico"
+        case .noValue: return "Metodo di produzione non specificato"
+        
+        }
+        
+    }
+    
     public func extendedDescription() -> String {
         
         switch self {

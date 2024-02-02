@@ -19,7 +19,7 @@ public struct DishFormat:Hashable,Codable {
         return current
     }
     
-    let id:String
+    let id:String // da deprecare
     
     public var label: String
     public var price: String

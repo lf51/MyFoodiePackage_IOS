@@ -13,17 +13,20 @@ public struct BollaAcquisto:MyProStarterPack_L0{
     
     public var rifIngrediente:String?
     public var nota:String?
-    public var data:String?
+    public var data:Date?
     public var user:String?
+    
+   // public var price:String?
+   // public var quantity:String?
+   // public var rifFornitore:String?
     
     /// Init con data corrente
    public init() {
         self.id = UUID().uuidString
-        self.data = csTimeFormatter().data.string(from: Date())
+        self.data = Date()//csTimeFormatter().data.string(from: Date())
     }
-    
     /// init con data nil
-    public init(nota: String) {
+   public init(nota: String) {
          self.id = UUID().uuidString
          self.nota = nota
      }
@@ -46,30 +49,30 @@ extension BollaAcquisto:Decodable {
     public init(from decoder: Decoder) throws {
         
         let decodingCase = decoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .inbound
+        let container = try decoder.container(keyedBy: CodingKeys.self)
         
         switch decodingCase {
+            
         case .mainCollection:
             fallthrough
         case .subCollection:
-            let container = try decoder.container(keyedBy: CodingKeys.self)
             
             self.id = try container.decode(String.self, forKey: .id)
             self.rifIngrediente = try container.decode(String.self, forKey: .rif)
-            self.data = try container.decode(String.self, forKey: .data)
+            self.data = try container.decode(Date.self, forKey: .data)
             self.nota = try container.decodeIfPresent(String.self, forKey: .nota)
             self.user = try container.decode(String.self, forKey: .user)
             
         case .inbound:
-            let container = try decoder.singleValueContainer()
+            self.id = UUID().uuidString
+            self.data = try container.decodeIfPresent(Date.self, forKey: .data)
+            self.nota = try container.decodeIfPresent(String.self, forKey: .nota)
             
-            let value = try container.decode(String.self)
-             self.id = UUID().uuidString
-            (self.data,self.nota) = decodeSingleValue(value)
         }
  
     }
     
-    private func decodeSingleValue(_ value:String) -> (data:String?,nota:String?) {
+   /* private func decodeSingleValue(_ value:String) -> (data:String?,nota:String?) {
         
         guard !value.isEmpty else {
             return (nil,nil)
@@ -98,7 +101,7 @@ extension BollaAcquisto:Decodable {
                 return (nil,nota)
             }
 
-    }
+    }*/ // deprecata
     
 }
 
@@ -107,13 +110,15 @@ extension BollaAcquisto:Encodable {
     public func encode(to encoder: Encoder) throws {
         
         let codingCase = encoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .inbound
+        var container = encoder.container(keyedBy: CodingKeys.self)
         
         switch codingCase {
+            
         case .mainCollection:
             fallthrough
             
         case .subCollection:
-            var container = encoder.container(keyedBy: CodingKeys.self)
+           
             try container.encode(self.id, forKey: .id)
             try container.encode(self.rifIngrediente, forKey: .rif)
             try container.encode(self.data, forKey: .data)
@@ -122,27 +127,25 @@ extension BollaAcquisto:Encodable {
             
         case .inbound:
             
-            var container = encoder.singleValueContainer()
-            let value = encodeSingleValue()
-            
-            try container.encode(value)
+            try container.encodeIfPresent(self.data, forKey: .data)
+            try container.encodeIfPresent(self.nota, forKey: .nota)
             
         }
     }
     
-    private func encodeSingleValue() -> String {
+   /*public func encodeSingleValue() -> String {
         
-        let nota = self.nota ?? ""
+       /* let nota = self.nota ?? ""
         let data = self.data ?? ""
         
         guard !nota.isEmpty ||
               !data.isEmpty else { return "" }
         
-        let value = "\(data)_:\(nota)"
-        
+        let value = "\(data)_:\(nota)"*/
+        let value = "DA CORREGGERE"
         return value
         
-    }
+    }*/ // deprecata
 
     
 }
@@ -157,8 +160,9 @@ extension BollaAcquisto:MyProSubCollectionPack {
     
     public func sortCondition(compare rhs: BollaAcquisto) -> Bool {
         
-        let currentData = self.data ?? ""
+       /* let currentData = self.data ?? ""
         let rhsData = rhs.data ?? ""
-        return csCompareDateString(lhs: currentData, rhs: rhsData)
+        return csCompareDateString(lhs: currentData, rhs: rhsData) */
+        return false
     }
 }

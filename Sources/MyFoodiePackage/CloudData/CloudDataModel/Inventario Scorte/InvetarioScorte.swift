@@ -11,18 +11,18 @@ import SwiftUI
 
 public struct InventarioScorte:Equatable {
         
-    public lazy var currentDate:String = {
+   /* public lazy var currentDate:String = {
         csTimeFormatter().data.string(from: Date())
-    }()
+    }()*/
     
     public var statusScorte:StatoScorte
-    public var dataUltimaBolla:String?
+    public var dataUltimaBolla:Date?
     /// Conserviamo temporaneamente il valore dell'ultima bolla durante la compilazione, prima della validazione
     public var bollaCorrente:BollaAcquisto?
     
     public var transitionState:TransizioneScorte {
         get { getTransition() }
-        set { setTransition(value: newValue) }
+       // set { setTransition(value: newValue) } // deprecata
     }
    
     public init() {
@@ -47,23 +47,25 @@ public struct InventarioScorte:Equatable {
         }
     }
     
-   mutating public func setTransition(value:TransizioneScorte?) {
-            
+  /* mutating public func setTransition(value:TransizioneScorte?) {
+            // 19_12_23 il valore di transizione viene aggiornato solo se validate, perchè il validate è aggiornato a più ingredienti in blocco, e dunque passa dal vieModel. Gli altri set della transizione sono fatti singolarmente direttamente su firebase
        guard let value else { return }
        
         switch value {
             
-        case .pending:
-            self.reverseInArrivo()
-        case .inArrivo:
-            self.setTemporaryLast()
+       /* case .pending,.inArrivo:
+            return*/
+          //  self.reverseInArrivo()
+       /* case .inArrivo:
+            self.setTemporaryLast()*/
         case .validate:
             self.validateAction()
+        default: return
         }
 
-        }
+        }*/ // deprecata
     
-    mutating private func validateAction() {
+    mutating public func validateAction() {
         
         guard let bollaCorrente,
         let data = bollaCorrente.data else {
@@ -76,7 +78,7 @@ public struct InventarioScorte:Equatable {
         
     }
         
-    mutating public func setTemporaryLast() {
+   /* mutating public func setTemporaryLast() {
         
         if var bollaCorrente {
             
@@ -90,24 +92,67 @@ public struct InventarioScorte:Equatable {
             
         }
         
-    }
+    }*/ // deprecabile in futuro
     
-    mutating public func reverseInArrivo() {
+   /* public func getUpdatedBolla() -> BollaAcquisto {
+        
+        if var bollaCorrente {
+            let timeStamp = Date() //csTimeFormatter().data.string(from: Date())
+            bollaCorrente.data = timeStamp
+            return bollaCorrente
+         //  self.bollaCorrente = bollaCorrente
+            
+        } else {
+            
+            let newBolla = BollaAcquisto()
+            return newBolla
+          //  self.bollaCorrente = newBolla
+            
+        }
+        
+    }*/ // deprecata 01_01_24
+    
+    /* public func setDataBollaToNil() -> BollaAcquisto? {
+        
+        guard var bollaCorrente else { return nil }
+        
+        bollaCorrente.data = nil
+        return bollaCorrente
+        
+    }*/ // deprecata 01_01_24
+    
+   /* mutating public func reverseInArrivo() {
         
         guard var bollaCorrente else { return }
         
         bollaCorrente.data = nil
         self.bollaCorrente = bollaCorrente
         
+    }*/ // deprecabile in futuro
+    
+   /* mutating public func validateAcquisto() {
+
+        self.transitionState = .validate
+        
+    }*/ // deprecata
+    
+     public func updateBollaWith(note:String) -> BollaAcquisto {
+        
+        if var bollaCorrente {
+            
+            bollaCorrente.nota = note
+            //self.bollaCorrente = bollaCorrente
+            return bollaCorrente
+            
+        } else {
+            let newBolla = BollaAcquisto(nota: note)
+            return newBolla
+           // self.bollaCorrente = newBolla
+            
+        }
     }
     
-    mutating public func updateTransizioneScorte(to status:TransizioneScorte) {
-        
-        self.transitionState = status
-        
-    }
-    
-    mutating public func updateNotaBolla(note:String) {
+   /* mutating public func updateNotaBolla(note:String) {
         
         if var bollaCorrente {
             
@@ -119,7 +164,7 @@ public struct InventarioScorte:Equatable {
             self.bollaCorrente = newBolla
             
         }
-    }
+    }*/// deprecabile
 
     
 }
@@ -139,7 +184,7 @@ extension InventarioScorte:Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         self.statusScorte = try container.decode(StatoScorte.self, forKey: .status)
-        self.dataUltimaBolla = try container.decodeIfPresent(String.self, forKey: .ultimoAcquisto)
+        self.dataUltimaBolla = try container.decodeIfPresent(Date.self, forKey: .ultimoAcquisto)
         self.bollaCorrente = try container.decodeIfPresent(BollaAcquisto.self, forKey: .bollaCorrente)
         
     }

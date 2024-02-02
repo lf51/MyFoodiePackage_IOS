@@ -133,7 +133,7 @@ extension StatoScorte:Codable {
         
     }
     
-    private func encodeAsString() -> String {
+    public func encodeAsString() -> String {
         
         let value = self.orderAndStorageValue()
         return String(value)

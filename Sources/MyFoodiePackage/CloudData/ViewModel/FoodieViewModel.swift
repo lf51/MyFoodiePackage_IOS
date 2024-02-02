@@ -271,9 +271,9 @@ open class FoodieViewModel:ObservableObject {
         var allergeniIn:Bool = false
         
         if let ingredient = model as? IngredientModel,
-           ingredient.allergeni != nil {
+           ingredient.values.allergeni != nil {
             
-            allergeniIn = !ingredient.allergeni!.isEmpty
+            allergeniIn = !ingredient.values.allergeni!.isEmpty
         }
         
         return (isActive,name,allergeniIn)
@@ -361,5 +361,16 @@ open class FoodieViewModel:ObservableObject {
         
     }
     
+    
+}
+
+extension FoodieViewModel {
+    
+    public func isTheModelAlreadyExist<Item:MyProStarterPack_L0>(modelID:String,path:KeyPath<FoodieViewModel,[Item]>) -> Bool {
+        
+        let containerM = self[keyPath: path]
+        return containerM.contains(where: {$0.id == modelID}) //first(where: {$0.id == id})
+        
+    }
     
 }

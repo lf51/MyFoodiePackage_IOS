@@ -340,8 +340,8 @@ public struct ProductModelRow_ClientVersion: View {
     
     @ViewBuilder private func vbConservazioneLine() -> some View {
         
-        let isThereSurgelati = self.item.hasSomeIngredientASpecificQuality(viewModel: self.viewModel, kpQuality: \.conservazione, quality: .surgelato)
-        let isThereCongelati = self.item.hasSomeIngredientASpecificQuality(viewModel: self.viewModel, kpQuality: \.conservazione, quality: .congelato)
+        let isThereSurgelati = self.item.hasSomeIngredientASpecificQuality(viewModel: self.viewModel, kpQuality: \.values.conservazione, quality: .surgelato)
+        let isThereCongelati = self.item.hasSomeIngredientASpecificQuality(viewModel: self.viewModel, kpQuality: \.values.conservazione, quality: .congelato)
         
         // Se l'ingrediente viene salvato di defult come Altro, allora invece di cercarle singolarmente possiamo ricercare per esclusione
         
@@ -687,9 +687,9 @@ public struct ProductModelRow_ClientVersion: View {
     
     @ViewBuilder private func vbBadgeRow() -> some View {
         
-        let areAllBio = self.item.hasAllIngredientSameQuality(viewModel: self.viewModel, kpQuality: \.produzione, quality: .biologico)
-        let areAllLocal = self.item.hasAllIngredientSameQuality(viewModel: self.viewModel, kpQuality: \.provenienza, quality: .km0)
-        let areAllItalian = self.item.hasAllIngredientSameQuality(viewModel: self.viewModel, kpQuality: \.provenienza, quality: .italia)
+        let areAllBio = self.item.hasAllIngredientSameQuality(viewModel: self.viewModel, kpQuality: \.values.produzione, quality: .biologico)
+        let areAllLocal = self.item.hasAllIngredientSameQuality(viewModel: self.viewModel, kpQuality: \.values.provenienza, quality: .km0)
+        let areAllItalian = self.item.hasAllIngredientSameQuality(viewModel: self.viewModel, kpQuality: \.values.provenienza, quality: .italia)
     
         let isDelGiorno = self.viewModel.checkMenuDiSistemaContainDish(idPiatto: self.item.id, menuDiSistema: .delGiorno)
         let isAdviceByTheChef = self.viewModel.checkMenuDiSistemaContainDish(idPiatto: self.item.id, menuDiSistema: .delloChef)
@@ -866,12 +866,12 @@ public struct ProductModelRow_ClientVersion: View {
                 
               //  let hasAllergene = !modelSostituto.allergeni.isEmpty
                 let hasAllergene:Bool = {
-                    if let allergeneIn = modelSostituto.allergeni {
+                    if let allergeneIn = modelSostituto.values.allergeni {
                         return !allergeneIn.isEmpty
                     } else { return false }
                 }()
-                let isItBio = modelSostituto.produzione == .biologico
-                let isFreeze = modelSostituto.conservazione == .congelato || modelSostituto.conservazione == .surgelato
+                let isItBio = modelSostituto.values.produzione == .biologico
+                let isFreeze = modelSostituto.values.conservazione == .congelato || modelSostituto.values.conservazione == .surgelato
 
                 sintesiSostituto = IngredientModelInSintesi(
                     intestazione: modelSostituto.intestazione,
@@ -953,12 +953,12 @@ public struct ProductModelRow_ClientVersion: View {
         let isPrincipal = ingredientiPrincipali.contains(ingredient.id)
       //  let hasAllergene = !ingredient.allergeni.isEmpty
         let hasAllergene:Bool = {
-            if let allergeneIn = ingredient.allergeni {
+            if let allergeneIn = ingredient.values.allergeni {
                 return !allergeneIn.isEmpty
             } else { return false }
         }()
-        let isItBio = ingredient.produzione == .biologico
-        let isFreeze = ingredient.conservazione == .congelato || ingredient.conservazione == .surgelato
+        let isItBio = ingredient.values.produzione == .biologico
+        let isFreeze = ingredient.values.conservazione == .congelato || ingredient.values.conservazione == .surgelato
    
         var isOff: Bool = false
         
