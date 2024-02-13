@@ -24,7 +24,7 @@ public enum StatusTransition:String,MyProEnumPack_L0,Equatable {
         case .inPausa:
             return "in Pausa"
         case .archiviato:
-            return "non disponibile"
+            return "archiviato"
         }
     }
     

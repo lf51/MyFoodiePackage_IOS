@@ -10,7 +10,7 @@ import SwiftUI
 
 public enum StatoScorte:String,MyProEnumPack_L0 {
     
-    public static var allCases:[StatoScorte] = [.inStock,.inEsaurimento,.esaurito]
+    public static var allCases:[StatoScorte] = [.inStock,.inEsaurimento,.esaurito,.outOfStock]
     
     case inEsaurimento = "in esaurimento"
     case esaurito = "esaurite"

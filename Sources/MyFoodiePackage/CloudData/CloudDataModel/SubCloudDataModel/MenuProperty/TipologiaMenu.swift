@@ -77,9 +77,6 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
     
     case fisso(persone:PaxMenuFisso,costo: String)
     case allaCarta(TipologiaMenu.DiSistema? = nil)
-  //  case delGiorno
-   // case delloChef
-    
     case noValue
     
     public func returnMenuPriceValue() -> (asString:String,asDouble:Double) {

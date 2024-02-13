@@ -369,7 +369,7 @@ public struct ProductModelRow_ClientVersion: View {
     @ViewBuilder private func vbDishHistory() -> some View {
         
         // 1. Prendiamo gli ingredienti secondari e li trasformiamo nella Sintesi
-        let allFilteredIngredients = self.item.allMinusArchiviati(viewModel: self.viewModel)
+        let allFilteredIngredients = self.item.allIngredientsIn(viewModel: self.viewModel)
         let allSintesys:[IngredientModelInSintesi] = allFilteredIngredients.map({self.sintetizzaIngredienteTitolare(ingredient: $0)})
         let allSintesysSecondary:[IngredientModelInSintesi] = allSintesys.filter({!$0.isPrincipal})
         
@@ -765,7 +765,7 @@ public struct ProductModelRow_ClientVersion: View {
     /// - Returns: Text
     @ViewBuilder private func vbPrincipalIngredientRow() -> some View {
  
-        let allFilteredIngredients = self.item.allMinusArchiviati(viewModel: self.viewModel)
+        let allFilteredIngredients = self.item.allIngredientsIn(viewModel: self.viewModel)
         let allSintesys:[IngredientModelInSintesi] = allFilteredIngredients.map({self.sintetizzaIngredienteTitolare(ingredient: $0)})
         let allSintesysPrincipal:[IngredientModelInSintesi] = allSintesys.filter({$0.isPrincipal})
       
@@ -947,7 +947,7 @@ public struct ProductModelRow_ClientVersion: View {
     /// - Returns: Ingrediente in Sintesi
     private func sintetizzaIngredienteTitolare(ingredient:IngredientModel) -> IngredientModelInSintesi {
         
-        let allTemporaryOff = self.item.elencoIngredientiOff ?? [:]
+        let allTemporaryOff = self.item.offManager?.elencoIngredientiOff ?? [:]
         let ingredientiPrincipali = self.item.ingredientiPrincipali ?? []
         
         let isPrincipal = ingredientiPrincipali.contains(ingredient.id)
@@ -962,7 +962,7 @@ public struct ProductModelRow_ClientVersion: View {
    
         var isOff: Bool = false
         
-        if self.item.idIngredienteDaSostituire == ingredient.id {isOff = true}
+        if self.item.offManager?.idIngredienteDaSostituire == ingredient.id {isOff = true}
         else { isOff = ingredient.statusTransition == .inPausa}
 
         var idSostituto: String? = nil

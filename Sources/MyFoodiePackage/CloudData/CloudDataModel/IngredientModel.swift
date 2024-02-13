@@ -164,7 +164,8 @@ public struct IngredientModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDesc
       lhs.allergeni == rhs.allergeni &&
       lhs.origine == rhs.origine &&*/
       lhs.status == rhs.status &&
-      lhs.inventario == rhs.inventario// &&
+      lhs.inventario == rhs.inventario &&
+      lhs.asProduct == rhs.asProduct
      // lhs.type == rhs.type
     }
 
@@ -268,12 +269,12 @@ extension IngredientModel:Decodable {
         case intestazione
         case descrizione
         
-        case conservazione // deprecabile
-        case produzione // deprecabile
-        case provenienza // deprecabile
-        case allergeni // deprecabile
-        case origine // deprecabile
-       // case type = "tipologia"
+      //  case conservazione // deprecabile
+      //  case produzione // deprecabile
+      //  case provenienza // deprecabile
+      //  case allergeni // deprecabile
+      //  case origine // deprecabile
+      //  case type = "tipologia"
         case inventario
         case asProduct = "as_product"
         case properties
@@ -284,43 +285,28 @@ extension IngredientModel:Decodable {
         let decodingCase = decoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        
         let valuesContainer = try decoder.singleValueContainer()
         self.values = try valuesContainer.decode(IngredientSubModel.self)
-        
-        //self.id = try container.decode(String.self, forKey: .id)
-       // self.values = IngredientSubModel()
+ 
         switch decodingCase {
             
         case .inbound:
-
-           /* self.values.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
-            self.values.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
-            self.values.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
-            self.values.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
-            self.values.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)*/
-           // self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)
+            self.id = ""
             self.intestazione = ""
             self.descrizione = nil
-           // self.status = .noStatus
             self.inventario = nil
-            self.id = ""
-           // self.type = .standard
+
             self.asProduct = nil
             
         case .mainCollection:
            
             self.id = try container.decode(String.self, forKey: .id)
             self.intestazione = try container.decode(String.self, forKey: .intestazione)
-          /*  self.values.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
-            self.values.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
-            self.values.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
-            self.values.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
-            self.values.origine = try container.decode(OrigineIngrediente.self, forKey: .origine)*/
-            
-           // self.status = .noStatus
+            self.descrizione = nil
+       
             self.inventario = InventarioScorte()
             self.asProduct = nil
-           // self.type = .standard
             
         case .subCollection:
             
@@ -329,15 +315,8 @@ extension IngredientModel:Decodable {
             self.intestazione = try container.decode(String.self, forKey: .intestazione)
             self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)
             
-           /* self.values.conservazione = try container.decode(ConservazioneIngrediente.self, forKey: .conservazione)
-            self.values.produzione = try container.decode(ProduzioneIngrediente.self, forKey: .produzione)
-            self.values.provenienza = try container.decode(ProvenienzaIngrediente.self, forKey: .provenienza)
-            self.values.allergeni = try container.decodeIfPresent([AllergeniIngrediente].self, forKey: .allergeni)
-            self.values.origine = try container.decode(OrigineIngrediente.self, forKey: .origine*/
-          //  self.status = try container.decode(StatusModel.self, forKey: .status)
             self.inventario = try container.decodeIfPresent(InventarioScorte.self, forKey: .inventario)
             self.asProduct = try container.decodeIfPresent(ProductModel.self, forKey: .asProduct)
-           // self.type = try container.decode(IngredientType.self, forKey: .type)
             
         }
  
@@ -352,58 +331,31 @@ extension IngredientModel:Encodable {
         let codingCase = encoder.userInfo[Self.codingInfo] as? MyCodingCase ?? .subCollection
         
         var valuesContainer = encoder.singleValueContainer()
-       // try valuesContainer.encode(self.values)
-       // var container = encoder.container(keyedBy: CodingKeys.self)
-      //  try valuesContainer.encode(self.values)
-      //  try container.encode(self.id, forKey: .id)
         
         switch codingCase {
             
          case .inbound:
           
            try valuesContainer.encode(self.values)
-           // try container.encode(self.intestazione, forKey: .intestazione)
-           /* try container.encode(self.values.conservazione, forKey: .conservazione)
-            try container.encode(self.values.produzione, forKey: .produzione)
-            try container.encode(self.values.provenienza, forKey: .provenienza)
-            try container.encodeIfPresent(self.values.allergeni, forKey: .allergeni)
-            try container.encode(self.values.origine, forKey: .origine)*/
-           // try container.encodeIfPresent(self.descrizione, forKey: .descrizione)
-           // try container.encode(self.status, forKey: .status)
             
         case .mainCollection:
             // Non in uso
             throw URLError(.cannotConnectToHost)
-           /* try container.encode(self.intestazione, forKey: .intestazione)
-            try container.encode(self.conservazione, forKey: .conservazione)
-            try container.encode(self.produzione, forKey: .produzione)
-            try container.encode(self.provenienza, forKey: .provenienza)
-            try container.encode(self.allergeni, forKey: .allergeni)
-            try container.encode(self.origine, forKey: .origine)*/
             
         case .subCollection:
             
             try valuesContainer.encode(self.values)
+            
             var container = encoder.container(keyedBy: CodingKeys.self)
             
             try container.encode(self.id, forKey: .id)
             try container.encode(self.intestazione, forKey: .intestazione)
             try container.encode(self.descrizione, forKey: .descrizione)
     
-           /* try container.encode(self.values.conservazione, forKey: .conservazione)
-            try container.encode(self.values.produzione, forKey: .produzione)
-            try container.encode(self.values.provenienza, forKey: .provenienza)
-            try container.encode(self.values.allergeni, forKey: .allergeni)
-            try container.encode(self.values.origine, forKey: .origine)*/
-           // try container.encode(self.status, forKey: .status)//
             try container.encodeIfPresent(self.inventario, forKey: .inventario)
-           // try container.encode(self.type, forKey: .type)
             try container.encodeIfPresent(self.asProduct, forKey: .asProduct)
             
-            
         }
-        
-        
     }
 }
 

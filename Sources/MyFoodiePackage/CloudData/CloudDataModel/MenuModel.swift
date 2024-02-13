@@ -36,7 +36,7 @@ public struct MenuModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDescriptio
     public var tipologia: TipologiaMenu // Categoria di Filtraggio
   //  public var status: StatusModel
     
-    public var isAvaibleWhen: AvailabilityMenu { willSet { giorniDelServizio = newValue == .dataEsatta ? [] : GiorniDelServizio.allCases } }
+    public var isAvaibleWhen: AvailabilityMenu { willSet { giorniDelServizio = newValue == .dataEsatta ? [] : GiorniDelServizio.allCases } } // può trasformarsi in una computed
     public var dataInizio: Date { willSet {
         dataFine = newValue.advanced(by: 604800)
     }}
@@ -129,6 +129,7 @@ public struct MenuModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDescriptio
         }
         
     } // 06.07 deprecata in futuro
+    
     public enum CodiceOnOffLive {
 
         case liveNow

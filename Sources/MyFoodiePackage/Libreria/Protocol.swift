@@ -107,7 +107,7 @@ public protocol MyProVisualPack_L0:MyProStarterPack_L0,MyProVMPack_L0 {
     
     func returnModelRowView(rowSize:RS) -> RowView
     /// Bottoni per il menu Interattivo specifici del modello
-    func vbMenuInterattivoModuloCustom(viewModel:VM,navigationPath:ReferenceWritableKeyPath<VM,NavigationPath>) -> InteractiveMenuContent
+    func vbMenuInterattivoModuloCustom(viewModel:VM,navigationPath:ReferenceWritableKeyPath<VM,NavigationPath>) -> InteractiveMenuContent 
     
     func opacityModelRowView(viewModel:VM) -> CGFloat
     /*func conditionToManageMenuInterattivo(viewModel:VM) -> (disableCustom:Bool,disableStatus:Bool,disableEdit:Bool,disableTrash:Bool,opacizzaAll:CGFloat)*/ // deprecta
