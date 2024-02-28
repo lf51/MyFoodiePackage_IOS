@@ -44,7 +44,7 @@ public enum GiorniDelServizio:String,MyProEnumPack_L2,Identifiable,Codable /*: M
     
     public func extendedDescription() -> String {
 
-        return "[DA_SVILUPPARE]"
+        return ""
     }
     
     public func shortDescription() -> String {

@@ -9,14 +9,14 @@ import Foundation
 
 public enum AvailabilityMenu:String,Hashable,MyProEnumPack_L1,Codable {
 
-    public static var allCases:[AvailabilityMenu] = [.dataEsatta,.intervalloAperto,.intervalloChiuso]
-    public static var defaultValue: AvailabilityMenu = .noValue
+    public static var allCases:[AvailabilityMenu] = [.intervalloAperto,.intervalloChiuso,.dataEsatta]
+    public static var defaultValue: AvailabilityMenu = .intervalloAperto
     
     case dataEsatta
     case intervalloChiuso
     case intervalloAperto
     
-    case noValue
+   // case noValue // da deprecare
     
     public func simpleDescription() -> String {
         
@@ -28,8 +28,8 @@ public enum AvailabilityMenu:String,Hashable,MyProEnumPack_L1,Codable {
             return "Intervallo Chiuso"
         case .intervalloAperto:
             return "Intervallo Aperto"
-        case .noValue:
-            return ""
+       /* case .noValue:
+            return ""*/
         }
     }
     
@@ -44,9 +44,9 @@ public enum AvailabilityMenu:String,Hashable,MyProEnumPack_L1,Codable {
         case .intervalloChiuso:
             return 2
         case .intervalloAperto:
-            return 3
-        case .noValue:
             return 0
+       /* case .noValue:
+            return 0*/
         }
     }
     
@@ -70,8 +70,8 @@ public enum AvailabilityMenu:String,Hashable,MyProEnumPack_L1,Codable {
             return "Chiuso"
         case .intervalloAperto:
             return "Aperto"
-        case .noValue:
-            return ""
+       /* case .noValue:
+            return ""*/
         }
     }
     
@@ -85,8 +85,8 @@ public enum AvailabilityMenu:String,Hashable,MyProEnumPack_L1,Codable {
             return "Programma il Menu con un Inizio e una Fine"
         case .intervalloAperto:
             return "Programma il Menu con un Inizio senza una Fine"
-       case .noValue:
-            return "Seleziona il tipo di intervallo temporale"
+      /* case .noValue:
+            return "Seleziona il tipo di intervallo temporale"*/
         }
         
     }
@@ -101,7 +101,7 @@ public enum AvailabilityMenu:String,Hashable,MyProEnumPack_L1,Codable {
             
         case .dataEsatta:
             incipit = "il"
-            postFix = ""
+            postFix = "data unica"
         case .intervalloChiuso:
             incipit = "dal"
             postFix = "al"
@@ -109,12 +109,27 @@ public enum AvailabilityMenu:String,Hashable,MyProEnumPack_L1,Codable {
         case .intervalloAperto:
             incipit = "dal"
             postFix = "Fine indeterminata"
-        case .noValue:
+       /* case .noValue:
             incipit = ""
-            postFix = ""
+            postFix = ""*/
         }
         
         return (incipit,postFix,showPost)
     }
+    
+    public func titlePicker() -> String {
+          
+          switch self {
+              
+          case .dataEsatta:
+              return "li:"
+          case.intervalloAperto,.intervalloChiuso:
+              return "dal:"
+              
+        /*  case .noValue:
+              return(true,true,true,true,"dal")*/
+          }
+          
+      }
     
 }

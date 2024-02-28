@@ -34,6 +34,20 @@ public struct ProductOffManager:Equatable {
         
     }
     
+    /// Ritorna la chiave corrispondente al valore passato. Ossia ritorna l'ingrediente titolare che ha come sostituto l'ingrediente passato.
+    public func fetchTitolare(for substitute:String) -> String? {
+        
+        for (key,value) in elencoIngredientiOff {
+            
+            if value == substitute { return key }
+            else { continue }
+            
+        }
+        
+        return nil
+        
+    }
+    
 }
 
 extension ProductOffManager:Decodable {

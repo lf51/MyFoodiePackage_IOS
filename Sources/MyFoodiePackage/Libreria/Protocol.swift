@@ -33,26 +33,44 @@ public protocol MyProStarterPack_L1:MyProVMPack_L0 {
 
 }
 
-/// Base di uno status da far funzionare automaticamente
+/// Lo stato di completezza del modello
 public protocol MyProStatusPack_L0 {
     
     var status: StatusModel { get }
     func modelStatusDescription() -> String
 
 }
-
-public protocol MyProStatusPack_L01:MyProStatusPack_L0 {
-    /// Può essere gestito automaticamente. Per una gestione semiAutomatica serve triangolare con lo statusCache (conformità L1)
-    var statusTransition:StatusTransition { get }
-}
-
+/// descrizione dello stato generale del modello,completezza transitione o quello che si vuole
 public protocol MyProStatusPack_L02:MyProVMPack_L0 {
     
     func visualStatusDescription(viewModel:VM) -> (internalImage:String,internalColor:Color,externalColor:Color,description:String)
 }
+/// Per una gestione Automatica o semiAutomatica dello status Transition dei modelli, che necessitano o meno di accedere a informazioni tramite viewModel. E' la parte get di due protocolli, uno per il get e uno per il set (L03)
+ public protocol MyProTransitionGetPack_L01 {
+  
+   // var statusTransition:StatusTransition { get }
+   // func getStatusTransition() -> StatusTransition
+    func getStatusTransition(viewModel:FoodieViewModel?) -> StatusTransition
+}
+/// Per una gestione semiAutomatica dello status Transition di modelli che richiedono informazioni da reperire tramite viewModel. E' la parte get di due protocolli, uno per il get e uno per il set (L03)
+/*public protocol MyProTransitionPack_L02 {
+    /// Serve a triangolare il valore del transition. Usiamo salvarlo su firebase come stringa.
+  //  var statusCache:Int { get set }
+    /// A differenza della computed statusTransition, usiamo un metodo per
+    func getStatusTransition(viewModel:FoodieViewModel) -> StatusTransition
+}*/
+
+public protocol MyProTransitionSetPack_L02:MyProVMPack_L0 {
+    /// Proprietà su cui triangolare il valore tramite firebase.. Usiamo salvarlo su firebase come stringa.
+    var statusCache:Int { get set }
+    
+    func setStatusTransition(to status:StatusTransition,viewModel:VM)
+    func generalDisableSetStatusTransition(viewModel:VM) -> Bool
+    func validateUpdateStatusTransition(to newStatus:StatusTransition,viewModel:VM) throws
+}
 
 /// Implementa una logica per derivare lo Status e/o forzarlo
-public protocol MyProStatusPack_L1: MyProStatusPack_L0,MyProVMPack_L0 {
+/*public protocol MyProStatusPack_L1: MyProStatusPack_L0,MyProVMPack_L0 {
 
     /// Serve a triangolare il valore del transition e viene salvato sul firebase come stringa
     var statusCache:Int { get set }
@@ -60,9 +78,11 @@ public protocol MyProStatusPack_L1: MyProStatusPack_L0,MyProVMPack_L0 {
     func getStatusTransition(viewModel:VM) -> StatusTransition
     func setStatusTransition(to status:StatusTransition,viewModel:VM)
   
-    func disabilitaSetStatusTransition(viewModel:VM) -> (general:Bool,upToDisponibile:Bool)
+    func generalDisableSetStatusTransition(viewModel:VM) -> Bool
+    
+    func validateUpdateStatusTransition(to newStatus:StatusTransition,viewModel:VM) throws
 
-}
+}*/
 
 public protocol MyProNavigationPack_L0 {
     

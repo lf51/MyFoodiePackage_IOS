@@ -94,6 +94,8 @@ public struct ProductModel:
     
     public init(from ingredient:IngredientModel) {
         
+        let statusTransition = ingredient.getStatusTransition()
+        
         self.id = UUID().uuidString
         self.intestazione = ingredient.intestazione
         self.descrizione = ingredient.descrizione
@@ -104,7 +106,7 @@ public struct ProductModel:
         self.pricingPiatto = DishFormat.customInit()
         self.rifIngredienteSottostante = ingredient.id
         self.ingredienteSottostante = ingredient.values
-        self.statusCache = ingredient.statusTransition.orderAndStorageValue()
+        self.statusCache = statusTransition.orderAndStorageValue()
     }
     
     func creaID(fromValue: String) -> String {
@@ -510,7 +512,7 @@ extension ProductModel {
               !offManager.elencoIngredientiOff.isEmpty else { return allIngIn }
         
         let allInPausa = allIngIn.filter({
-            $0.statusTransition == .inPausa
+            $0.getStatusTransition() == .inPausa
             })
         
         var allInPausaId = allInPausa.map({$0.id})
@@ -534,7 +536,7 @@ extension ProductModel {
             if let sostituto = offManager.fetchSubstitute(for: ingredient) {
 
                 let modelSostituo = viewModel.modelFromId(id: sostituto, modelPath: \.db.allMyIngredients)
-                let isActive = modelSostituo?.statusTransition == .disponibile
+                let isActive = modelSostituo?.getStatusTransition() == .disponibile
                 
                 if isActive {
                     allActiveIDs[position!] = sostituto
@@ -738,6 +740,49 @@ extension ProductModel {
             return(\.ingredientiSecondari,index)
             
         } else { return (nil,nil)}
+        
+    }
+    
+    /// ritorna l'utilizzo dell'ingrediente nella preparazione, quindi come principale o secondario o come sostituto. In quess'ultimo caso associa l'Id del Titolare
+    public func individuaUtilizzoIngrediente(idIngrediente:String) -> UtilizzoIngredient? {
+        
+        let ingredientiPrincipali = self.ingredientiPrincipali ?? []
+        let ingredientiSecondari = self.ingredientiSecondari ?? []
+        
+        if ingredientiPrincipali.contains(idIngrediente) {
+            
+            return (.principale)
+            
+        } else if ingredientiSecondari.contains(idIngrediente) {
+            
+            return .secondario
+        }
+        
+        guard let offManager,
+              let titolare = offManager.fetchTitolare(for: idIngrediente) else { return nil }
+        
+        return .sostituto(titolare)
+        
+    }
+ 
+    public enum UtilizzoIngredient:Equatable {
+        
+        case principale
+        case secondario
+        case sostituto(_ :String)
+        
+       public func simpleDescription() -> String {
+            
+            switch self {
+            case .principale:
+                return "as Principale"
+            case .secondario:
+                return "as Secondario"
+            case .sostituto(let titolare):
+                return "as Sostituto di <\(titolare)>"
+            }
+            
+        }
         
     }
     
@@ -1046,4 +1091,229 @@ extension ProductModel {
              return orderedAllergeni
      
       }
+}
+
+extension ProductModel:MyProTransitionGetPack_L01 {
+    
+    /// Lo status Transition è ricavato in modo semi-Automatico. Il valore di default per i nuovi prodotti sarà zero, ovvero disponibile. In questo caso il transition si muoverà in automatico, riflettendo l'executionState. Se l'utente lo forza ad uno stato di inPausa o archiviato, l'executionState sarà ignorato. Se l'utente vuole ripristinare lo stato di disponibile, il sistema ritorneraà ad una assegnazione automatica in funzione dell'executionState. Potremmo rimpiazzare sul firebase lo status di .disponibile con un valore nil.
+     /// Se venisse passato un valore nil, ritornerebbe lo status di archiviato. Il valore deve essere passato Mandatory
+    public func getStatusTransition(viewModel:FoodieViewModel?) -> StatusTransition {
+        
+        guard let viewModel else { return .archiviato }
+        
+        if statusCache == 0  {
+            // automatizzato
+            return getTransitionFromExecution(viewModel: viewModel)
+
+        } else {
+            // valore precedentemente forzato
+            let currentStatus = StatusTransition.decodeStatus(from: self.statusCache)
+            
+            return currentStatus
+        }
+
+    }
+    
+    private func getTransitionFromExecution(viewModel:FoodieViewModel) -> StatusTransition {
+        
+        let executionState = self.checkStatusExecution(viewModel: viewModel)
+        
+        switch executionState {
+        case .eseguibile,.eseguibileConRiserva:
+            return .disponibile
+        case .nonEseguibile:
+            return .inPausa
+        }
+        
+    }
+    
+    /// analizza gli ingredienti per comprendere se un piatto è eseguibile o meno
+   public func checkStatusExecution(viewModel:FoodieViewModel) -> ExecutionState {
+        // 22_01_24 da Aggiornare in ragione del fatto che lo status degli ing è strettamente correlato in automatico con lo stato scorte.
+        // Quando abbiamo creato questa func lo status dell'ing poteva essere forzato manualmente
+        
+        // 1. Eseguibile
+        // 1a. Tutti gli ing sono disponibili, principali, secondari o eventuali sostituti
+        // Passaggio di status sempre consentito. 16.03.23 Nessuna modifica da apportare
+        
+        //Update 09.07.23
+        
+        switch self.adress {
+            
+        case .preparazione: return checkStatusPreparazione(viewModel: viewModel)
+        case .finito: return checkStatusAsProduct(viewModel: viewModel)
+        case .composizione: return .eseguibileConRiserva
+            
+        }
+        
+       /* guard self.adress != .composizione else { return .eseguibileConRiserva }
+ 
+        guard self.adress != .finito else {
+            return .nonEseguibile
+        } */
+        //end update
+      /*  let allIng = self.allIngredientsIn(viewModel: viewModel)
+        
+        if self.adress == .preparazione,
+           allIng.isEmpty {
+           return .nonEseguibile
+        }
+        
+        let ingCount = allIng.count
+        
+        let ingActive = self.allIngredientsAttivi(viewModel: viewModel)
+        let activeCount = ingActive.count
+        
+        guard ingCount != activeCount else { return .eseguibile }
+        
+        // 1b. Non tutti gli ing sono disponibili, ma sono tutti in stock
+        // Passaggio di status consentito con alert informativo della presenza di ing inPausa. 16.03.23 da implementare
+        let allInPausa = allIng.filter({ $0.statusTransition == .inPausa })
+       /* let allInPausaAvaible = allInPausa.map({viewModel.inventarioScorte.statoScorteIng(idIngredient: $0.id)}).contains(.esaurito) */
+        
+        let areNotAllIngInPausaAvaible = allInPausa.contains(where: { /*viewModel.currentProperty.inventario.statoScorteIng(idIngredient: $0.id) == .esaurito*/
+           // viewModel.getStatusScorteING(from: $0.id) == .esaurito
+            $0.statusScorte() == .esaurito
+        })
+        
+        guard areNotAllIngInPausaAvaible else { return .eseguibile }
+        
+        // 2.Eseguibile con Riserva
+        
+        //2a. Se Gli ing in Pausa, e non in stock, sono tutti secondari è consentito eseguire il piatto con riserva dello chef
+        // In questo caso il passaggio di Status da inPausa a Disponibile può essere consentito con conferma. 16.03.23 da implementare
+        
+        let idIngInPausa = allInPausa.map({$0.id})
+        let ingredientiPrincipali = self.ingredientiPrincipali ?? []
+        let areNotInPausaAllSecondary = ingredientiPrincipali.contains {
+            idIngInPausa.contains($0)
+        }
+        
+        guard areNotInPausaAllSecondary else { return .eseguibileConRiserva }
+        
+        // 3. Non Eseguibile. Il piatto contiene fra i principali degli ing in pausa e non in stock
+        // In questo caso il passaggio di Status da inPausa a Disponibile deve essere bloccato. 16.03.23 da implementare
+        
+        return .nonEseguibile */
+        
+    }
+    
+    private func checkStatusPreparazione(viewModel:FoodieViewModel) -> ExecutionState {
+        
+        let allING = self.allIngredientsOrSubs(viewModel: viewModel)
+        
+        guard !allING.isEmpty else { return .nonEseguibile}
+        
+        let ingredientiPrincipali = self.ingredientiPrincipali ?? []
+        
+        let allEsauriti = allING.filter({$0.statusScorte() == .esaurito})// coincideranno con gli ing in pausa che non hanno un sostituto
+        
+        guard allEsauriti.isEmpty else {
+            // vi sono ingredienti esauriti senza rimpiazzo
+            let esauritiID = allEsauriti.map({$0.id})
+            
+            let esauriFraPrincipali = ingredientiPrincipali.contains(where: {
+                esauritiID.contains($0)
+            })
+            
+            if esauriFraPrincipali { return .nonEseguibile }
+            else { return .eseguibileConRiserva }
+        }
+        
+        // tutti gli ing sono disponibili o hanno un sostituto disponibile
+        
+        // verifichiamo se ve ne sono in esaurimento
+        
+        let allInEsaurimento = allING.filter({$0.statusScorte() == .inEsaurimento})
+        
+        guard allInEsaurimento.isEmpty else {
+            
+            // vi sono ing in esaurimento. Non possiamo sapere se riguardano un principale o un secondario per via di eventuali sostituzioni, e quindi non badiamo al path e lo rimandiamo ad un controllo manuale, indicandolo come eseguibile con riserva
+            return .eseguibileConRiserva
+            
+        }
+        
+        return .eseguibile
+
+    }
+    
+    private func checkStatusAsProduct(viewModel:FoodieViewModel) -> ExecutionState {
+        
+        guard let collegato = self.getIngredienteCollegatoAsProduct(viewModel: viewModel) else { return .nonEseguibile }
+        
+        let statoScorte = collegato.statusScorte()
+        
+        switch statoScorte {
+            
+        case .inEsaurimento:
+            return .eseguibileConRiserva
+        case .esaurito,.outOfStock:
+            return.nonEseguibile
+        case .inStock:
+            return .eseguibile
+        
+        }
+        
+    }
+}
+/// Logica Execution State
+extension ProductModel {
+    
+    public enum ExecutionState:Property_FPC {
+        
+        static public let allCases:[ExecutionState] = [.eseguibile,.eseguibileConRiserva,.nonEseguibile]
+        
+        case eseguibile
+        case eseguibileConRiserva
+        case nonEseguibile
+        
+        public func simpleDescription() -> String {
+            switch self {
+                
+            case .eseguibile: return "Eseguibile"
+            case .eseguibileConRiserva: return "con Riserva"
+            case .nonEseguibile: return "Non Eseguibile"
+            
+            }
+        }
+        
+        public func filterDescription() -> String {
+            
+            switch self {
+            
+            case .eseguibileConRiserva: return "Eseguibile con Riserva"
+            default: return self.simpleDescription()
+            
+            }
+        }
+        
+        public func returnTypeCase() -> ProductModel.ExecutionState {
+           
+            return self
+        }
+        
+        public func orderAndStorageValue() -> Int {
+            switch self {
+                
+            case .eseguibile: return 0
+            case .eseguibileConRiserva: return 1
+            case .nonEseguibile: return 2
+            
+            }
+        }
+        
+        public func coloreAssociato() -> Color {
+            
+            switch self {
+                
+            case .eseguibile: return .seaTurtle_3
+            case .eseguibileConRiserva: return .orange
+            case .nonEseguibile: return .red.opacity(0.8)
+            
+            }
+            
+        }
+        
+    }
+    
 }

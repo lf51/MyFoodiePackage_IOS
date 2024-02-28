@@ -46,7 +46,8 @@ public enum PaxMenuFisso:String,MyProEnumPack_L1,Codable /*:MyEnumProtocolMapCon
     }
     
     public func returnTypeCase() -> PaxMenuFisso {
-        PaxMenuFisso.uno
+        //PaxMenuFisso.uno
+        self
     }
     
     public func orderAndStorageValue() -> Int {
@@ -67,17 +68,16 @@ public enum PaxMenuFisso:String,MyProEnumPack_L1,Codable /*:MyEnumProtocolMapCon
     } */
 }
 
-
 public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: MyEnumProtocol, MyEnumProtocolMapConform*/ {
    
-    public static var allCases: [TipologiaMenu] = [.allaCarta(),.fisso(persone: .uno, costo: "n/d")]
-    public static var defaultValue: TipologiaMenu = .noValue
+    public static var allCases: [TipologiaMenu] = [.allaCarta(),.fisso(persone: .defaultValue, costo: "n/d")]
+    public static var defaultValue: TipologiaMenu = .allaCarta()
     
     public var id:String {self.createId()}
     
     case fisso(persone:PaxMenuFisso,costo: String)
     case allaCarta(TipologiaMenu.DiSistema? = nil)
-    case noValue
+   // case noValue
     
     public func returnMenuPriceValue() -> (asString:String,asDouble:Double) {
         
@@ -102,8 +102,8 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
         //   return "piatti del Giorno"
        // case .delloChef:
         //    return "i consigliati"
-        case .noValue:
-            return "Selezionare tipologia menu"
+      /*  case .noValue:
+            return "Selezionare tipologia menu"*/
 
         }
     }
@@ -120,8 +120,8 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
         //    return "Vedi Info"
        // case .delloChef:
          //   return "Vedi info"
-        case .noValue:
-            return "Selezionare tipologia menu"
+      /*  case .noValue:
+            return "Selezionare tipologia menu"*/
            
         }
 
@@ -177,8 +177,8 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
         case .allaCarta(_):
             return .allaCarta()
             
-        case .noValue:
-            return self
+      /*  case .noValue:
+            return self*/
             
         }
     }
@@ -190,7 +190,7 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
         case .allaCarta(let subType):
             return subType
             
-        default:
+        default :
             return nil
             
         }
@@ -211,8 +211,8 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
         //    return "clock.arrow.circlepath"
      //   case .delloChef:
        //     return "mustache.fill" //"👨🏻‍🍳"
-        case .noValue:
-            return "gear.badge.xmark"
+       /* case .noValue:
+            return "gear.badge.xmark"*/
         }
     }
     
@@ -223,9 +223,9 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
         case .fisso(_, _):
             return 1
         case .allaCarta:
-            return 2
-        case .noValue:
-           return 0
+            return 0
+      /*  case .noValue:
+           return 0*/
         }
     } // Deprecbile
     
@@ -237,10 +237,10 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
         case .fisso(let pax, let price):
             return ["pax":pax.orderAndStorageValue(),"price":price]
         case .allaCarta(let diSistema):
-            let value = diSistema == nil ? 2 : diSistema!.orderAndStorageValue()
+            let value = diSistema == nil ? 0 : diSistema!.orderAndStorageValue()
             return value
-        case .noValue:
-           return 0
+        /*case .noValue:
+           return 0*/
         }
     }
     
@@ -353,8 +353,8 @@ public enum TipologiaMenu:Identifiable, Equatable, MyProEnumPack_L2,Codable /*: 
             
             switch self {
                 
-            case .delGiorno: return 3
-            case .delloChef: return 4
+            case .delGiorno: return 2
+            case .delloChef: return 3
             }
         }
 

@@ -246,7 +246,7 @@ open class FoodieViewModel:ObservableObject {
     // deprecato
     public static var userAuthData:(id:String,userName:String,mail:String) = ("","","") // deprecata
 
-    
+    @Published public var internalClock:InternalClock = InternalClock()
   
     public init(currentProperty: PropertyCurrentData) {
         self.db = CloudDataStore()
@@ -262,11 +262,11 @@ open class FoodieViewModel:ObservableObject {
         return containerM.first(where: {$0.id == id})
     }
 
-   public func infoFromId<M:MyProStarterPack_L0&MyProStarterPack_L01&MyProStatusPack_L01>(id:String,modelPath:KeyPath<FoodieViewModel,[M]>) -> (isActive:Bool,nome:String,hasAllergeni:Bool) {
+   public func infoFromId<M:MyProStarterPack_L0&MyProStarterPack_L01&MyProTransitionGetPack_L01>(id:String,modelPath:KeyPath<FoodieViewModel,[M]>) -> (isActive:Bool,nome:String,hasAllergeni:Bool) {
         
         guard let model = modelFromId(id: id, modelPath: modelPath) else { return (false,"",false) }
         
-        let isActive = model.statusTransition == .disponibile
+        let isActive = model.getStatusTransition(viewModel: self) == .disponibile
         let name = model.intestazione
         var allergeniIn:Bool = false
         
@@ -373,4 +373,38 @@ extension FoodieViewModel {
         
     }
     
+}
+
+/// Gestione Model Transition
+extension FoodieViewModel {
+    
+    public func checkDishStatusTransition(of dishes:[String]? = nil,check:StatusTransition) -> [String] {
+        
+        let allModel:[ProductModel] = {
+            
+            guard let allDishes = dishes else {
+                return self.db.allMyDish
+            }
+            
+          let allModelDishes = self.modelCollectionFromCollectionID(
+            collectionId: allDishes,
+            modelPath: \.db.allMyDish)
+        
+            return allModelDishes
+        }()
+        
+        let allModelChecked = allModel.filter({$0.getStatusTransition(viewModel: self) == check})
+        let allRif = allModelChecked.map({$0.id})
+        
+        return allRif
+    }
+}
+
+import Combine
+/// Un orologio Interno per mandare automaticamente un update ai modelli, come i Menu, che hanno una programmazione Interna
+final public class InternalClock:ObservableObject {
+    
+   public let currentTimeOnAccess: Date = Date.now
+   public let timer = Timer.publish(every: 60.0, on: .main, in: .common).autoconnect()
+        
 }

@@ -247,11 +247,14 @@ extension IngredientModel {
         
         guard var asProduct else { return nil }
         
+        let ingredientTransition = self.getStatusTransition()
+        
         asProduct.intestazione = self.intestazione
         asProduct.descrizione = self.descrizione
         asProduct.ingredienteSottostante = self.values
         asProduct.rifIngredienteSottostante = self.id
-        asProduct.statusCache = self.statusTransition.orderAndStorageValue()
+        asProduct.statusCache = ingredientTransition.orderAndStorageValue()
+       // asProduct.statusCache = self.statusTransition.orderAndStorageValue()
         
         return asProduct
     }
@@ -530,14 +533,10 @@ extension IngredientModel {
     }
         
 }
-/// Lo Status e il transition sono gestiti automaticamente
-extension IngredientModel:MyProStatusPack_L01 {
-    
-   // public var statusCache: Int? { nil }
+
+extension IngredientModel:MyProStatusPack_L0 {
     
     public var status: StatusModel { self.getStatus() }
-    
-    public var statusTransition:StatusTransition { self.getStatusTransition() }
     
     private func getStatus() -> StatusModel {
         
@@ -548,7 +547,27 @@ extension IngredientModel:MyProStatusPack_L01 {
         
     }
     
-    private func getStatusTransition() -> StatusTransition {
+    public func modelStatusDescription() -> String {
+         "Ingrediente (\(self.status.simpleDescription().capitalized))"
+     }
+    
+    /// ritorna true se tutte le proprietà optional sono state compilate, e dunque il modello è completo.
+    public func optionalComplete() -> Bool {
+        
+        guard let descrizione else { return false }
+        
+        return descrizione != ""
+
+    }
+}
+/// Lo Status e il transition sono gestiti automaticamente
+extension IngredientModel:MyProTransitionGetPack_L01 {
+
+   // public var statusCache: Int? { nil }
+    
+    //public var statusTransition:StatusTransition { self.getStatusTransition() }
+    
+    public func getStatusTransition(viewModel:FoodieViewModel? = nil) -> StatusTransition {
         
         guard let inventario else { return .disponibile/* da Sviluppare */ }
         
@@ -560,20 +579,7 @@ extension IngredientModel:MyProStatusPack_L01 {
             
         }
     }
-    
-    public func modelStatusDescription() -> String {
-         "Ingrediente (\(self.status.simpleDescription().capitalized))"
-     }
-   
-    /// ritorna true se tutte le proprietà optional sono state compilate, e dunque il modello è completo.
-    public func optionalComplete() -> Bool {
-        
-        guard let descrizione else { return false }
-        
-        return descrizione != ""
 
-    }
-    
    /* public func fullStatusDescription() -> String {
         
         "\(self.status.simpleDescription()) \(self.statusTransition.simpleDescription())"

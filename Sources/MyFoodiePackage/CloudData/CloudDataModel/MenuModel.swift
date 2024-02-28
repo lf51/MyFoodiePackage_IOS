@@ -19,9 +19,9 @@ public struct MenuModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDescriptio
         lhs.rifDishIn == rhs.rifDishIn &&
         lhs.tipologia == rhs.tipologia &&
         lhs.statusCache == rhs.statusCache &&
-        lhs.isAvaibleWhen == rhs.isAvaibleWhen &&
-        lhs.dataInizio == rhs.dataInizio &&
-        lhs.dataFine == rhs.dataFine &&
+      //  lhs.isAvaibleWhen == rhs.isAvaibleWhen &&
+        lhs.giornoInizio == rhs.giornoInizio &&
+        lhs.giornoFine == rhs.giornoFine &&
         lhs.giorniDelServizio == rhs.giorniDelServizio &&
         lhs.oraInizio == rhs.oraInizio &&
         lhs.oraFine == rhs.oraFine
@@ -36,16 +36,22 @@ public struct MenuModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDescriptio
     public var tipologia: TipologiaMenu // Categoria di Filtraggio
   //  public var status: StatusModel
     
-    public var isAvaibleWhen: AvailabilityMenu { willSet { giorniDelServizio = newValue == .dataEsatta ? [] : GiorniDelServizio.allCases } } // può trasformarsi in una computed
-    public var dataInizio: Date { willSet {
+   /* public var isAvaibleWhen: AvailabilityMenu { willSet { giorniDelServizio = newValue == .dataEsatta ? [] : GiorniDelServizio.allCases } }*/ // può trasformarsi in una computed
+   /* public var dataInizio: Date { willSet {
         dataFine = newValue.advanced(by: 604800)
-    }}
-    public var dataFine: Date // opzionale perchè possiamo non avere una fine in caso di data fissa
+    }}*/
+   // public var dataFine: Date // opzionale perchè possiamo non avere una fine in caso di data fissa
     public var giorniDelServizio:[GiorniDelServizio] // Categoria Filtraggio
-    public var oraInizio: Date { willSet {oraFine = newValue.advanced(by: 1800)} }
+    public var oraInizio: Date { willSet {oraFine = newValue.advanced(by: 3600)} }
     public var oraFine: Date
     
     public var statusCache:Int
+    
+    // update 13.02.24
+    public var giornoInizio:Date { willSet {
+        giornoFine = setGiornoFine(from: newValue)
+    }}
+    public var giornoFine:Date?
     
     public init() {
         
@@ -53,19 +59,21 @@ public struct MenuModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDescriptio
         
         self.id = UUID().uuidString
         self.intestazione = ""
-        self.descrizione = ""
+        self.descrizione = nil 
         self.tipologia = .defaultValue
        // self.status = .bozza(.inPausa)
         self.rifDishIn = []
-        self.isAvaibleWhen = .defaultValue
-        self.dataInizio = currentDate
-        self.dataFine = currentDate.advanced(by: 604800)
+      //  self.isAvaibleWhen = .defaultValue // deprecare
+      // self.dataInizio = currentDate // deprecare
+       // self.dataFine = currentDate.advanced(by: 604800) // deprecare
         self.giorniDelServizio = []
         self.oraInizio = currentDate
-        self.oraFine = currentDate.advanced(by: 1800)
+        self.oraFine = currentDate.advanced(by: 3600)
         
-        self.statusCache = 0 // da implementare
+        self.statusCache = 0 //
         
+        self.giornoInizio = currentDate
+        self.giornoFine = nil
     }
     
     public init(tipologiaDiSistema:TipologiaMenu.DiSistema) {
@@ -84,9 +92,11 @@ public struct MenuModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDescriptio
         self.descrizione = tipologiaDiSistema.modelDescription()
        // self.status = .bozza(.disponibile)
         self.rifDishIn = []
-        self.isAvaibleWhen = .dataEsatta
-        self.dataInizio = currentDate
-        self.dataFine = currentDate.advanced(by: 604800)
+        
+       // self.isAvaibleWhen = .dataEsatta // deprecare
+       // self.dataInizio = currentDate // deprecare
+       // self.dataFine = currentDate.advanced(by: 604800) // deprecare
+        
         let giornoDataInizio = GiorniDelServizio.giornoServizioFromData(dataEsatta: currentDate)
         self.giorniDelServizio = [giornoDataInizio]
         self.oraInizio = Date.distantFuture.advanced(by: -3540)
@@ -94,6 +104,9 @@ public struct MenuModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDescriptio
        // self.oraFine = Date.distantFuture.advanced(by: 56500)
         
         self.statusCache = 0 // da implementare
+        
+        self.giornoInizio = currentDate
+        self.giornoFine = currentDate
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -174,6 +187,122 @@ public struct MenuModel:MyProStarterPack_L0,MyProStarterPack_L01,MyProDescriptio
         
 } // end Model
 
+/// Gestione Availability
+extension MenuModel {
+    
+    public var availability:AvailabilityMenu {
+        get { getAvailability() }
+        set { setAvailability(value:newValue) }
+    }
+    
+    
+    private func getAvailability() -> AvailabilityMenu { 
+        
+        guard let giornoFine else {
+            
+            return .intervalloAperto
+        }
+        
+        if giornoFine == giornoInizio { return .dataEsatta }
+        else { return .intervalloChiuso }
+    }
+    
+    mutating public func setAvailability(value:AvailabilityMenu) {
+        
+        switch value {
+            
+        case .dataEsatta:
+            setDataEsatta()
+        case .intervalloChiuso:
+            setIntervalloChiuso()
+        case .intervalloAperto:
+            setIntervalloAperto()
+       /* case .noValue:
+            return*/
+        }
+        
+    }
+    
+   mutating private func setDataEsatta() {
+        
+        let current = Date.now
+        
+       // self.dataInizio = current // deprecata in fut
+       // self.dataFine = current // deprecato in fut
+       
+        self.giornoInizio = current
+        self.giornoFine = current
+        
+        self.oraInizio = current
+        self.oraFine = current.advanced(by: 3600) // plus one hour
+       
+        self.setGiornoDataEsatta()
+    }
+    
+    mutating private func setIntervalloAperto() {
+         
+         let current = Date.now
+         
+        // self.dataInizio = current // depre in fut
+         self.giornoInizio = current
+        
+       //  self.dataFine = current.advanced(by: 6900999) // deprecato in fut
+         self.giornoFine = nil
+         
+         self.oraInizio = current
+         self.oraFine = current.advanced(by: 3600) // plus one hour
+        
+         self.giorniDelServizio = []
+     }
+    
+    mutating private func setIntervalloChiuso() {
+         
+         let current = Date.now
+         
+        // self.dataInizio = current // depre in fut
+         self.giornoInizio = current
+        
+        // self.dataFine = current.advanced(by: 604800) // deprecato in fut
+         self.giornoFine = current.advanced(by: 604800)
+         
+         self.oraInizio = current
+         self.oraFine = current.advanced(by: 3600) // plus one hour
+        
+         self.giorniDelServizio = []
+     }
+    
+     private func setGiornoFine(from day:Date) -> Date? {
+        
+         switch self.availability {
+             
+         case .dataEsatta: return day
+         case .intervalloAperto: return nil
+         case .intervalloChiuso: return day.advanced(by: 604800)
+       //  case .noValue: return nil
+             
+         }
+        
+    }
+    
+   mutating private func setGiornoDataEsatta() {
+        
+       let serviceDay = getGiornoServizioDataEsatta()
+        
+        self.giorniDelServizio = [serviceDay]
+        
+    }
+    
+    public func getGiornoServizioDataEsatta() -> GiorniDelServizio {
+        
+        let dataEsatta = self.giornoInizio
+        let serviceDay = GiorniDelServizio.giornoServizioFromData(dataEsatta: dataEsatta)
+        
+        return serviceDay
+        
+    }
+        
+}
+
 extension MenuModel {
     
     func creaID(fromValue: String) -> String {
@@ -183,10 +312,124 @@ extension MenuModel {
     /// ritorna lo status associato al livello di completamento.
     public func optionalComplete() -> Bool {
         
-        self.descrizione != ""
+        guard let descrizione,
+              !descrizione.isEmpty else { return false }
+        
+        
+        return !self.rifDishIn.isEmpty
     }
 }
 
+extension MenuModel:Decodable { 
+    
+    public enum CodingKeys:String,CodingKey {
+       
+        case id
+        case intestazione
+        case descrizione
+        case rifDishIn = "rif_dish"
+        case tipologia
+    
+        case dataInizio = "giorno_inizio"
+        case dataFine = "giorno_fine"
+       
+        case oraInizio = "ora_inizio"
+        case oraFine = "ora_fine"
+        
+        case giorniDelServizio = "work_days"
+        
+        case statusCache = "status_cache"
+        
+    }
+    
+    
+    public init(from decoder: Decoder) throws {
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.id = try container.decode(String.self, forKey: .id)
+        self.intestazione = try container.decode(String.self, forKey: .intestazione)
+        self.descrizione = try container.decodeIfPresent(String.self, forKey: .descrizione)
+        
+        self.tipologia = try container.decode(TipologiaMenu.self, forKey: .tipologia)
+        self.rifDishIn = try container.decode([String].self, forKey: .rifDishIn)
+    
+        self.oraInizio = try container.decode(Date.self, forKey: .oraInizio)
+        self.oraFine = try container.decode(Date.self, forKey: .oraFine)
+        
+        self.giorniDelServizio = try container.decode([GiorniDelServizio].self, forKey: .giorniDelServizio)
+  
+        self.giornoInizio = try container.decode(Date.self, forKey: .dataInizio)
+        self.giornoFine = try container.decodeIfPresent(Date.self, forKey: .dataFine)
+        
+        let statusValue = try container.decode(String.self, forKey: .statusCache)
+        self.statusCache = Int(statusValue) ?? 0
+    }
+
+}
+
+extension MenuModel:Encodable { 
+    
+    public func encode(to encoder: Encoder) throws {
+        
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(self.id, forKey: .id)
+        try container.encode(self.intestazione, forKey: .intestazione)
+        try container.encode(self.descrizione, forKey: .descrizione)
+        
+        try container.encode(self.tipologia, forKey: .tipologia)
+        try container.encode(self.rifDishIn, forKey: .rifDishIn)
+        
+        try container.encode(self.giornoInizio, forKey: .dataInizio)
+        try container.encode(self.giornoFine, forKey: .dataFine)
+        try container.encode(self.oraInizio, forKey: .oraInizio)
+        try container.encode(self.oraFine, forKey: .oraFine)
+        
+        try container.encode(self.giorniDelServizio, forKey: .giorniDelServizio)
+        
+        let statusValue = String(self.statusCache)
+        try container.encode(statusValue, forKey: .statusCache)
+        
+    }
+    
+}
+
+extension MenuModel:MyProTransitionGetPack_L01 {
+
+    /// Se venisse passato un valore nil, ritornerebbe lo status di archiviato. Il valore deve essere passato Mandatory
+    public func getStatusTransition(viewModel:FoodieViewModel?) -> StatusTransition {
+        
+        guard let viewModel else { return .archiviato }
+        
+        if statusCache == 0 {
+            // automatizzato
+            return getTransitionAutomatically(viewModel: viewModel)
+            
+        } else {
+            // valore precedentemente forzato
+            let currentStatus = StatusTransition.decodeStatus(from: self.statusCache)
+            
+            return currentStatus
+        }
+        
+    }
+    
+    private func getTransitionAutomatically(viewModel:FoodieViewModel) -> StatusTransition {
+        
+        guard !self.rifDishIn.isEmpty else { return .inPausa }
+        
+        let productsDisponibili:[String] = viewModel.checkDishStatusTransition(of: self.rifDishIn, check: .disponibile)
+        
+        guard !productsDisponibili.isEmpty else { return .inPausa }
+        
+        return .disponibile
+
+    }
+    
+}
+
+/// Gestione isOnAir
 extension MenuModel {
     
     /// Di default il check del timeRange viene effettuato. Se messo su false non viene eseguito e dunque viene controllato solo la compatibilità con i giorni. Utile per il monitor Servizio
@@ -196,7 +439,7 @@ extension MenuModel {
         let statusTransition:StatusTransition = .disponibile
         guard statusTransition == .disponibile else { return .offByStatus }
         
-        switch self.isAvaibleWhen {
+        switch self.availability {
             
         case .dataEsatta:
             return isOnAirDataEsatta()
@@ -204,8 +447,8 @@ extension MenuModel {
             return isOnAirClosedRange()
         case .intervalloAperto:
             return isOnAirOpenRange()
-        case .noValue:
-            return .scadutoForEver//non dovrebbe mai verificarsi
+       /* case .noValue:
+            return .scadutoForEver*///non dovrebbe mai verificarsi
             
         }
         
@@ -214,7 +457,7 @@ extension MenuModel {
     private func isOnAirDataEsatta() -> MenuModel.CodiceOnOffLive {
         
         let calendario = Calendar(identifier: .gregorian)
-        let isSame = calendario.isDateInToday(self.dataInizio)
+        let isSame = calendario.isDateInToday(self.giornoInizio)
         
         guard isSame else {
      
@@ -322,8 +565,8 @@ extension MenuModel {
         
         let calendario = Calendar(identifier: .gregorian)
         
-        let startDay = calendario.dateComponents([.day,.month,.year], from: self.dataInizio)
-        let endDay = calendario.dateComponents([.day,.month,.year], from: self.dataFine)
+        let startDay = calendario.dateComponents([.day,.month,.year], from: self.giornoInizio)
+        let endDay = calendario.dateComponents([.day,.month,.year], from: self.giornoFine ?? Date.now) // da sistemare
         let currentDay = calendario.dateComponents([.day,.month,.year,.weekday], from: Date.now)
 
         return(startDay,endDay,currentDay)
@@ -341,6 +584,7 @@ extension MenuModel {
             return (true,false)
         case .scadutoToday:
             return (true,false)
+            
         default: return (false,false)
         }
     }
@@ -412,4 +656,24 @@ extension MenuModel {
     }
 }
 
-extension MenuModel:Codable { }
+
+
+
+/// 23.02.24 Gestione Programmazione
+extension MenuModel {
+    
+    public var planStatus:CodiceOnOffLive { getPlanStatus() }
+    
+    private func getPlanStatus() -> CodiceOnOffLive {
+    
+    
+        return .liveNow
+        
+        
+        
+    }
+    
+    
+    
+    
+}
