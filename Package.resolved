@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "mypackview_l0",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lf51/MyPackView_L0.git",
+      "state" : {
+        "revision" : "5b27641f57d0488148373493a36285918ccfe318",
+        "version" : "0.3.0"
+      }
+    }
+  ],
+  "version" : 2
+}
