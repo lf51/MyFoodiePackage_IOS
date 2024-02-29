@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import MyPackView_L0
 
 public enum StatoScorte:String,MyProEnumPack_L0 {
     

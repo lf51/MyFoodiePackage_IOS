@@ -18,7 +18,8 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(url:"https://github.com/lf51/MyPackView_L0.git", from: "0.0.9")
+        //.package(url:"https://github.com/lf51/MyPackView_L0.git", from: "0.0.9")
+        .package(url: "https://github.com/lf51/MyFilterPackage.git", from: "0.5.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -26,7 +27,8 @@ let package = Package(
         .target(
             name: "MyFoodiePackage",
             dependencies: [
-                .product(name: "MyPackView_L0", package: "MyPackView_L0")
+               //.product(name: "MyPackView_L0", package: "MyPackView_L0")
+                .product(name: "MyFilterPackage", package: "MyFilterPackage")
             ]),
     ]
 )

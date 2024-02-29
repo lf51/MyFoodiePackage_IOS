@@ -1,12 +1,21 @@
 {
   "pins" : [
     {
+      "identity" : "myfilterpackage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lf51/MyFilterPackage.git",
+      "state" : {
+        "revision" : "da6ec2a84f0b1ddb655c19d0f2b6b4bb77174a28",
+        "version" : "0.5.3"
+      }
+    },
+    {
       "identity" : "mypackview_l0",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lf51/MyPackView_L0.git",
       "state" : {
-        "revision" : "5b27641f57d0488148373493a36285918ccfe318",
-        "version" : "0.3.0"
+        "revision" : "054a032ae09a961e9396bf24d3ad8b42acfd3eb7",
+        "version" : "0.3.1"
       }
     }
   ],
