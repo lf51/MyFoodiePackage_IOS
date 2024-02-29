@@ -7,7 +7,9 @@
 
 import Foundation
 import SwiftUI
-import MyPackView_L0
+
+//import MyPackView_L0
+//import MyViewPack
 /*
 public struct BoxDescriptionModel_Generic<M:MyProDescriptionPack_L0>: View {
     // 15.09 passa da MyProModelPack a MyProToolPack

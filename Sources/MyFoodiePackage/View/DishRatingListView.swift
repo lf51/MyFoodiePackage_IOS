@@ -6,7 +6,8 @@
 //
 
 import SwiftUI
-import MyPackView_L0
+//import MyPackView_L0
+import MyPackView
 
 public struct DishRatingListView: View {
     

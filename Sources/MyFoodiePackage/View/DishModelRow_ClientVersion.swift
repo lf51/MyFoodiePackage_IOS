@@ -6,7 +6,8 @@
 //
 
 import SwiftUI
-import MyPackView_L0
+//import MyPackView_L0
+import MyPackView
 import CoreLocation
 
 public struct ProductModelRow_ClientVersion: View {
